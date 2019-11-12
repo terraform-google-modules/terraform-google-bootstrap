@@ -64,6 +64,12 @@ resource "google_project_iam_member" "org_admins_cloudbuild_editor" {
   member  = "group:${var.group_org_admins}"
 }
 
+resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
+  project = google_project.cloudbuild_project.id
+  role    = "roles/viewer"
+  member  = "group:${var.group_org_admins}"
+}
+
 /******************************************
   Cloudbuild Artifact bucket
 *******************************************/
@@ -251,6 +257,17 @@ resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
 
 resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   bucket = google_storage_bucket.cloudbuild_artifacts.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_project.cloudbuild_project.number}@cloudbuild.gserviceaccount.com"
+  depends_on = [
+    google_project_service.cloudbuild_project_api
+  ]
+}
+
+# Required to allow cloud build to access state with impersonation.
+resource "google_storage_bucket_iam_member" "cloudbuild_state_iam" {
+  count  = local.impersonation_enabled_count
+  bucket = var.terraform_state_bucket
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_project.cloudbuild_project.number}@cloudbuild.gserviceaccount.com"
   depends_on = [

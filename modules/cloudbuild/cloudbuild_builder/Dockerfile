@@ -1,10 +1,10 @@
 FROM gcr.io/cloud-builders/gcloud-slim
 
-ENV TERRAFORM_VERSION=0.12.6
-ENV TERRAFORM_VERSION_SHA256SUM=6544eb55b3e916affeea0a46fe785329c36de1ba1bdb51ca5239d3567101876f
+ENV TERRAFORM_VERSION=0.12.13
+ENV TERRAFORM_VERSION_SHA256SUM=63f765a3f83987b67b046a9c31acff1ec9ee618990d0eab4db34eca6c0d861ec
 
 RUN apt-get update && \
-    /builder/google-cloud-sdk/bin/gcloud -q components install alpha beta && \
+   /builder/google-cloud-sdk/bin/gcloud -q components install alpha beta && \
     apt-get -y install curl jq unzip ca-certificates && \
     curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
       > terraform_linux_amd64.zip && \
