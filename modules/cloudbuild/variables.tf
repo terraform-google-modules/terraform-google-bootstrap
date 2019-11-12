@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2019 Google LLC
  *
@@ -33,13 +34,23 @@ variable "group_org_admins" {
   type        = string
 }
 
-variable "group_billing_admins" {
-  description = "Google Group for GCP Billing Administrators"
+variable "default_region" {
+  description = "Default region to create resources where applicable."
   type        = string
 }
 
-variable "default_region" {
-  description = "Default region to create resources where applicable."
+variable "terraform_sa_email" {
+  description = "Email for terraform service account."
+  type        = string
+}
+
+variable "terraform_sa_name" {
+  description = "Fully-qualified name of the terraform service account."
+  type        = string
+}
+
+variable "terraform_state_bucket" {
+  description = "Default state bucket, used in Cloud Build substitutions."
   type        = string
 }
 
@@ -49,16 +60,18 @@ variable "default_region" {
 
 variable "credentials_file_path" {
   description = "Service account key path with default to Application Default Credentials path"
+  type        = string
   default     = "~/.config/gcloud/application_default_credentials.json"
 }
 
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
+  type        = string
   default     = "cft"
 }
 
 variable "activate_apis" {
-  description = "List of APIs to enable in the seed project."
+  description = "List of APIs to enable in the Cloudbuild project."
   type        = list(string)
 
   default = [
@@ -74,34 +87,19 @@ variable "activate_apis" {
   ]
 }
 
-variable "sa_org_iam_permissions" {
-  description = "List of permissions granted to Terraform service account across the GCP organization."
-  type        = list(string)
-  default = [
-    "roles/billing.user",
-    "roles/compute.networkAdmin",
-    "roles/compute.xpnAdmin",
-    "roles/iam.serviceAccountAdmin",
-    "roles/logging.configWriter",
-    "roles/orgpolicy.policyAdmin",
-    "roles/resourcemanager.folderCreator",
-    "roles/resourcemanager.folderViewer",
-    "roles/resourcemanager.organizationViewer"
-  ]
-}
-
 variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
 }
 
-variable "org_admins_org_iam_permissions" {
-  description = "List of permissions granted to the group supplied in group_org_admins variable across the GCP organization."
+variable "cloud_source_repos" {
+  description = "List of Cloud Source Repo's to create with CloudBuild triggers."
   type        = list(string)
+
   default = [
-    "roles/billing.user",
-    "roles/resourcemanager.organizationAdmin",
-    "roles/resourcemanager.projectCreator"
+    "gcp-org",
+    "gcp-networks",
+    "gcp-projects",
   ]
 }

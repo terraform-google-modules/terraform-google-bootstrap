@@ -1,10 +1,6 @@
 # terraform-google-bootstrap
 
-This module was generated from [terraform-google-module-template](https://github.com/terraform-google-modules/terraform-google-module-template/), which by default generates a module that simply creates a GCS bucket. As the module develops, this README should be updated.
-
-The resources/services/activations/deletions that this module will create/trigger are:
-
-- Create a GCS bucket with the provided name
+The purpose of this module is to help bootstrap a GCP organization, creating all the required GCP resources & permissions to start using the Cloud Foundation Toolkit (CFT). For users who want to use Cloud Build & Cloud Source Repos for foundations code, there is also a submodule to help bootstrap all the required resources to do this.
 
 ## Usage
 
@@ -15,68 +11,69 @@ module "bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
   version = "~> 0.1"
 
-  project_id  = "<PROJECT ID>"
-  bucket_name = "gcs-test-bucket"
+  organization_id      = "<ORGANIZATION_ID>"
+  billing_account      = "<BILLING_ACCOUNT_ID>"
+  group_org_admins     = "gcp-organization-admins@example.com"
+  group_billing_admins = "gcp-billing-admins@example.com"
+  default_region       = "australia-southeast1"
 }
 ```
 
 Functional examples are included in the
 [examples](./examples/) directory.
 
+## Features
+
+The Organization Bootstrap module will take the following actions:
+
+1. Create a new GCP seed project using `project_prefix`.
+1. Enable APIs in the seed project using `activate_apis`
+1. Create a new service account for terraform in seed project
+1. Create GCS bucket for Terraform state and grant access to service account
+1. Grant IAM permissions required for CFT modules & Organization setup
+    1. Overwrite organization wide project creator and billing account creator roles
+    1. Grant Organization permissions to service account using `sa_org_iam_permissions`
+    1. Grant access to billing account for service account
+    1. Grant Organization permissions to `group_org_admins` using `org_admins_org_iam_permissions`
+    1. Grant billing permissions to `group_billing_admins`
+    1. (optional) Permissions required for service account impersonation using `sa_enable_impersonation`
+
+For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
+
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| bucket\_name | The name of the bucket to create | string | n/a | yes |
-| project\_id | The project ID to deploy to | string | n/a | yes |
+| activate\_apis | List of APIs to enable in the seed project. | list(string) | `[ "servicenetworking.googleapis.com", "compute.googleapis.com", "logging.googleapis.com", "bigquery-json.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudbilling.googleapis.com", "iam.googleapis.com", "admin.googleapis.com", "appengine.googleapis.com" ]` | no |
+| billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
+| credentials\_file\_path | Service account key path with default to Application Default Credentials path | string | `"~/.config/gcloud/application_default_credentials.json"` | no |
+| default\_region | Default region to create resources where applicable. | string | n/a | yes |
+| group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
+| group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
+| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/resourcemanager.organizationAdmin", "roles/resourcemanager.projectCreator" ]` | no |
+| organization\_id | GCP Organization ID | string | n/a | yes |
+| project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
+| sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
+| sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/compute.networkAdmin", "roles/compute.xpnAdmin", "roles/iam.serviceAccountAdmin", "roles/logging.configWriter", "roles/orgpolicy.policyAdmin", "roles/resourcemanager.folderCreator", "roles/resourcemanager.folderViewer", "roles/resourcemanager.organizationViewer" ]` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| bucket\_name |  |
+| gcs\_bucket\_tfstate | Bucket used for storing terraform state for foundations pipelines in seed project. |
+| seed\_project\_id | Project where service accounts and core APIs will be enabled. |
+| terraform\_sa\_email | Email for privileged service account. |
+| terraform\_sa\_name | Fully qualified name for privileged service account. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Requirements
 
-These sections describe requirements for using this module.
-
 ### Software
 
-The following dependencies must be available:
-
-- [Terraform][terraform] v0.12
-- [Terraform Provider for GCP][terraform-provider-gcp] plugin v2.0
-
-### Service Account
-
-A service account with the following roles must be used to provision
-the resources of this module:
-
-- Storage Admin: `roles/storage.admin`
-
-The [Project Factory module][project-factory-module] and the
-[IAM module][iam-module] may be used in combination to provision a
-service account with the necessary roles applied.
-
-### APIs
-
-A project with the following APIs enabled must be used to host the
-resources of this module:
-
-- Google Cloud Storage JSON API: `storage-api.googleapis.com`
-
-The [Project Factory module][project-factory-module] can be used to
-provision a project with the necessary APIs enabled.
-
-## Contributing
-
-Refer to the [contribution guidelines](./CONTRIBUTING.md) for
-information on contributing to this module.
-
-[iam-module]: https://registry.terraform.io/modules/terraform-google-modules/iam/google
-[project-factory-module]: https://registry.terraform.io/modules/terraform-google-modules/project-factory/google
-[terraform-provider-gcp]: https://www.terraform.io/docs/providers/google/index.html
-[terraform]: https://www.terraform.io/downloads.html
+-   [gcloud sdk](https://cloud.google.com/sdk/install) >= 206.0.0
+-   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.6
+-   [terraform-provider-google] plugin 2.1.x
+-   [terraform-provider-google-beta] plugin 2.1.x
