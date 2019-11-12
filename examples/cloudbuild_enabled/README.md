@@ -1,3 +1,7 @@
+## Overview
+
+This example combines the Organization bootstrap module with the Cloud Build submodule, to setup everything that is required to run subsequent infrastructure as code using cloud native tooling and limited external dependencies. For more details on what the Cloud Build module is doing, see the [readme](../../modules/cloudbuild).
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 

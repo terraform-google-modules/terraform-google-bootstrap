@@ -1,3 +1,7 @@
+## Overview
+
+This example demonstrates the simplest usage of the GCP organization bootstrap module, accepting default values for the module variables.
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
