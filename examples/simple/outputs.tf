@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-output "bucket_name" {
-  description = "The name of the bucket."
-  value       = module.bootstrap.bucket_name
+
+output "seed_project_id" {
+  value = module.seed_bootstrap.seed_project_id
+}
+
+output "org_terraform_sa_email" {
+  value = module.seed_bootstrap.org_terraform_sa_email
+}
+
+output "gcs_bucket_tfstate" {
+  value = module.seed_bootstrap.gcs_bucket_tfstate
 }

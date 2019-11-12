@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.12"
+output "cloudbuild_project_id" {
+  description = "Project where CloudBuild configuration and terraform container image will reside."
+  value       = google_project.cloudbuild_project.project_id
+}
+
+output "gcs_bucket_cloudbuild_artifacts" {
+  description = "Bucket used to store Cloud/Build artefacts in CloudBuild project."
+  value       = google_storage_bucket.cloudbuild_artifacts.name
+}
+
+output "csr_repos" {
+  value = google_sourcerepo_repository.gcp_repo
+}
+
+output "kms_keyring" {
+  value = google_kms_key_ring.tf_keyring
+}
+
+output "kms_crypto_key" {
+  value = google_kms_crypto_key.tf_key
 }
