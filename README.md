@@ -77,3 +77,29 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 -   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.6
 -   [terraform-provider-google] plugin 2.1.x
 -   [terraform-provider-google-beta] plugin 2.1.x
+
+### Permissions
+
+- `roles/resourcemanager.organizationAdmin` on GCP Organization
+- `roles/billing.admin` on supplied billing account
+- Account running terraform should be a member of group provided in `group_org_admins` variable, to ensure that project creation and other API calls do not fail.
+
+### Credentials
+
+If you are not customizing the credentials used in the variable `credentials_file_path`, please ensure you run `gcloud auth application-default login` prior to running your code to ensure the module can retreive credentials.
+
+For users interested in using service account impersonation which this module helps enable with `sa_enable_impersonation`, please see this [blog post](https://medium.com/google-cloud/terraform-assume-role-and-service-account-impersonation-on-google-cloud-ffc553863e72) which explains how it works.
+
+### APIs
+
+A project with the following APIs enabled must be used to host the
+resources of this module:
+
+- Google Cloud Resource Manager API: `cloudresourcemanager.googleapis.com`
+
+This API can be enabled in the default project created during establishing an organization.
+
+## Contributing
+
+Refer to the [contribution guidelines](./CONTRIBUTING.md) for
+information on contributing to this module.
