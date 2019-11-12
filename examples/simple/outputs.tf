@@ -19,8 +19,8 @@ output "seed_project_id" {
   value = module.seed_bootstrap.seed_project_id
 }
 
-output "org_terraform_sa_email" {
-  value = module.seed_bootstrap.org_terraform_sa_email
+output "terraform_sa_email" {
+  value = module.seed_bootstrap.terraform_sa_email
 }
 
 output "gcs_bucket_tfstate" {

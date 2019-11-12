@@ -14,7 +14,7 @@
 | Name | Description |
 |------|-------------|
 | gcs\_bucket\_tfstate |  |
-| org\_terraform\_sa\_email |  |
 | seed\_project\_id |  |
+| terraform\_sa\_email |  |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
