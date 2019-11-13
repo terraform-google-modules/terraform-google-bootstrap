@@ -48,9 +48,9 @@ resource "google_project" "cloudbuild_project" {
 *******************************************/
 
 resource "google_project_service" "cloudbuild_project_api" {
-  count                      = length(local.activate_apis)
+  for_each                   = toset(local.activate_apis)
   project                    = google_project.cloudbuild_project.id
-  service                    = local.activate_apis[count.index]
+  service                    = each.value
   disable_dependent_services = true
 }
 
@@ -135,9 +135,9 @@ resource "google_kms_crypto_key_iam_binding" "cloud_build_crypto_key_encrypter" 
 *******************************************/
 
 resource "google_sourcerepo_repository" "gcp_repo" {
-  count   = length(var.cloud_source_repos)
-  project = google_project.cloudbuild_project.id
-  name    = var.cloud_source_repos[count.index]
+  for_each = toset(var.cloud_source_repos)
+  project  = google_project.cloudbuild_project.id
+  name     = each.value
   depends_on = [
     google_project_service.cloudbuild_project_api
   ]
@@ -158,13 +158,13 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "master_trigger" {
-  count       = length(var.cloud_source_repos)
+  for_each    = toset(var.cloud_source_repos)
   project     = google_project.cloudbuild_project.id
-  description = "${var.cloud_source_repos[count.index]} - terraform apply on push to master."
+  description = "${each.value} - terraform apply on push to master."
 
   trigger_template {
     branch_name = "master"
-    repo_name   = var.cloud_source_repos[count.index]
+    repo_name   = each.value
   }
 
   substitutions = {
@@ -188,13 +188,13 @@ resource "google_cloudbuild_trigger" "master_trigger" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "non_master_trigger" {
-  count       = length(var.cloud_source_repos)
+  for_each    = toset(var.cloud_source_repos)
   project     = google_project.cloudbuild_project.id
-  description = "${var.cloud_source_repos[count.index]} - terraform plan on all branches except master."
+  description = "${each.value} - terraform plan on all branches except master."
 
   trigger_template {
     branch_name = "[^master]"
-    repo_name   = var.cloud_source_repos[count.index]
+    repo_name   = each.value
   }
 
   substitutions = {
