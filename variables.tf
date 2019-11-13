@@ -47,14 +47,10 @@ variable "default_region" {
   Optional variables
 *******************************************/
 
-variable "credentials_file_path" {
-  description = "Service account key path with default to Application Default Credentials path"
-  default     = "~/.config/gcloud/application_default_credentials.json"
-}
-
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
   default     = "cft"
+  type        = string
 }
 
 variable "activate_apis" {

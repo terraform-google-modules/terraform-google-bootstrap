@@ -48,7 +48,6 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 |------|-------------|:----:|:-----:|:-----:|
 | activate\_apis | List of APIs to enable in the seed project. | list(string) | `[ "servicenetworking.googleapis.com", "compute.googleapis.com", "logging.googleapis.com", "bigquery-json.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudbilling.googleapis.com", "iam.googleapis.com", "admin.googleapis.com", "appengine.googleapis.com" ]` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
-| credentials\_file\_path | Service account key path with default to Application Default Credentials path | string | `"~/.config/gcloud/application_default_credentials.json"` | no |
 | default\_region | Default region to create resources where applicable. | string | n/a | yes |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
@@ -85,8 +84,6 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 - Account running terraform should be a member of group provided in `group_org_admins` variable, to ensure that project creation and other API calls do not fail.
 
 ### Credentials
-
-If you are not customizing the credentials used in the variable `credentials_file_path`, please ensure you run `gcloud auth application-default login` prior to running your code to ensure the module can retreive credentials.
 
 For users interested in using service account impersonation which this module helps enable with `sa_enable_impersonation`, please see this [blog post](https://medium.com/google-cloud/terraform-assume-role-and-service-account-impersonation-on-google-cloud-ffc553863e72) which explains how it works.
 

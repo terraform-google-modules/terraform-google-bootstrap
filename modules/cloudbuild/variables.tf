@@ -58,12 +58,6 @@ variable "terraform_state_bucket" {
   Optional variables
 *******************************************/
 
-variable "credentials_file_path" {
-  description = "Service account key path with default to Application Default Credentials path"
-  type        = string
-  default     = "~/.config/gcloud/application_default_credentials.json"
-}
-
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
   type        = string

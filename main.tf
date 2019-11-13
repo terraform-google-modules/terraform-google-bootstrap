@@ -45,9 +45,10 @@ resource "google_project" "seed_project" {
 }
 
 resource "google_project_service" "seed_project_api" {
-  count                      = length(local.activate_apis)
+  for_each = toset(local.activate_apis)
+
   project                    = google_project.seed_project.id
-  service                    = local.activate_apis[count.index]
+  service                    = local.activate_apis[each.value]
   disable_dependent_services = true
 }
 
@@ -102,9 +103,10 @@ resource "google_organization_iam_binding" "project_creator" {
  ***********************************************/
 
 resource "google_organization_iam_member" "org_admins_group" {
-  count  = length(var.org_admins_org_iam_permissions)
+  for_each = toset(var.org_admins_org_iam_permissions)
+
   org_id = var.organization_id
-  role   = var.org_admins_org_iam_permissions[count.index]
+  role   = var.org_admins_org_iam_permissions[each.value]
   member = "group:${var.group_org_admins}"
 }
 
@@ -123,9 +125,10 @@ resource "google_organization_iam_member" "org_billing_admin" {
  ***********************************************/
 
 resource "google_organization_iam_member" "tf_sa_org_perms" {
-  count  = length(var.sa_org_iam_permissions)
+  for_each = toset(var.sa_org_iam_permissions)
+
   org_id = var.organization_id
-  role   = var.sa_org_iam_permissions[count.index]
+  role   = var.sa_org_iam_permissions[each.value]
   member = "serviceAccount:${google_service_account.org_terraform.email}"
 }
 
