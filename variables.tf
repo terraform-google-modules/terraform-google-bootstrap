@@ -101,3 +101,15 @@ variable "org_admins_org_iam_permissions" {
     "roles/resourcemanager.projectCreator"
   ]
 }
+
+variable "folder_id" {
+  description = "The ID of a folder to host this project"
+  type        = string
+  default     = ""
+}
+
+variable "org_project_creators" {
+  description = "Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required."
+  type        = list(string)
+  default     = []
+}

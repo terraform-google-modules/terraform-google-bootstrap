@@ -16,7 +16,7 @@
 
 output "cloudbuild_project_id" {
   description = "Project where CloudBuild configuration and terraform container image will reside."
-  value       = google_project.cloudbuild_project.project_id
+  value       = module.cloudbuild_project.project_id
 }
 
 output "gcs_bucket_cloudbuild_artifacts" {

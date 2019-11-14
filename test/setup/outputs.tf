@@ -46,3 +46,7 @@ output "group_billing_admins" {
 output "default_region" {
   value = var.default_region
 }
+
+output "org_project_creators" {
+  value = ["serviceAccount:${google_service_account.int_test.email}"]
+}

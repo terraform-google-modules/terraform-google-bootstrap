@@ -16,7 +16,7 @@
 
 echo "#!/usr/bin/env bash" > ../source.sh
 
-TF_VARS="project_id org_id folder_id billing_account group_org_admins group_billing_admins default_region"
+TF_VARS="project_id org_id folder_id billing_account group_org_admins group_billing_admins default_region org_project_creators"
 
 for TF_VAR in $TF_VARS
 do

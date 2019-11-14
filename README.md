@@ -49,9 +49,11 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | activate\_apis | List of APIs to enable in the seed project. | list(string) | `[ "servicenetworking.googleapis.com", "compute.googleapis.com", "logging.googleapis.com", "bigquery-json.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudbilling.googleapis.com", "iam.googleapis.com", "admin.googleapis.com", "appengine.googleapis.com" ]` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
 | default\_region | Default region to create resources where applicable. | string | n/a | yes |
+| folder\_id | The ID of a folder to host this project | string | `""` | no |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/resourcemanager.organizationAdmin", "roles/resourcemanager.projectCreator" ]` | no |
+| org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `[]` | no |
 | organization\_id | GCP Organization ID | string | n/a | yes |
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
@@ -80,8 +82,9 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 ### Permissions
 
 - `roles/resourcemanager.organizationAdmin` on GCP Organization
+- `roles/resourcemanager.projectCreator` on GCP Organization
 - `roles/billing.admin` on supplied billing account
-- Account running terraform should be a member of group provided in `group_org_admins` variable, to ensure that project creation and other API calls do not fail.
+- Account running terraform should be a member of group provided in `group_org_admins` variable, otherwise they will loose `roles/resourcemanager.projectCreator` access. Additional members can be added by using the `org_project_creators` variable.
 
 ### Credentials
 

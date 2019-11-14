@@ -97,3 +97,9 @@ variable "cloud_source_repos" {
     "gcp-projects",
   ]
 }
+
+variable "folder_id" {
+  description = "The ID of a folder to host this project"
+  type        = string
+  default     = ""
+}

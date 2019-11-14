@@ -56,6 +56,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
 | cloud\_source\_repos | List of Cloud Source Repo's to create with CloudBuild triggers. | list(string) | `[ "gcp-org", "gcp-networks", "gcp-projects" ]` | no |
 | default\_region | Default region to create resources where applicable. | string | n/a | yes |
+| folder\_id | The ID of a folder to host this project | string | `""` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
 | organization\_id | GCP Organization ID | string | n/a | yes |
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |

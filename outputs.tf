@@ -20,7 +20,7 @@
 
 output "seed_project_id" {
   description = "Project where service accounts and core APIs will be enabled."
-  value       = google_project.seed_project.project_id
+  value       = module.seed_project.project_id
 }
 
 /******************************************

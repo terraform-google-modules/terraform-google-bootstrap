@@ -15,10 +15,11 @@
  */
 
 locals {
-  seed_project_id             = format("%s-%s-%s", var.project_prefix, "seed", random_id.suffix.hex)
+  seed_project_id             = format("%s-%s", var.project_prefix, "seed")
   impersonation_apis          = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
+  org_project_creators        = distinct(concat(var.org_project_creators, ["serviceAccount:${google_service_account.org_terraform.email}", "group:${var.group_org_admins}"]))
 }
 
 resource "random_id" "suffix" {
@@ -33,22 +34,15 @@ data "google_organization" "org" {
   Create IaC Project
 *******************************************/
 
-resource "google_project" "seed_project" {
-  name                = local.seed_project_id
-  project_id          = local.seed_project_id
-  org_id              = var.organization_id
-  billing_account     = var.billing_account
-  auto_create_network = false
-  depends_on = [
-    google_organization_iam_member.org_admins_group,
-  ]
-}
-
-resource "google_project_service" "seed_project_api" {
-  for_each                   = toset(local.activate_apis)
-  project                    = google_project.seed_project.id
-  service                    = each.value
-  disable_dependent_services = true
+module "seed_project" {
+  source            = "terraform-google-modules/project-factory/google"
+  version           = "~> 5.0"
+  name              = local.seed_project_id
+  random_project_id = "true"
+  folder_id         = var.folder_id
+  org_id            = var.organization_id
+  billing_account   = var.billing_account
+  activate_apis     = local.activate_apis
 }
 
 /******************************************
@@ -56,7 +50,7 @@ resource "google_project_service" "seed_project_api" {
 *******************************************/
 
 resource "google_service_account" "org_terraform" {
-  project      = google_project.seed_project.id
+  project      = module.seed_project.project_id
   account_id   = "org-terraform"
   display_name = "CFT Organization Terraform Account"
 }
@@ -66,7 +60,7 @@ resource "google_service_account" "org_terraform" {
  ***********************************************/
 
 resource "google_storage_bucket" "org_terraform_state" {
-  project       = google_project.seed_project.id
+  project       = module.seed_project.project_id
   name          = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
   location      = var.default_region
   force_destroy = true
@@ -91,10 +85,7 @@ resource "google_organization_iam_binding" "project_creator" {
   org_id = var.organization_id
   role   = "roles/resourcemanager.projectCreator"
 
-  members = [
-    "serviceAccount:${google_service_account.org_terraform.email}",
-    "group:${var.group_org_admins}"
-  ]
+  members = local.org_project_creators
 }
 
 /***********************************************
@@ -158,8 +149,7 @@ resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissio
 resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
   count = local.impersonation_enabled_count
 
-  org_id     = var.organization_id
-  role       = "roles/serviceusage.serviceUsageConsumer"
-  member     = "group:${var.group_org_admins}"
-  depends_on = [google_project_service.seed_project_api]
+  org_id = var.organization_id
+  role   = "roles/serviceusage.serviceUsageConsumer"
+  member = "group:${var.group_org_admins}"
 }
