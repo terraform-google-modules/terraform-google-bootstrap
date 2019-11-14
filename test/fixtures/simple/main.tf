@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-output "bucket_name" {
-  description = "The name of the bucket."
-  value       = module.example.bucket_name
-}
+module "example" {
+  source = "../../../examples/simple"
 
-output "project_id" {
-  description = "The ID of the project in which resources are provisioned."
-  value       = var.project_id
+  organization_id      = var.org_id
+  billing_account      = var.billing_account
+  group_org_admins     = var.group_org_admins
+  group_billing_admins = var.group_billing_admins
+  default_region       = var.default_region
 }

@@ -46,16 +46,16 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| activate\_apis | List of APIs to enable in the seed project. | list(string) | `[ "servicenetworking.googleapis.com", "compute.googleapis.com", "logging.googleapis.com", "bigquery-json.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudbilling.googleapis.com", "iam.googleapis.com", "admin.googleapis.com", "appengine.googleapis.com" ]` | no |
+| activate\_apis | List of APIs to enable in the seed project. | list(string) | `<list>` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
 | default\_region | Default region to create resources where applicable. | string | n/a | yes |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
-| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/resourcemanager.organizationAdmin", "roles/resourcemanager.projectCreator" ]` | no |
+| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `<list>` | no |
 | organization\_id | GCP Organization ID | string | n/a | yes |
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
-| sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/compute.networkAdmin", "roles/compute.xpnAdmin", "roles/iam.serviceAccountAdmin", "roles/logging.configWriter", "roles/orgpolicy.policyAdmin", "roles/resourcemanager.folderCreator", "roles/resourcemanager.folderViewer", "roles/resourcemanager.organizationViewer" ]` | no |
+| sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `<list>` | no |
 
 ## Outputs
 

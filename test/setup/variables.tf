@@ -24,3 +24,15 @@ variable "folder_id" {
 variable "billing_account" {
   description = "The billing account id associated with the project, e.g. XXXXXX-YYYYYY-ZZZZZZ"
 }
+
+variable "group_org_admins" {
+  description = "Google Group for GCP Organization Administrators"
+}
+
+variable "group_billing_admins" {
+  description = "Google Group for GCP Billing Administrators"
+}
+
+variable "default_region" {
+  description = "Default region to create resources where applicable."
+}

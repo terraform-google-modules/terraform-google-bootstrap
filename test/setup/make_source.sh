@@ -16,8 +16,13 @@
 
 echo "#!/usr/bin/env bash" > ../source.sh
 
-project_id=$(terraform output project_id)
-echo "export TF_VAR_project_id='$project_id'" >> ../source.sh
+TF_VARS="project_id org_id folder_id billing_account group_org_admins group_billing_admins default_region"
+
+for TF_VAR in $TF_VARS
+do
+    TF_VAR_VAL=$(terraform output "${TF_VAR}")
+    echo "export TF_VAR_${TF_VAR}='$TF_VAR_VAL'" >> ../source.sh
+done
 
 sa_json=$(terraform output sa_key)
 # shellcheck disable=SC2086

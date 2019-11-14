@@ -23,6 +23,10 @@ output "terraform_sa_email" {
   value = module.seed_bootstrap.terraform_sa_email
 }
 
+output "terraform_sa_name" {
+  value = module.seed_bootstrap.terraform_sa_name
+}
+
 output "gcs_bucket_tfstate" {
   value = module.seed_bootstrap.gcs_bucket_tfstate
 }

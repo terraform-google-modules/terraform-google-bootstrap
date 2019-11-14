@@ -20,5 +20,6 @@ This example demonstrates the simplest usage of the GCP organization bootstrap m
 | gcs\_bucket\_tfstate |  |
 | seed\_project\_id |  |
 | terraform\_sa\_email |  |
+| terraform\_sa\_name |  |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

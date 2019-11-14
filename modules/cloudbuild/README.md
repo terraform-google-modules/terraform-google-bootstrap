@@ -52,9 +52,9 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| activate\_apis | List of APIs to enable in the Cloudbuild project. | list(string) | `[ "servicenetworking.googleapis.com", "compute.googleapis.com", "logging.googleapis.com", "bigquery-json.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudbilling.googleapis.com", "iam.googleapis.com", "admin.googleapis.com", "appengine.googleapis.com" ]` | no |
+| activate\_apis | List of APIs to enable in the Cloudbuild project. | list(string) | `<list>` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
-| cloud\_source\_repos | List of Cloud Source Repo's to create with CloudBuild triggers. | list(string) | `[ "gcp-org", "gcp-networks", "gcp-projects" ]` | no |
+| cloud\_source\_repos | List of Cloud Source Repo's to create with CloudBuild triggers. | list(string) | `<list>` | no |
 | default\_region | Default region to create resources where applicable. | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
 | organization\_id | GCP Organization ID | string | n/a | yes |

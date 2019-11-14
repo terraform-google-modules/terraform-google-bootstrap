@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-provider "random" {
-  version = "~> 2.0"
+output "seed_project_id" {
+  value = module.example.seed_project_id
 }
 
-resource "random_pet" "main" {
-  length    = 1
-  prefix    = "simple-example"
-  separator = "-"
+output "terraform_sa_email" {
+  value = module.example.terraform_sa_email
 }
 
-module "example" {
-  source = "../../../examples/simple_example"
+output "terraform_sa_name" {
+  value = module.example.terraform_sa_name
+}
 
-  project_id  = var.project_id
-  bucket_name = random_pet.main.id
+output "gcs_bucket_tfstate" {
+  value = module.example.gcs_bucket_tfstate
 }
