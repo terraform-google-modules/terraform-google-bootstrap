@@ -24,6 +24,8 @@ default_apis = [
   "appengine.googleapis.com"
 ]
 
+cloudbuild_apis = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
+
 control "bootstrap" do
   title "Bootstrap module GCP resources"
 
@@ -42,6 +44,33 @@ control "bootstrap" do
 
   default_apis.each do |api|
     describe google_project_service(project: attribute("seed_project_id"), name: api) do
+      it { should exist }
+      its('state') { should cmp "ENABLED" }
+    end
+  end
+
+end
+
+control "cloudbuild" do
+  title "Cloudbuild sub-module GCP Resources"
+
+  describe google_project(project_id: attribute("cloudbuild_project_id")) do
+    it { should exist }
+  end
+
+  describe google_storage_bucket(name: attribute("gcs_bucket_cloudbuild_artifacts")) do
+    it { should exist }
+  end
+
+  default_apis.each do |api|
+    describe google_project_service(project: attribute("cloudbuild_project_id"), name: api) do
+      it { should exist }
+      its('state') { should cmp "ENABLED" }
+    end
+  end
+
+  cloudbuild_apis.each do |api|
+    describe google_project_service(project: attribute("cloudbuild_project_id"), name: api) do
       it { should exist }
       its('state') { should cmp "ENABLED" }
     end

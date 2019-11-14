@@ -1,0 +1,33 @@
+name: simple
+depends:
+  - name: inspec-gcp
+    git: https://github.com/inspec/inspec-gcp.git
+    tag: v0.20.0
+attributes:
+  - name: seed_project_id
+    required: true
+    type: string
+  - name: terraform_sa_email
+    required: true
+    type: string
+  - name: terraform_sa_name
+    required: true
+    type: string
+  - name: gcs_bucket_tfstate
+    required: true
+    type: string
+  - name: cloudbuild_project_id
+    required: true
+    type: string
+  - name: gcs_bucket_cloudbuild_artifacts
+    required: true
+    type: string
+  # - name: csr_repos
+  #   required: true
+  #   type: string
+  # - name: kms_keyring
+  #   required: true
+  #   type: string
+  # - name: kms_crypto_key
+  #   required: true
+  #   type: string

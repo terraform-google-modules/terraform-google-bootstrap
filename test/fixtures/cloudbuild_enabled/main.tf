@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-module "simple" {
-  source = "../../../examples/simple"
+module "cloudbuild_enabled" {
+  source = "../../../examples/cloudbuild_enabled"
 
   organization_id      = var.org_id
   billing_account      = var.billing_account

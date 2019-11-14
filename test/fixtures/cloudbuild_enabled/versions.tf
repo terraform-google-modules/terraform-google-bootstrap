@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-module "simple" {
-  source = "../../../examples/simple"
-
-  organization_id      = var.org_id
-  billing_account      = var.billing_account
-  group_org_admins     = var.group_org_admins
-  group_billing_admins = var.group_billing_admins
-  default_region       = var.default_region
+terraform {
+  required_version = "~> 0.12.6"
 }

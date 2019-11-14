@@ -15,17 +15,37 @@
  */
 
 output "seed_project_id" {
-  value = module.simple.seed_project_id
+  value = module.cloudbuild_enabled.seed_project_id
 }
 
 output "terraform_sa_email" {
-  value = module.simple.terraform_sa_email
+  value = module.cloudbuild_enabled.terraform_sa_email
 }
 
 output "terraform_sa_name" {
-  value = module.simple.terraform_sa_name
+  value = module.cloudbuild_enabled.terraform_sa_name
 }
 
 output "gcs_bucket_tfstate" {
-  value = module.simple.gcs_bucket_tfstate
+  value = module.cloudbuild_enabled.gcs_bucket_tfstate
+}
+
+output "cloudbuild_project_id" {
+  value = module.cloudbuild_enabled.cloudbuild_project_id
+}
+
+output "gcs_bucket_cloudbuild_artifacts" {
+  value = module.cloudbuild_enabled.gcs_bucket_cloudbuild_artifacts
+}
+
+output "csr_repos" {
+  value = module.cloudbuild_enabled.csr_repos
+}
+
+output "kms_keyring" {
+  value = module.cloudbuild_enabled.kms_keyring
+}
+
+output "kms_crypto_key" {
+  value = module.cloudbuild_enabled.kms_crypto_key
 }

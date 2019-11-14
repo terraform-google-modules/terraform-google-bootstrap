@@ -29,6 +29,9 @@ module "project" {
     "cloudbilling.googleapis.com",
     "iam.googleapis.com",
     "storage-api.googleapis.com",
-    "serviceusage.googleapis.com"
+    "serviceusage.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "sourcerepo.googleapis.com",
+    "cloudkms.googleapis.com"
   ]
 }
