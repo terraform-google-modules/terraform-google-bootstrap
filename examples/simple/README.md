@@ -19,6 +19,8 @@ This example demonstrates the simplest usage of the GCP organization bootstrap m
 | Name | Description |
 |------|-------------|
 | gcs\_bucket\_tfstate |  |
+| group\_billing\_admins |  |
+| group\_org\_admins |  |
 | seed\_project\_id |  |
 | terraform\_sa\_email |  |
 | terraform\_sa\_name |  |

@@ -26,6 +26,8 @@ default_apis = [
 
 cloudbuild_apis = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
 
+cloudbuild_project_admin_roles = ["roles/cloudbuild.builds.editor", "roles/viewer", "roles/source.admin"]
+
 control "bootstrap" do
   title "Bootstrap module GCP resources"
 
@@ -58,6 +60,13 @@ control "cloudbuild" do
     it { should exist }
   end
 
+  cloudbuild_project_admin_roles.each do |role|
+    describe google_project_iam_binding(project: attribute("cloudbuild_project_id"),  role: role) do
+      it { should exist }
+      its('members') {should include 'group:' + attribute("group_org_admins")}
+    end
+  end
+
   describe google_storage_bucket(name: attribute("gcs_bucket_cloudbuild_artifacts")) do
     it { should exist }
   end
@@ -74,6 +83,25 @@ control "cloudbuild" do
       it { should exist }
       its('state') { should cmp "ENABLED" }
     end
+  end
+
+  google_projects.where(project_id: attribute("cloudbuild_project_id")).project_numbers.each do |project_number|
+    describe google_storage_bucket_iam_binding(bucket: attribute("gcs_bucket_tfstate"),  role: 'roles/storage.objectAdmin') do
+      it { should exist }
+      its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
+      its('members') {should include 'serviceAccount:' + project_number.to_s + '@cloudbuild.gserviceaccount.com'}
+    end
+
+    describe google_kms_crypto_key_iam_binding(crypto_key_url: attribute("kms_crypto_key")['self_link'],  role: "roles/cloudkms.cryptoKeyDecrypter") do
+      it { should exist }
+      its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
+      its('members') {should include 'serviceAccount:' + project_number.to_s + '@cloudbuild.gserviceaccount.com'}
+    end
+  end
+
+  describe google_kms_crypto_key_iam_binding(crypto_key_url: attribute("kms_crypto_key")['self_link'],  role: "roles/cloudkms.cryptoKeyEncrypter") do
+    it { should exist }
+    its('members') {should include 'group:' + attribute("group_org_admins")}
   end
 
 end

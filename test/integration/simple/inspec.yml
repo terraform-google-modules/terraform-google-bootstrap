@@ -4,6 +4,8 @@ depends:
     git: https://github.com/inspec/inspec-gcp.git
     tag: v0.20.0
 attributes:
+  - name: group_org_admins
+    required: true
   - name: seed_project_id
     required: true
     type: string

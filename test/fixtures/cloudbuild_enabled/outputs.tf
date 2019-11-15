@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+output "group_org_admins" {
+  value = module.cloudbuild_enabled.group_org_admins
+}
+
 output "seed_project_id" {
   value = module.cloudbuild_enabled.seed_project_id
 }

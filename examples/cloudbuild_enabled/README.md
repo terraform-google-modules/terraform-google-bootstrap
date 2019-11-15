@@ -22,6 +22,8 @@ This example combines the Organization bootstrap module with the Cloud Build sub
 | csr\_repos |  |
 | gcs\_bucket\_cloudbuild\_artifacts |  |
 | gcs\_bucket\_tfstate |  |
+| group\_billing\_admins |  |
+| group\_org\_admins |  |
 | kms\_crypto\_key |  |
 | kms\_keyring |  |
 | seed\_project\_id |  |

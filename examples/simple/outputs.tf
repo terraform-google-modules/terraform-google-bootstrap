@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+output "group_org_admins" {
+  value = var.group_org_admins
+}
+
+output "group_billing_admins" {
+  value = var.group_billing_admins
+}
 
 output "seed_project_id" {
   value = module.seed_bootstrap.seed_project_id

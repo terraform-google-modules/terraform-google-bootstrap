@@ -35,6 +35,10 @@ control "bootstrap" do
     it { should exist }
   end
 
+  describe google_storage_bucket_iam_binding(bucket: attribute("gcs_bucket_tfstate"),  role: 'roles/storage.objectAdmin') do
+    its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
+  end
+
   describe google_service_account(name: attribute("terraform_sa_name")) do
     it { should exist }
     its('has_user_managed_keys?') {should cmp false }
