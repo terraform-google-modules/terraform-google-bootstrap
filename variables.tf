@@ -97,8 +97,7 @@ variable "org_admins_org_iam_permissions" {
   type        = list(string)
   default = [
     "roles/billing.user",
-    "roles/resourcemanager.organizationAdmin",
-    "roles/resourcemanager.projectCreator"
+    "roles/resourcemanager.organizationAdmin"
   ]
 }
 

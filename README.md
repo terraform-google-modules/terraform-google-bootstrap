@@ -52,7 +52,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | folder\_id | The ID of a folder to host this project | string | `""` | no |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
-| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/resourcemanager.organizationAdmin", "roles/resourcemanager.projectCreator" ]` | no |
+| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `[ "roles/billing.user", "roles/resourcemanager.organizationAdmin" ]` | no |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `[]` | no |
 | organization\_id | GCP Organization ID | string | n/a | yes |
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
@@ -82,8 +82,8 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 ### Permissions
 
 - `roles/resourcemanager.organizationAdmin` on GCP Organization
-- `roles/resourcemanager.projectCreator` on GCP Organization
 - `roles/billing.admin` on supplied billing account
+- `roles/resourcemanager.projectCreator` on GCP Organization for `group_org_admins` group.
 - Account running terraform should be a member of group provided in `group_org_admins` variable, otherwise they will loose `roles/resourcemanager.projectCreator` access. Additional members can be added by using the `org_project_creators` variable.
 
 ### Credentials

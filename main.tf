@@ -75,16 +75,14 @@ resource "google_storage_bucket" "org_terraform_state" {
 resource "google_organization_iam_binding" "billing_creator" {
   org_id = var.organization_id
   role   = "roles/billing.creator"
-
   members = [
     "group:${var.group_billing_admins}",
   ]
 }
 
 resource "google_organization_iam_binding" "project_creator" {
-  org_id = var.organization_id
-  role   = "roles/resourcemanager.projectCreator"
-
+  org_id  = var.organization_id
+  role    = "roles/resourcemanager.projectCreator"
   members = local.org_project_creators
 }
 
