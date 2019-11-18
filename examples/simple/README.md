@@ -11,7 +11,7 @@ This example demonstrates the simplest usage of the GCP organization bootstrap m
 | default\_region | Default region to create resources where applicable. | string | n/a | yes |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
-| org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `[]` | no |
+| org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `<list>` | no |
 | organization\_id | GCP Organization ID | string | n/a | yes |
 
 ## Outputs
