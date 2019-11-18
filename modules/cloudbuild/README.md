@@ -76,3 +76,39 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | kms\_keyring |  |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Requirements
+
+### Software
+
+-   [gcloud sdk](https://cloud.google.com/sdk/install) >= 206.0.0
+-   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.6
+-   [terraform-provider-google] plugin 2.1.x
+-   [terraform-provider-google-beta] plugin 2.1.x
+
+### Permissions
+
+- `roles/billing.user` on supplied billing account
+- `roles/resourcemanager.organizationAdmin` on GCP Organization
+- `roles/resourcemanager.projectCreator` on GCP Organization or folder
+
+### APIs
+
+A project with the following APIs enabled must be used to host the
+resources of this module:
+
+- Google Cloud Resource Manager API: `cloudresourcemanager.googleapis.com`
+- Google Cloud Billing API: `cloudbilling.googleapis.com`
+- Google Cloud IAM API: `iam.googleapis.com`
+- Google Cloud Storage API `storage-api.googleapis.com`
+- Google Cloud Service Usage API: `serviceusage.googleapis.com`
+- Google Cloud Build API: `cloudbuild.googleapis.com`
+- Google Cloud Source Repo API: `sourcerepo.googleapis.com`
+- Google Cloud KMS API: `cloudkms.googleapis.com`
+
+This API can be enabled in the default project created during establishing an organization.
+
+## Contributing
+
+Refer to the [contribution guidelines](../../CONTRIBUTING.md) for
+information on contributing to this module.
