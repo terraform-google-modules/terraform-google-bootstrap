@@ -18,7 +18,7 @@ locals {
   cloudbuild_project_id       = format("%s-%s", var.project_prefix, "cloudbuild")
   cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
-  activate_apis               = distinct(concat(var.activate_apis, local.cloudbuild_apis))
+  activate_apis               = distinct(var.activate_apis)
 }
 
 resource "random_id" "suffix" {
@@ -35,14 +35,22 @@ data "google_organization" "org" {
 *******************************************/
 
 module "cloudbuild_project" {
-  source            = "terraform-google-modules/project-factory/google"
-  version           = "~> 5.0"
-  name              = local.cloudbuild_project_id
-  random_project_id = "true"
-  folder_id         = var.folder_id
-  org_id            = var.organization_id
-  billing_account   = var.billing_account
-  activate_apis     = local.activate_apis
+  source                      = "terraform-google-modules/project-factory/google"
+  version                     = "~> 5.0"
+  name                        = local.cloudbuild_project_id
+  random_project_id           = "true"
+  disable_services_on_destroy = "false"
+  folder_id                   = var.folder_id
+  org_id                      = var.organization_id
+  billing_account             = var.billing_account
+  activate_apis               = local.activate_apis
+}
+
+resource "google_project_service" "cloudbuild_apis" {
+  for_each           = toset(local.cloudbuild_apis)
+  project            = module.cloudbuild_project.project_id
+  service            = each.value
+  disable_on_destroy = false
 }
 
 /******************************************
@@ -80,6 +88,9 @@ resource "google_kms_key_ring" "tf_keyring" {
   project  = module.cloudbuild_project.project_id
   name     = "tf-keyring"
   location = var.default_region
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }
 
 /******************************************
@@ -102,6 +113,9 @@ resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
   members = [
     "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com",
     "serviceAccount:${var.terraform_sa_email}"
+  ]
+  depends_on = [
+    google_project_service.cloudbuild_apis,
   ]
 }
 
@@ -126,6 +140,9 @@ resource "google_sourcerepo_repository" "gcp_repo" {
   for_each = toset(var.cloud_source_repos)
   project  = module.cloudbuild_project.project_id
   name     = each.value
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }
 
 /******************************************
@@ -164,7 +181,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
 
   filename = "cloudbuild-tf-apply.yaml"
   depends_on = [
-    google_sourcerepo_repository.gcp_repo
+    google_sourcerepo_repository.gcp_repo,
   ]
 }
 
@@ -194,7 +211,7 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
 
   filename = "cloudbuild-tf-plan.yaml"
   depends_on = [
-    google_sourcerepo_repository.gcp_repo
+    google_sourcerepo_repository.gcp_repo,
   ]
 }
 
@@ -210,6 +227,9 @@ resource "null_resource" "cloudbuild_terraform_builder" {
   provisioner "local-exec" {
     command = "gcloud builds submit ${path.module}/cloudbuild_builder/ --project ${module.cloudbuild_project.project_id} --config=${path.module}/cloudbuild_builder/cloudbuild.yaml"
   }
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }
 
 /***********************************************
@@ -220,6 +240,9 @@ resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   bucket = google_storage_bucket.cloudbuild_artifacts.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }
 
 resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonate_permissions" {
@@ -228,6 +251,9 @@ resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonat
   service_account_id = var.terraform_sa_name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }
 
 resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
@@ -236,6 +262,9 @@ resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
   org_id = var.organization_id
   role   = "roles/serviceusage.serviceUsageConsumer"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }
 
 # Required to allow cloud build to access state with impersonation.
@@ -245,4 +274,7 @@ resource "google_storage_bucket_iam_member" "cloudbuild_state_iam" {
   bucket = var.terraform_state_bucket
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
 }

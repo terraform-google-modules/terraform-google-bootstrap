@@ -35,14 +35,15 @@ data "google_organization" "org" {
 *******************************************/
 
 module "seed_project" {
-  source            = "terraform-google-modules/project-factory/google"
-  version           = "~> 5.0"
-  name              = local.seed_project_id
-  random_project_id = "true"
-  folder_id         = var.folder_id
-  org_id            = var.organization_id
-  billing_account   = var.billing_account
-  activate_apis     = local.activate_apis
+  source                      = "terraform-google-modules/project-factory/google"
+  version                     = "~> 5.0"
+  name                        = local.seed_project_id
+  random_project_id           = "true"
+  disable_services_on_destroy = "false"
+  folder_id                   = var.folder_id
+  org_id                      = var.organization_id
+  billing_account             = var.billing_account
+  activate_apis               = local.activate_apis
 }
 
 /******************************************
