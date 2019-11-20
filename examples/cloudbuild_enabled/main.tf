@@ -21,7 +21,7 @@ provider "google" {
 
 module "seed_bootstrap" {
   source                  = "../.."
-  organization_id         = var.organization_id
+  org_id                  = var.org_id
   billing_account         = var.billing_account
   group_org_admins        = var.group_org_admins
   group_billing_admins    = var.group_billing_admins
@@ -32,7 +32,7 @@ module "seed_bootstrap" {
 
 module "cloudbuild_bootstrap" {
   source                  = "../../modules/cloudbuild"
-  organization_id         = var.organization_id
+  org_id                  = var.org_id
   billing_account         = var.billing_account
   group_org_admins        = var.group_org_admins
   default_region          = var.default_region

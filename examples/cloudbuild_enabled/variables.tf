@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "organization_id" {
+variable "org_id" {
   description = "GCP Organization ID"
 }
 

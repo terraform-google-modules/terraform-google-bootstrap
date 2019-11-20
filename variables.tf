@@ -18,7 +18,7 @@
   Required variables
 *******************************************/
 
-variable "organization_id" {
+variable "org_id" {
   description = "GCP Organization ID"
   type        = string
 }
@@ -41,6 +41,7 @@ variable "group_billing_admins" {
 variable "default_region" {
   description = "Default region to create resources where applicable."
   type        = string
+  default     = "us-central-1"
 }
 
 /******************************************

@@ -11,7 +11,7 @@ module "bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
   version = "~> 0.1"
 
-  organization_id      = "<ORGANIZATION_ID>"
+  org_id      = "<ORGANIZATION_ID>"
   billing_account      = "<BILLING_ACCOUNT_ID>"
   group_org_admins     = "gcp-organization-admins@example.com"
   group_billing_admins = "gcp-billing-admins@example.com"

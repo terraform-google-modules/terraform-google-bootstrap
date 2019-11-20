@@ -26,7 +26,7 @@ resource "random_id" "suffix" {
 }
 
 data "google_organization" "org" {
-  organization = var.organization_id
+  organization = var.org_id
 }
 
 
@@ -41,7 +41,7 @@ module "cloudbuild_project" {
   random_project_id           = "true"
   disable_services_on_destroy = "false"
   folder_id                   = var.folder_id
-  org_id                      = var.organization_id
+  org_id                      = var.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
 }
@@ -170,7 +170,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
   }
 
   substitutions = {
-    _ORG_ID               = var.organization_id
+    _ORG_ID               = var.org_id
     _BILLING_ID           = var.billing_account
     _DEFAULT_REGION       = var.default_region
     _TF_SA_EMAIL          = var.terraform_sa_email
@@ -200,7 +200,7 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
   }
 
   substitutions = {
-    _ORG_ID               = var.organization_id
+    _ORG_ID               = var.org_id
     _BILLING_ID           = var.billing_account
     _DEFAULT_REGION       = var.default_region
     _TF_SA_EMAIL          = var.terraform_sa_email
@@ -259,7 +259,7 @@ resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonat
 resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
   count = local.impersonation_enabled_count
 
-  org_id = var.organization_id
+  org_id = var.org_id
   role   = "roles/serviceusage.serviceUsageConsumer"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
   depends_on = [

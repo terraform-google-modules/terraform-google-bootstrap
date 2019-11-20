@@ -27,7 +27,7 @@ resource "random_id" "suffix" {
 }
 
 data "google_organization" "org" {
-  organization = var.organization_id
+  organization = var.org_id
 }
 
 /******************************************
@@ -41,7 +41,7 @@ module "seed_project" {
   random_project_id           = "true"
   disable_services_on_destroy = "false"
   folder_id                   = var.folder_id
-  org_id                      = var.organization_id
+  org_id                      = var.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
 }
@@ -74,7 +74,7 @@ resource "google_storage_bucket" "org_terraform_state" {
  ***********************************************/
 
 resource "google_organization_iam_binding" "billing_creator" {
-  org_id = var.organization_id
+  org_id = var.org_id
   role   = "roles/billing.creator"
   members = [
     "group:${var.group_billing_admins}",
@@ -82,7 +82,7 @@ resource "google_organization_iam_binding" "billing_creator" {
 }
 
 resource "google_organization_iam_binding" "project_creator" {
-  org_id  = var.organization_id
+  org_id  = var.org_id
   role    = "roles/resourcemanager.projectCreator"
   members = local.org_project_creators
 }
@@ -93,7 +93,7 @@ resource "google_organization_iam_binding" "project_creator" {
 
 resource "google_organization_iam_member" "org_admins_group" {
   for_each = toset(var.org_admins_org_iam_permissions)
-  org_id   = var.organization_id
+  org_id   = var.org_id
   role     = each.value
   member   = "group:${var.group_org_admins}"
 }
@@ -103,7 +103,7 @@ resource "google_organization_iam_member" "org_admins_group" {
  ***********************************************/
 
 resource "google_organization_iam_member" "org_billing_admin" {
-  org_id = var.organization_id
+  org_id = var.org_id
   role   = "roles/billing.admin"
   member = "group:${var.group_billing_admins}"
 }
@@ -115,7 +115,7 @@ resource "google_organization_iam_member" "org_billing_admin" {
 resource "google_organization_iam_member" "tf_sa_org_perms" {
   for_each = toset(var.sa_org_iam_permissions)
 
-  org_id = var.organization_id
+  org_id = var.org_id
   role   = each.value
   member = "serviceAccount:${google_service_account.org_terraform.email}"
 }
@@ -148,7 +148,7 @@ resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissio
 resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
   count = local.impersonation_enabled_count
 
-  org_id = var.organization_id
+  org_id = var.org_id
   role   = "roles/serviceusage.serviceUsageConsumer"
   member = "group:${var.group_org_admins}"
 }

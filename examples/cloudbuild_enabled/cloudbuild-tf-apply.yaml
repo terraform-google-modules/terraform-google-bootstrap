@@ -19,6 +19,10 @@ steps:
   args:
   - init
   - -input=false
+# terraform validate
+- name: gcr.io/$PROJECT_ID/terraform
+  args:
+  - validate
 # terraform plan -input=false -out=tfplan
 - name: gcr.io/$PROJECT_ID/terraform
   args:
