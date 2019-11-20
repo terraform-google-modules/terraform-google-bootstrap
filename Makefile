@@ -41,7 +41,6 @@ docker_test_prepare:
 		-e TF_VAR_billing_account \
 		-e TF_VAR_group_org_admins \
 		-e TF_VAR_group_billing_admins \
-		-e TF_VAR_default_region \
 		-v $(CURDIR):/workspace \
 		$(REGISTRY_URL)/${DOCKER_IMAGE_DEVELOPER_TOOLS}:${DOCKER_TAG_VERSION_DEVELOPER_TOOLS} \
 		/usr/local/bin/execute_with_credentials.sh prepare_environment
@@ -56,7 +55,6 @@ docker_test_cleanup:
 		-e TF_VAR_billing_account \
 		-e TF_VAR_group_org_admins \
 		-e TF_VAR_group_billing_admins \
-		-e TF_VAR_default_region \
 		-v $(CURDIR):/workspace \
 		$(REGISTRY_URL)/${DOCKER_IMAGE_DEVELOPER_TOOLS}:${DOCKER_TAG_VERSION_DEVELOPER_TOOLS} \
 		/usr/local/bin/execute_with_credentials.sh cleanup_environment
