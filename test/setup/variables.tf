@@ -15,22 +15,27 @@
  */
 variable "org_id" {
   description = "The numeric organization id"
+  type        = string
 }
 
 variable "folder_id" {
   description = "The folder to deploy in"
+  type        = string
 }
 
 variable "billing_account" {
   description = "The billing account id associated with the project, e.g. XXXXXX-YYYYYY-ZZZZZZ"
+  type        = string
 }
 
 variable "group_org_admins" {
   description = "Google Group for GCP Organization Administrators"
+  type        = string
 }
 
 variable "group_billing_admins" {
   description = "Google Group for GCP Billing Administrators"
+  type        = string
 }
 
 variable "default_region" {

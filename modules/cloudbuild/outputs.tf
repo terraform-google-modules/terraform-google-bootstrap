@@ -25,13 +25,16 @@ output "gcs_bucket_cloudbuild_artifacts" {
 }
 
 output "csr_repos" {
-  value = google_sourcerepo_repository.gcp_repo
+  description = "List of Cloud Source Repos created by the module, linked to Cloud Build triggers."
+  value       = google_sourcerepo_repository.gcp_repo
 }
 
 output "kms_keyring" {
-  value = google_kms_key_ring.tf_keyring
+  description = "KMS Keyring created by the module."
+  value       = google_kms_key_ring.tf_keyring
 }
 
 output "kms_crypto_key" {
-  value = google_kms_crypto_key.tf_key
+  description = "KMS key created by the module."
+  value       = google_kms_crypto_key.tf_key
 }

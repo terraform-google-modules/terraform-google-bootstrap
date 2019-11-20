@@ -74,10 +74,9 @@ resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
 *******************************************/
 
 resource "google_storage_bucket" "cloudbuild_artifacts" {
-  project       = module.cloudbuild_project.project_id
-  name          = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
-  location      = var.default_region
-  force_destroy = true
+  project  = module.cloudbuild_project.project_id
+  name     = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
+  location = var.default_region
 }
 
 /******************************************

@@ -18,14 +18,14 @@ This example combines the Organization bootstrap module with the Cloud Build sub
 
 | Name | Description |
 |------|-------------|
-| cloudbuild\_project\_id |  |
-| csr\_repos |  |
-| gcs\_bucket\_cloudbuild\_artifacts |  |
-| gcs\_bucket\_tfstate |  |
-| kms\_crypto\_key |  |
-| kms\_keyring |  |
-| seed\_project\_id |  |
-| terraform\_sa\_email |  |
-| terraform\_sa\_name |  |
+| cloudbuild\_project\_id | Project where CloudBuild configuration and terraform container image will reside. |
+| csr\_repos | List of Cloud Source Repos created by the module, linked to Cloud Build triggers. |
+| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artefacts in CloudBuild project. |
+| gcs\_bucket\_tfstate | Bucket used for storing terraform state for foundations pipelines in seed project. |
+| kms\_crypto\_key | KMS key created by the module. |
+| kms\_keyring | KMS Keyring created by the module. |
+| seed\_project\_id | Project where service accounts and core APIs will be enabled. |
+| terraform\_sa\_email | Email for privileged service account for Terraform. |
+| terraform\_sa\_name | Fully qualified name for privileged service account for Terraform. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

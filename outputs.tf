@@ -28,12 +28,12 @@ output "seed_project_id" {
 *******************************************/
 
 output "terraform_sa_email" {
-  description = "Email for privileged service account."
+  description = "Email for privileged service account for Terraform."
   value       = google_service_account.org_terraform.email
 }
 
 output "terraform_sa_name" {
-  description = "Fully qualified name for privileged service account."
+  description = "Fully qualified name for privileged service account for Terraform."
   value       = google_service_account.org_terraform.name
 }
 

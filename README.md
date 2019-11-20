@@ -65,8 +65,8 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 |------|-------------|
 | gcs\_bucket\_tfstate | Bucket used for storing terraform state for foundations pipelines in seed project. |
 | seed\_project\_id | Project where service accounts and core APIs will be enabled. |
-| terraform\_sa\_email | Email for privileged service account. |
-| terraform\_sa\_name | Fully qualified name for privileged service account. |
+| terraform\_sa\_email | Email for privileged service account for Terraform. |
+| terraform\_sa\_name | Fully qualified name for privileged service account for Terraform. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

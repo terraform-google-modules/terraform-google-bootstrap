@@ -18,9 +18,9 @@ This example demonstrates the simplest usage of the GCP organization bootstrap m
 
 | Name | Description |
 |------|-------------|
-| gcs\_bucket\_tfstate |  |
-| seed\_project\_id |  |
-| terraform\_sa\_email |  |
-| terraform\_sa\_name |  |
+| gcs\_bucket\_tfstate | Bucket used for storing terraform state for foundations pipelines in seed project. |
+| seed\_project\_id | Project where service accounts and core APIs will be enabled. |
+| terraform\_sa\_email | Email for privileged service account for Terraform. |
+| terraform\_sa\_name | Fully qualified name for privileged service account for Terraform. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
