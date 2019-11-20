@@ -48,7 +48,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 |------|-------------|:----:|:-----:|:-----:|
 | activate\_apis | List of APIs to enable in the seed project. | list(string) | `<list>` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
-| default\_region | Default region to create resources where applicable. | string | `"us-central-1"` | no |
+| default\_region | Default region to create resources where applicable. | string | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | string | `""` | no |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |

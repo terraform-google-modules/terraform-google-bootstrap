@@ -55,7 +55,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | activate\_apis | List of APIs to enable in the Cloudbuild project. | list(string) | `<list>` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
 | cloud\_source\_repos | List of Cloud Source Repo's to create with CloudBuild triggers. | list(string) | `<list>` | no |
-| default\_region | Default region to create resources where applicable. | string | `"us-central-1"` | no |
+| default\_region | Default region to create resources where applicable. | string | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | string | `""` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
 | org\_id | GCP Organization ID | string | n/a | yes |

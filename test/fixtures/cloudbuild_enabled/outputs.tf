@@ -15,7 +15,7 @@
  */
 
 output "group_org_admins" {
-  value = module.cloudbuild_enabled.group_org_admins
+  value = var.group_org_admins
 }
 
 output "seed_project_id" {
