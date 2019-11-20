@@ -38,8 +38,8 @@ module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
   version                     = "~> 5.0"
   name                        = local.seed_project_id
-  random_project_id           = "true"
-  disable_services_on_destroy = "false"
+  random_project_id           = true
+  disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = var.org_id
   billing_account             = var.billing_account
