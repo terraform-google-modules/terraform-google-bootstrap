@@ -9,11 +9,12 @@ and this project adheres to
 
 ## [Unreleased]
 
-## [0.1.0] - 20XX-YY-ZZ
+## [0.1.0] - 2019-11-21
 
 ### Added
 
-- Initial release
+- Initial release. [#1]
 
 [Unreleased]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/releases/tag/v0.1.0
+[#1]: https://github.com/terraform-google-modules/terraform-google-bootstrap/pull/1
