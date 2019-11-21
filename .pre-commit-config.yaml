@@ -1,4 +1,4 @@
-# Copyright 2018 Google LLC
+# Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-control "gcloud" do
-  title "gcloud"
-
-  describe command("gcloud --project=#{attribute("project_id")} services list --enabled") do
-    its(:exit_status) { should eq 0 }
-    its(:stderr) { should eq "" }
-    its(:stdout) { should match "storage-api.googleapis.com" }
-  end
-end
+repos:
+- repo: git://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.21.0
+  hooks:
+    - id: terraform_fmt
+    # - id: terraform_docs
+- repo: git://github.com/pre-commit/pre-commit-hooks
+  rev: v2.2.3
+  hooks:
+    - id: check-executables-have-shebangs
+    - id: check-json
+    - id: check-merge-conflict
+    - id: check-xml
+    - id: check-yaml
+    - id: detect-private-key
+    - id: pretty-format-json
+      args: [--autofix]
+    - id: sort-simple-yaml
+    - id: trailing-whitespace

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,22 @@
  * limitations under the License.
  */
 
-/******************************************
-  Project
-*******************************************/
-
 output "seed_project_id" {
   description = "Project where service accounts and core APIs will be enabled."
-  value       = module.seed_project.project_id
+  value       = module.simple.seed_project_id
 }
-
-/******************************************
-  Service Account
-*******************************************/
 
 output "terraform_sa_email" {
   description = "Email for privileged service account for Terraform."
-  value       = google_service_account.org_terraform.email
+  value       = module.simple.terraform_sa_email
 }
 
 output "terraform_sa_name" {
   description = "Fully qualified name for privileged service account for Terraform."
-  value       = google_service_account.org_terraform.name
+  value       = module.simple.terraform_sa_name
 }
-
-/******************************************
-  GCS Terraform State Bucket
-*******************************************/
 
 output "gcs_bucket_tfstate" {
   description = "Bucket used for storing terraform state for foundations pipelines in seed project."
-  value       = google_storage_bucket.org_terraform_state.name
+  value       = module.simple.gcs_bucket_tfstate
 }

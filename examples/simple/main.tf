@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "The ID of the project in which to provision resources."
-  type        = string
+
+provider "google" {
+  version = "~> 2.0"
 }
 
-variable "bucket_name" {
-  description = "The name of the bucket to create."
-  type        = string
+module "seed_bootstrap" {
+  source               = "../.."
+  org_id               = var.org_id
+  billing_account      = var.billing_account
+  group_org_admins     = var.group_org_admins
+  group_billing_admins = var.group_billing_admins
+  default_region       = var.default_region
+  org_project_creators = var.org_project_creators
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+variable "project_id" {
+  description = "The ID of the project in which to provision resources."
+  type        = string
+}
+
 variable "org_id" {
   description = "The numeric organization id"
   type        = string
@@ -42,4 +48,10 @@ variable "default_region" {
   description = "Default region to create resources where applicable."
   type        = string
   default     = "us-central1"
+}
+
+variable "org_project_creators" {
+  description = "Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required."
+  type        = list(string)
+  default     = []
 }

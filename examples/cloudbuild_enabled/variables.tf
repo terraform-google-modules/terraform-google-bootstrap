@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-variable "org_id" {
-  description = "The numeric organization id"
-  type        = string
-}
 
-variable "folder_id" {
-  description = "The folder to deploy in"
+variable "org_id" {
+  description = "GCP Organization ID"
   type        = string
 }
 
 variable "billing_account" {
-  description = "The billing account id associated with the project, e.g. XXXXXX-YYYYYY-ZZZZZZ"
+  description = "The ID of the billing account to associate projects with."
   type        = string
 }
 
@@ -42,4 +38,10 @@ variable "default_region" {
   description = "Default region to create resources where applicable."
   type        = string
   default     = "us-central1"
+}
+
+variable "org_project_creators" {
+  description = "Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required."
+  type        = list(string)
+  default     = []
 }

@@ -26,18 +26,24 @@ platforms:
   - name: default
 
 suites:
-  - name: simple_example
+  - name: simple
     driver:
-      root_module_directory: test/fixtures/simple_example/
+      root_module_directory: test/fixtures/simple/
     verifier:
       color: false
       systems:
-        - name: simple_example local
-          backend: local
-          controls:
-            - gcloud
-            - gsutil
-        - name: simple_example gcp
+        - name: simple gcp
           backend: gcp
           controls:
-            - gcp
+            - bootstrap
+  - name: cloudbuild_enabled
+    driver:
+      root_module_directory: test/fixtures/cloudbuild_enabled/
+    verifier:
+      color: false
+      systems:
+        - name: cloudbuild_enabled gcp
+          backend: gcp
+          controls:
+            - bootstrap
+            - cloudbuild

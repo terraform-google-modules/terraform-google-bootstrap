@@ -1,4 +1,4 @@
-# Copyright 2018 Google LLC
+# Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-control "gcp" do
-  title "GCP Resources"
-
-  describe google_storage_bucket(name: attribute("bucket_name")) do
-    it { should exist }
-  end
-end
+timeout: 1200s
+steps:
+# terraform init -input=false
+- name: gcr.io/$PROJECT_ID/terraform
+  args:
+  - init
+  - -input=false
+# terraform validate
+- name: gcr.io/$PROJECT_ID/terraform
+  args:
+  - validate
+# terraform plan -input=false -out=tfplan
+- name: gcr.io/$PROJECT_ID/terraform
+  args:
+  - plan
+  - -input=false
+  - -out=tfplan
+artifacts:
+  objects:
+    location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/plan/$BUILD_ID'
+    paths: ['cloudbuild-tf-plan.yaml', 'tfplan']

@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "The ID of the project in which to provision resources."
-  type        = string
-}
+organization_id = "000000000000"
+
+billing_account = "000000-000000-000000"
+
+group_org_admins = "org-admins@example.com"
+
+group_billing_admins = "billing-admins@example.com"
+
+default_region = "australia-southeast1"
