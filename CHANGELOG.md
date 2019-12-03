@@ -9,6 +9,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- The `project_labels` and `storage_bucket_labels` variables. [#2]
+
+### Changed
+
+- The storage buckets are changed to enforce Bucket Policy Only access. [#3]
+
 ## [0.1.0] - 2019-11-21
 
 ### Added
@@ -17,4 +25,6 @@ and this project adheres to
 
 [Unreleased]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/releases/tag/v0.1.0
+[#3]: https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/3
+[#2]: https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/2
 [#1]: https://github.com/terraform-google-modules/terraform-google-bootstrap/pull/1
