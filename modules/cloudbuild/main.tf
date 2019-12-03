@@ -44,6 +44,7 @@ module "cloudbuild_project" {
   org_id                      = var.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
+  labels                      = var.project_labels
 }
 
 resource "google_project_service" "cloudbuild_apis" {
@@ -77,6 +78,7 @@ resource "google_storage_bucket" "cloudbuild_artifacts" {
   project  = module.cloudbuild_project.project_id
   name     = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
   location = var.default_region
+  labels   = var.storage_bucket_labels
 }
 
 /******************************************

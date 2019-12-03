@@ -44,6 +44,7 @@ module "seed_project" {
   org_id                      = var.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
+  labels                      = var.project_labels
 }
 
 /******************************************
@@ -64,6 +65,7 @@ resource "google_storage_bucket" "org_terraform_state" {
   project  = module.seed_project.project_id
   name     = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
   location = var.default_region
+  labels   = var.storage_bucket_labels
 }
 
 /***********************************************

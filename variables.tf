@@ -48,6 +48,12 @@ variable "default_region" {
   Optional variables
 *******************************************/
 
+variable "project_labels" {
+  description = "Labels to apply to the project."
+  type        = map(string)
+  default     = {}
+}
+
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
   default     = "cft"
@@ -91,6 +97,12 @@ variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
+}
+
+variable "storage_bucket_labels" {
+  description = "Labels to apply to the storage bucket."
+  type        = map(string)
+  default     = {}
 }
 
 variable "org_admins_org_iam_permissions" {
