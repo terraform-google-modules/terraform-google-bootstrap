@@ -75,10 +75,11 @@ resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
 *******************************************/
 
 resource "google_storage_bucket" "cloudbuild_artifacts" {
-  project  = module.cloudbuild_project.project_id
-  name     = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
-  location = var.default_region
-  labels   = var.storage_bucket_labels
+  project            = module.cloudbuild_project.project_id
+  name               = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
+  location           = var.default_region
+  labels             = var.storage_bucket_labels
+  bucket_policy_only = true
 }
 
 /******************************************
@@ -239,7 +240,7 @@ resource "null_resource" "cloudbuild_terraform_builder" {
 
 resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   bucket = google_storage_bucket.cloudbuild_artifacts.name
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.admin"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
   depends_on = [
     google_project_service.cloudbuild_apis,
@@ -273,7 +274,7 @@ resource "google_storage_bucket_iam_member" "cloudbuild_state_iam" {
   count = local.impersonation_enabled_count
 
   bucket = var.terraform_state_bucket
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.admin"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
   depends_on = [
     google_project_service.cloudbuild_apis,

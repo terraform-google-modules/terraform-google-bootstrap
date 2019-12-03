@@ -85,6 +85,7 @@ variable "activate_apis" {
     "iam.googleapis.com",
     "admin.googleapis.com",
     "appengine.googleapis.com",
+    "storage-api.googleapis.com"
   ]
 }
 
