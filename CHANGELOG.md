@@ -16,7 +16,7 @@ and this project adheres to
 ### Changed
 
 - The storage buckets are changed to enforce Bucket Policy Only access. [#3]
-- The Terraform service account receives Security Admin by default. [#4]
+- The Terraform service account receives Security Admin and Editor by default. [#4]
 
 ## [0.1.0] - 2019-11-21
 
