@@ -67,6 +67,9 @@ resource "google_storage_bucket" "org_terraform_state" {
   location           = var.default_region
   labels             = var.storage_bucket_labels
   bucket_policy_only = true
+  versioning = {
+    enabled = true
+  }
 }
 
 /***********************************************
