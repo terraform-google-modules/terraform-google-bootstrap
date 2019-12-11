@@ -80,7 +80,7 @@ resource "google_storage_bucket" "cloudbuild_artifacts" {
   location           = var.default_region
   labels             = var.storage_bucket_labels
   bucket_policy_only = true
-  versioning = {
+  versioning {
     enabled = true
   }
 }
