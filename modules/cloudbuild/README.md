@@ -13,7 +13,6 @@ module "bootstrap" {
   org_id         = "<ORGANIZATION_ID>"
   billing_account         = "<BILLING_ACCOUNT_ID>"
   group_org_admins        = "gcp-organization-admins@example.com"
-  group_billing_admins    = "gcp-billing-admins@example.com"
   default_region          = "australia-southeast1"
   sa_enable_impersonation = true
   terraform_sa_email      = "<SERVICE_ACCOUNT_EMAIL>"
