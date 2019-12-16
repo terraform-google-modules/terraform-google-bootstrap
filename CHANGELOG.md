@@ -9,6 +9,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.0] - 2019-12-16
+
 ### Added
 
 - The `project_labels` and `storage_bucket_labels` variables. [#2]
@@ -24,7 +26,8 @@ and this project adheres to
 
 - Initial release. [#1]
 
-[Unreleased]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/releases/tag/v0.1.0
 [#4]: https://github.com/terraform-google-modules/terraform-google-bootstrap/pull/4
 [#3]: https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/3
