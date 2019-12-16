@@ -59,6 +59,12 @@ variable "terraform_state_bucket" {
   Optional variables
 *******************************************/
 
+variable "project_labels" {
+  description = "Labels to apply to the project."
+  type        = map(string)
+  default     = {}
+}
+
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
   type        = string
@@ -79,6 +85,7 @@ variable "activate_apis" {
     "iam.googleapis.com",
     "admin.googleapis.com",
     "appengine.googleapis.com",
+    "storage-api.googleapis.com"
   ]
 }
 
@@ -86,6 +93,12 @@ variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
+}
+
+variable "storage_bucket_labels" {
+  description = "Labels to apply to the storage bucket."
+  type        = map(string)
+  default     = {}
 }
 
 variable "cloud_source_repos" {

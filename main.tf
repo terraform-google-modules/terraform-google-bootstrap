@@ -44,6 +44,7 @@ module "seed_project" {
   org_id                      = var.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
+  labels                      = var.project_labels
 }
 
 /******************************************
@@ -61,9 +62,14 @@ resource "google_service_account" "org_terraform" {
  ***********************************************/
 
 resource "google_storage_bucket" "org_terraform_state" {
-  project  = module.seed_project.project_id
-  name     = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
-  location = var.default_region
+  project            = module.seed_project.project_id
+  name               = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
+  location           = var.default_region
+  labels             = var.storage_bucket_labels
+  bucket_policy_only = true
+  versioning {
+    enabled = true
+  }
 }
 
 /***********************************************
@@ -127,7 +133,7 @@ resource "google_billing_account_iam_member" "tf_billing_user" {
 
 resource "google_storage_bucket_iam_member" "org_terraform_state_iam" {
   bucket = google_storage_bucket.org_terraform_state.name
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.admin"
   member = "serviceAccount:${google_service_account.org_terraform.email}"
 }
 

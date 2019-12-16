@@ -48,6 +48,12 @@ variable "default_region" {
   Optional variables
 *******************************************/
 
+variable "project_labels" {
+  description = "Labels to apply to the project."
+  type        = map(string)
+  default     = {}
+}
+
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
   default     = "cft"
@@ -68,6 +74,7 @@ variable "activate_apis" {
     "iam.googleapis.com",
     "admin.googleapis.com",
     "appengine.googleapis.com",
+    "storage-api.googleapis.com"
   ]
 }
 
@@ -78,6 +85,7 @@ variable "sa_org_iam_permissions" {
     "roles/billing.user",
     "roles/compute.networkAdmin",
     "roles/compute.xpnAdmin",
+    "roles/iam.securityAdmin",
     "roles/iam.serviceAccountAdmin",
     "roles/logging.configWriter",
     "roles/orgpolicy.policyAdmin",
@@ -91,6 +99,12 @@ variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
+}
+
+variable "storage_bucket_labels" {
+  description = "Labels to apply to the storage bucket."
+  type        = map(string)
+  default     = {}
 }
 
 variable "org_admins_org_iam_permissions" {
