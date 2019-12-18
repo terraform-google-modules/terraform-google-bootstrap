@@ -88,6 +88,7 @@ control "cloudbuild" do
   google_projects.where(project_id: attribute("cloudbuild_project_id")).project_numbers.each do |project_number|
     describe google_storage_bucket_iam_binding(bucket: attribute("gcs_bucket_tfstate"),  role: 'roles/storage.admin') do
       it { should exist }
+      its('members') {should include 'group:' + attribute("group_org_admins")}
       its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
       its('members') {should include 'serviceAccount:' + project_number.to_s + '@cloudbuild.gserviceaccount.com'}
     end

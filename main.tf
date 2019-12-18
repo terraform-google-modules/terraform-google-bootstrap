@@ -157,3 +157,11 @@ resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
   role   = "roles/serviceusage.serviceUsageConsumer"
   member = "group:${var.group_org_admins}"
 }
+
+resource "google_storage_bucket_iam_member" "orgadmins_state_iam" {
+  count = local.impersonation_enabled_count
+
+  bucket = google_storage_bucket.org_terraform_state.name
+  role   = "roles/storage.admin"
+  member = "group:${var.group_org_admins}"
+}
