@@ -9,6 +9,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.3.0] - 2019-12-18
+
+### Fixed
+- Fixed #5 where org admins were not able to access the terraform state bucket when using service account impersonation.
+
 ## [0.2.0] - 2019-12-16
 
 ### Added
