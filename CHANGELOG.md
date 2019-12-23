@@ -9,6 +9,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.3.0] - 2019-12-18
+
+### Fixed
+- Fixed [#5] where org admins were not able to access the terraform state bucket when using service account impersonation.
+
 ## [0.2.0] - 2019-12-16
 
 ### Added
@@ -26,9 +31,11 @@ and this project adheres to
 
 - Initial release. [#1]
 
-[Unreleased]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/terraform-google-modules/terraform-google-bootstrap/releases/tag/v0.1.0
+[#5]: https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/5
 [#4]: https://github.com/terraform-google-modules/terraform-google-bootstrap/pull/4
 [#3]: https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/3
 [#2]: https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/2
