@@ -36,7 +36,7 @@ data "google_organization" "org" {
 
 module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 5.0"
+  version                     = "~> 7.0"
   name                        = local.seed_project_id
   random_project_id           = true
   disable_services_on_destroy = false

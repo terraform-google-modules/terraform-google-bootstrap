@@ -79,7 +79,7 @@ variable "activate_apis" {
     "servicenetworking.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
-    "bigquery-json.googleapis.com",
+    "bigquery.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "cloudbilling.googleapis.com",
     "iam.googleapis.com",
