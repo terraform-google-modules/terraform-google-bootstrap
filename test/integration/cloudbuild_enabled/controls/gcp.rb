@@ -13,6 +13,7 @@
 # limitations under the License.
 
 default_apis = [
+  "serviceusage.googleapis.com",
   "servicenetworking.googleapis.com",
   "compute.googleapis.com",
   "logging.googleapis.com",
