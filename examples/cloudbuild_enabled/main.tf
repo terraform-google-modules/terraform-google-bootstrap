@@ -31,9 +31,30 @@ provider "random" {
   version = "~> 2.2"
 }
 
+/*************************************************
+  Make sure group_org_admins has projectCreator.
+*************************************************/
+
+data "google_organization" "org" {
+  organization = var.org_id
+  depends_on = [
+    google_organization_iam_member.tmp_project_creator
+  ]
+}
+
+resource "google_organization_iam_member" "tmp_project_creator" {
+  org_id = var.org_id
+  role   = "roles/resourcemanager.projectCreator"
+  member = "group:${var.group_org_admins}"
+}
+
+/*************************************************
+  Bootstrap GCP Organization.
+*************************************************/
+
 module "seed_bootstrap" {
   source                  = "../.."
-  org_id                  = var.org_id
+  org_id                  = data.google_organization.org.org_id
   billing_account         = var.billing_account
   group_org_admins        = var.group_org_admins
   group_billing_admins    = var.group_billing_admins
@@ -44,7 +65,7 @@ module "seed_bootstrap" {
 
 module "cloudbuild_bootstrap" {
   source                  = "../../modules/cloudbuild"
-  org_id                  = var.org_id
+  org_id                  = data.google_organization.org.org_id
   billing_account         = var.billing_account
   group_org_admins        = var.group_org_admins
   default_region          = var.default_region

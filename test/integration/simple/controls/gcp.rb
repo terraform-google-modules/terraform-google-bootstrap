@@ -17,12 +17,13 @@ default_apis = [
   "servicenetworking.googleapis.com",
   "compute.googleapis.com",
   "logging.googleapis.com",
-  "bigquery-json.googleapis.com",
+  "bigquery.googleapis.com",
   "cloudresourcemanager.googleapis.com",
   "cloudbilling.googleapis.com",
   "iam.googleapis.com",
   "admin.googleapis.com",
-  "appengine.googleapis.com"
+  "appengine.googleapis.com",
+  "storage-api.googleapis.com"
 ]
 
 control "bootstrap" do

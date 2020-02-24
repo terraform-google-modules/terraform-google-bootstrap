@@ -76,6 +76,7 @@ variable "activate_apis" {
   type        = list(string)
 
   default = [
+    "serviceusage.googleapis.com",
     "servicenetworking.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
