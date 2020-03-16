@@ -85,7 +85,6 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 
 - `roles/resourcemanager.organizationAdmin` on GCP Organization
 - `roles/billing.admin` on supplied billing account
-- `roles/resourcemanager.projectCreator` on GCP Organization for `group_org_admins` group. Both provided examples show you can implement this in terraform.
 - Account running terraform should be a member of group provided in `group_org_admins` variable, otherwise they will loose `roles/resourcemanager.projectCreator` access. Additional members can be added by using the `org_project_creators` variable.
 
 ### Credentials
