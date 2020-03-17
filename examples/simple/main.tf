@@ -30,6 +30,10 @@ provider "random" {
   version = "~> 2.2"
 }
 
+/*************************************************
+  Bootstrap GCP Organization.
+*************************************************/
+
 module "seed_bootstrap" {
   source               = "../.."
   org_id               = var.org_id

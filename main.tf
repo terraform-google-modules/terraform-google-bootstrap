@@ -30,6 +30,16 @@ data "google_organization" "org" {
   organization = var.org_id
 }
 
+/*************************************************
+  Make sure group_org_admins has projectCreator.
+*************************************************/
+
+resource "google_organization_iam_member" "tmp_project_creator" {
+  org_id = var.org_id
+  role   = "roles/resourcemanager.projectCreator"
+  member = "group:${var.group_org_admins}"
+}
+
 /******************************************
   Create IaC Project
 *******************************************/
@@ -41,7 +51,7 @@ module "seed_project" {
   random_project_id           = true
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
-  org_id                      = var.org_id
+  org_id                      = google_organization_iam_member.tmp_project_creator.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
