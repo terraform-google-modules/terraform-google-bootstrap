@@ -92,7 +92,8 @@ variable "sa_org_iam_permissions" {
     "roles/orgpolicy.policyAdmin",
     "roles/resourcemanager.folderCreator",
     "roles/resourcemanager.folderViewer",
-    "roles/resourcemanager.organizationViewer"
+    "roles/resourcemanager.folderMover",
+    "roles/resourcemanager.organizationViewer",
   ]
 }
 
