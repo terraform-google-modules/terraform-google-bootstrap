@@ -20,6 +20,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- The `grant_billing_user` variable. [#18]
+
 ## [0.3.0] - 2019-12-18
 
 ### Fixed
