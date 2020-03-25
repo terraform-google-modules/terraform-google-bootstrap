@@ -16,7 +16,16 @@
 # $ gcloud builds submit . --config=cloudbuild.yaml
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '--tag=gcr.io/${PROJECT_ID}/terraform', '.']
+  args: [
+    'build',
+    '--tag=gcr.io/${PROJECT_ID}/terraform',
+    '--build-arg=TERRAFORM_VERSION=${_TERRAFORM_VERSION}',
+    '--build-arg=TERRAFORM_VERSION_SHA256SUM=${_TERRAFORM_VERSION_SHA256SUM}',
+    '.'
+    ]
 - name: 'gcr.io/${PROJECT_ID}/terraform'
   args: ['version']
+substitutions:
+  _TERRAFORM_VERSION: '0.12.24' # default value
+  _TERRAFORM_VERSION_SHA256SUM: '602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11' # default value
 images: ['gcr.io/${PROJECT_ID}/terraform']

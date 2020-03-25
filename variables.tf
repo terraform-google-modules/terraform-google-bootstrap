@@ -103,6 +103,12 @@ variable "sa_enable_impersonation" {
   default     = false
 }
 
+variable "grant_billing_user" {
+  description = "Grant roles/billing.user role to CFT service account"
+  type        = bool
+  default     = true
+}
+
 variable "storage_bucket_labels" {
   description = "Labels to apply to the storage bucket."
   type        = map(string)
