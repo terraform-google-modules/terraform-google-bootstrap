@@ -128,3 +128,9 @@ variable "org_project_creators" {
   type        = list(string)
   default     = []
 }
+   
+variable "skip_gcloud_download" {
+  description = "Skip gcloud download for Project Factory modules"
+  type        = bool
+  default     = false
+}
