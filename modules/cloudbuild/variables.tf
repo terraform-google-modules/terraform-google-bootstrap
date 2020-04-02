@@ -118,3 +118,9 @@ variable "folder_id" {
   type        = string
   default     = ""
 }
+
+variable "skip_gcloud_download" {
+  description = "Skip gcloud download for Project Factory module"
+  type        = bool
+  default     = false
+}
