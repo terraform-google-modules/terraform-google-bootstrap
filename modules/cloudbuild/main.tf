@@ -227,11 +227,18 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
 
 resource "null_resource" "cloudbuild_terraform_builder" {
   triggers = {
-    project_id_seed_project = module.cloudbuild_project.project_id
+    project_id_cloudbuild_project = module.cloudbuild_project.project_id
+    terraform_version_sha256sum   = var.terraform_version_sha256sum
+    terraform_version             = var.terraform_version
   }
 
   provisioner "local-exec" {
-    command = "gcloud builds submit ${path.module}/cloudbuild_builder/ --project ${module.cloudbuild_project.project_id} --config=${path.module}/cloudbuild_builder/cloudbuild.yaml"
+    command = <<EOT
+      gcloud builds submit ${path.module}/cloudbuild_builder/ \
+      --project ${module.cloudbuild_project.project_id} \
+      --config=${path.module}/cloudbuild_builder/cloudbuild.yaml \
+      --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum}
+  EOT
   }
   depends_on = [
     google_project_service.cloudbuild_apis,

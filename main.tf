@@ -137,6 +137,7 @@ resource "google_organization_iam_member" "tf_sa_org_perms" {
 }
 
 resource "google_billing_account_iam_member" "tf_billing_user" {
+  count              = var.grant_billing_user == true ? 1 : 0
   billing_account_id = var.billing_account
   role               = "roles/billing.user"
   member             = "serviceAccount:${google_service_account.org_terraform.email}"

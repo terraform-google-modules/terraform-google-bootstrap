@@ -75,7 +75,8 @@ variable "activate_apis" {
     "iam.googleapis.com",
     "admin.googleapis.com",
     "appengine.googleapis.com",
-    "storage-api.googleapis.com"
+    "storage-api.googleapis.com",
+    "monitoring.googleapis.com"
   ]
 }
 
@@ -100,6 +101,12 @@ variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
+}
+
+variable "grant_billing_user" {
+  description = "Grant roles/billing.user role to CFT service account"
+  type        = bool
+  default     = true
 }
 
 variable "storage_bucket_labels" {
