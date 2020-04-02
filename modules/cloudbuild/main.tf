@@ -36,7 +36,7 @@ data "google_organization" "org" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 7.0"
+  version                     = "~> 7.1"
   name                        = local.cloudbuild_project_id
   random_project_id           = true
   disable_services_on_destroy = false
@@ -45,6 +45,7 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
+  skip_gcloud_download        = var.skip_gcloud_download
 }
 
 resource "google_project_service" "cloudbuild_apis" {
