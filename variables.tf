@@ -90,9 +90,7 @@ variable "sa_org_iam_permissions" {
     "roles/iam.serviceAccountAdmin",
     "roles/logging.configWriter",
     "roles/orgpolicy.policyAdmin",
-    "roles/resourcemanager.folderCreator",
-    "roles/resourcemanager.folderViewer",
-    "roles/resourcemanager.folderMover",
+    "roles/resourcemanager.folderAdmin",
     "roles/resourcemanager.organizationViewer",
   ]
 }
