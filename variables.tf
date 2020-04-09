@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,9 +91,8 @@ variable "sa_org_iam_permissions" {
     "roles/iam.serviceAccountAdmin",
     "roles/logging.configWriter",
     "roles/orgpolicy.policyAdmin",
-    "roles/resourcemanager.folderCreator",
-    "roles/resourcemanager.folderViewer",
-    "roles/resourcemanager.organizationViewer"
+    "roles/resourcemanager.folderAdmin",
+    "roles/resourcemanager.organizationViewer",
   ]
 }
 
