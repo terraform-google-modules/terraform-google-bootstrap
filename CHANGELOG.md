@@ -7,6 +7,15 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.0.0...v1.1.0) (2020-04-16)
+
+### Features
+
+* Add serviceusage api to the defaults (#13)
+* Make sure group_org_admins has projectCreator permission. (#15)
+* Add folder mover permission by default
+* Add ability to customize / upgrade terraform version (#17)
+
 ## [1.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v0.3.0...v1.0.0) (2020-01-27)
 
 
