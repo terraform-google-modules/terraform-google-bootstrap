@@ -17,6 +17,7 @@
 resource "random_string" "suffix" {
   length  = 16
   special = false
+  upper   = false
 }
 
 module "cloudbuild_enabled" {
