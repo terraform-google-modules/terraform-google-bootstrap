@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
+resource "random_string" {
+  length = 16
+  special = false
+}
+
 module "simple" {
   source = "../../../examples/simple"
 
   org_id               = var.org_id
   billing_account      = var.billing_account
-  project_id           = var.project_id
-  state_bucket_name    = var.state_bucket_name
-  service_account_id   = var.service_account_id
+  project_id           = "cft-${random_string.result}"
+  state_bucket_name    = "cft-state-${random_string.result}"
+  service_account_id   = "org-terraform"
   group_org_admins     = var.group_org_admins
   group_billing_admins = var.group_billing_admins
   org_project_creators = var.org_project_creators
