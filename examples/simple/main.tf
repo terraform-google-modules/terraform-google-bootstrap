@@ -28,21 +28,21 @@ module "seed_bootstrap" {
 
   project = {
     project_id    = var.project_id
-    labels        = {} # No labels.
-    activate_apis = [] # Default activate_apis.
+    labels        = {}
+    activate_apis = null # Default activate_apis.
   }
 
   state_bucket = {
     name     = var.state_bucket_name
     location = var.default_region
-    labels   = {} # No labels.
+    labels   = {}
   }
 
   service_account = {
     account_id          = var.service_account_id
     grant_billing_user  = true
     allow_impersonation = true
-    root_roles          = [] # Default root roles.
-    seed_project_roles  = [] # No roles on seed project.
+    root_roles          = null # Default root roles.
+    seed_project_roles  = null # No roles on seed project.
   }
 }

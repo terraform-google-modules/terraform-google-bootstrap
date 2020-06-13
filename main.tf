@@ -15,7 +15,7 @@
  */
 
 locals {
-  initial_activate_apis = length(var.project.activate_apis) > 0 ? var.project.activate_apis : [
+  initial_activate_apis = var.project.activate_apis != null ? var.project.activate_apis : [
     "serviceusage.googleapis.com",
     "servicenetworking.googleapis.com",
     "compute.googleapis.com",
@@ -29,7 +29,7 @@ locals {
     "storage-api.googleapis.com",
     "monitoring.googleapis.com"
   ]
-  service_account_root_roles = length(var.service_account.root_roles) > 0 ? var.service_account.root_roles : [
+  service_account_root_roles = var.service_account.root_roles != null ? var.service_account.root_roles : [
     "roles/billing.user",
     "roles/compute.networkAdmin",
     "roles/compute.xpnAdmin",
@@ -87,7 +87,7 @@ resource "google_service_account" "org_terraform" {
 }
 
 resource "google_project_iam_member" "tf_sa_seed_perms" {
-  for_each = toset(var.service_account.seed_project_roles)
+  for_each = toset(var.service_account.seed_project_roles == null ? [] : var.service_account.seed_project_roles)
 
   project = module.seed_project.project_id
   role    = each.key

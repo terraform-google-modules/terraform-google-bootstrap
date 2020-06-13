@@ -34,6 +34,16 @@ variable "billing_account" {
   type        = string
 }
 
+variable "state_bucket_name" {
+  description = "Name of state bucket"
+  type        = string
+}
+
+variable "service_account_id" {
+  description = "Account id of service account"
+  type        = string
+}
+
 variable "group_org_admins" {
   description = "Google Group for GCP Organization Administrators"
   type        = string
