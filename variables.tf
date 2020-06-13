@@ -31,8 +31,13 @@ variable "billing_account" {
 variable "project" {
   description = "The seed project to host Terraform related resources."
   type = object({
+    # ID of project to create.
     project_id    = string
+
+    # Labels for the project.
     labels        = map(string)
+
+    # APIs to enable on the seed project. If 'null', a default set of apis will be set.
     activate_apis = list(string)
   })
 }
@@ -40,8 +45,13 @@ variable "project" {
 variable "state_bucket" {
   description = "The bucket to store Terraform remote state."
   type = object({
+    # Name of state bucket.
     name     = string
+
+    # Location of state bucket.
     location = string
+
+    # Labels for the state bucket.
     labels   = map(string)
   })
 }
@@ -49,10 +59,21 @@ variable "state_bucket" {
 variable "service_account" {
   description = "The service account to run Terraform operations."
   type = object({
+    # ID of the service account.
     account_id          = string
+
+    # Whether to grant this service account billing user role on the billing account.
     grant_billing_user  = bool
+
+    # Whether to allow org admins to impersonate this service account.
     allow_impersonation = bool
+
+    # Roles to grant this service account on the root resource (org).
+    # If 'null' will set a default set of roles.
     root_roles          = list(string)
+
+    # Roles to grant this service account on the seed project.
+    # If 'null' will set no roles.
     seed_project_roles  = list(string)
   })
 }
@@ -70,12 +91,6 @@ variable "group_billing_admins" {
 /******************************************
   Optional variables
 *******************************************/
-
-variable "sa_enable_impersonation" {
-  description = "Allow org_admins group to impersonate service account & enable APIs required."
-  type        = bool
-  default     = false
-}
 
 variable "org_admins_org_iam_permissions" {
   description = "List of permissions granted to the group supplied in group_org_admins variable across the GCP organization."
