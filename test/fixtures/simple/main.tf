@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-resource "random_string" {
+resource "random_string" "suffix" {
   length  = 16
   special = false
 }
@@ -24,8 +24,8 @@ module "simple" {
 
   org_id               = var.org_id
   billing_account      = var.billing_account
-  project_id           = "cft-${random_string.result}"
-  state_bucket_name    = "cft-state-${random_string.result}"
+  project_id           = "cft-${random_string.suffix.result}"
+  state_bucket_name    = "cft-state-${random_string.suffix.result}"
   service_account_id   = "org-terraform"
   group_org_admins     = var.group_org_admins
   group_billing_admins = var.group_billing_admins
