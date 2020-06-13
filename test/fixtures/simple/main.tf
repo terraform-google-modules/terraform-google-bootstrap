@@ -19,7 +19,10 @@ module "simple" {
 
   org_id               = var.org_id
   billing_account      = var.billing_account
+  project_id           = var.project_id
+  state_bucket_name    = var.state_bucket_name
+  service_account_id   = var.service_account_id
   group_org_admins     = var.group_org_admins
   group_billing_admins = var.group_billing_admins
-  default_region       = var.default_region
+  org_project_creators = var.org_project_creators
 }

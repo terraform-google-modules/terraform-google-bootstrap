@@ -28,6 +28,35 @@ variable "billing_account" {
   type        = string
 }
 
+variable "project" {
+  description = "The seed project to host Terraform related resources."
+  type = object({
+    project_id    = string
+    labels        = map(string)
+    activate_apis = list(string)
+  })
+}
+
+variable "state_bucket" {
+  description = "The bucket to store Terraform remote state."
+  type = object({
+    name     = string
+    location = string
+    labels   = map(string)
+  })
+}
+
+variable "service_account" {
+  description = "The service account to run Terraform operations."
+  type = object({
+    account_id          = string
+    grant_billing_user  = bool
+    allow_impersonation = bool
+    root_roles          = list(string)
+    seed_project_roles  = list(string)
+  })
+}
+
 variable "group_org_admins" {
   description = "Google Group for GCP Organization Administrators"
   type        = string
@@ -38,80 +67,14 @@ variable "group_billing_admins" {
   type        = string
 }
 
-variable "default_region" {
-  description = "Default region to create resources where applicable."
-  type        = string
-  default     = "us-central1"
-}
-
 /******************************************
   Optional variables
 *******************************************/
-
-variable "project_labels" {
-  description = "Labels to apply to the project."
-  type        = map(string)
-  default     = {}
-}
-
-variable "project_prefix" {
-  description = "Name prefix to use for projects created."
-  default     = "cft"
-  type        = string
-}
-
-variable "activate_apis" {
-  description = "List of APIs to enable in the seed project."
-  type        = list(string)
-
-  default = [
-    "serviceusage.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "compute.googleapis.com",
-    "logging.googleapis.com",
-    "bigquery.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "cloudbilling.googleapis.com",
-    "iam.googleapis.com",
-    "admin.googleapis.com",
-    "appengine.googleapis.com",
-    "storage-api.googleapis.com",
-    "monitoring.googleapis.com"
-  ]
-}
-
-variable "sa_org_iam_permissions" {
-  description = "List of permissions granted to Terraform service account across the GCP organization."
-  type        = list(string)
-  default = [
-    "roles/billing.user",
-    "roles/compute.networkAdmin",
-    "roles/compute.xpnAdmin",
-    "roles/iam.securityAdmin",
-    "roles/iam.serviceAccountAdmin",
-    "roles/logging.configWriter",
-    "roles/orgpolicy.policyAdmin",
-    "roles/resourcemanager.folderAdmin",
-    "roles/resourcemanager.organizationViewer",
-  ]
-}
 
 variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
-}
-
-variable "grant_billing_user" {
-  description = "Grant roles/billing.user role to CFT service account"
-  type        = bool
-  default     = true
-}
-
-variable "storage_bucket_labels" {
-  description = "Labels to apply to the storage bucket."
-  type        = map(string)
-  default     = {}
 }
 
 variable "org_admins_org_iam_permissions" {

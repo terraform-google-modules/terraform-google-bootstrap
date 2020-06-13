@@ -15,19 +15,38 @@
  */
 
 locals {
-  seed_project_id             = format("%s-%s", var.project_prefix, "seed")
-  impersonation_apis          = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
-  impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
-  activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
+  initial_activate_apis = length(var.project.activate_apis) > 0 ? var.project.activate_apis : [
+    "serviceusage.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "compute.googleapis.com",
+    "logging.googleapis.com",
+    "bigquery.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "cloudbilling.googleapis.com",
+    "iam.googleapis.com",
+    "admin.googleapis.com",
+    "appengine.googleapis.com",
+    "storage-api.googleapis.com",
+    "monitoring.googleapis.com"
+  ]
+  service_account_root_roles = length(var.service_account.root_roles) > 0 ? var.service_account.root_roles : [
+    "roles/billing.user",
+    "roles/compute.networkAdmin",
+    "roles/compute.xpnAdmin",
+    "roles/iam.securityAdmin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/logging.configWriter",
+    "roles/orgpolicy.policyAdmin",
+    "roles/resourcemanager.folderAdmin",
+    "roles/resourcemanager.organizationViewer",
+  ]
+
+  impersonation_apis          = distinct(concat(local.initial_activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
+  impersonation_enabled_count = var.service_account.allow_impersonation == true ? 1 : 0
+  activate_apis               = var.service_account.allow_impersonation == true ? local.impersonation_apis : local.initial_activate_apis
   org_project_creators        = distinct(concat(var.org_project_creators, ["serviceAccount:${google_service_account.org_terraform.email}", "group:${var.group_org_admins}"]))
-}
 
-resource "random_id" "suffix" {
-  byte_length = 2
-}
 
-data "google_organization" "org" {
-  organization = var.org_id
 }
 
 /*************************************************
@@ -46,15 +65,15 @@ resource "google_organization_iam_member" "tmp_project_creator" {
 
 module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 7.0"
-  name                        = local.seed_project_id
-  random_project_id           = true
+  version                     = "~> 8.0"
+  name                        = var.project.project_id
+  random_project_id           = false
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = google_organization_iam_member.tmp_project_creator.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
-  labels                      = var.project_labels
+  labels                      = var.project.labels
 }
 
 /******************************************
@@ -63,8 +82,16 @@ module "seed_project" {
 
 resource "google_service_account" "org_terraform" {
   project      = module.seed_project.project_id
-  account_id   = "org-terraform"
+  account_id   = var.service_account.account_id
   display_name = "CFT Organization Terraform Account"
+}
+
+resource "google_project_iam_member" "tf_sa_seed_perms" {
+  for_each = toset(var.service_account.seed_project_roles)
+
+  project = module.seed_project.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.org_terraform.email}"
 }
 
 /***********************************************
@@ -73,9 +100,9 @@ resource "google_service_account" "org_terraform" {
 
 resource "google_storage_bucket" "org_terraform_state" {
   project            = module.seed_project.project_id
-  name               = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
-  location           = var.default_region
-  labels             = var.storage_bucket_labels
+  name               = var.state_bucket.name
+  location           = var.state_bucket.location
+  labels             = var.state_bucket.labels
   bucket_policy_only = true
   versioning {
     enabled = true
@@ -128,7 +155,7 @@ resource "google_organization_iam_member" "org_billing_admin" {
  ***********************************************/
 
 resource "google_organization_iam_member" "tf_sa_org_perms" {
-  for_each = toset(var.sa_org_iam_permissions)
+  for_each = toset(local.service_account_root_roles)
 
   org_id = var.org_id
   role   = each.value
@@ -136,7 +163,7 @@ resource "google_organization_iam_member" "tf_sa_org_perms" {
 }
 
 resource "google_billing_account_iam_member" "tf_billing_user" {
-  count              = var.grant_billing_user == true ? 1 : 0
+  count              = var.service_account.grant_billing_user == true ? 1 : 0
   billing_account_id = var.billing_account
   role               = "roles/billing.user"
   member             = "serviceAccount:${google_service_account.org_terraform.email}"

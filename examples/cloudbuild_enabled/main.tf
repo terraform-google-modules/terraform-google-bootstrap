@@ -14,37 +14,39 @@
  * limitations under the License.
  */
 
-
-provider "google" {
-  version = "~> 3.5.0"
-}
-
-provider "google-beta" {
-  version = "~> 3.5.0"
-}
-
-provider "null" {
-  version = "~> 2.1"
-}
-
-provider "random" {
-  version = "~> 2.2"
-}
-
 /*************************************************
   Bootstrap GCP Organization.
 *************************************************/
 
 module "seed_bootstrap" {
-  source                  = "../.."
-  org_id                  = var.org_id
-  billing_account         = var.billing_account
-  group_org_admins        = var.group_org_admins
-  group_billing_admins    = var.group_billing_admins
-  default_region          = var.default_region
-  org_project_creators    = var.org_project_creators
-  sa_enable_impersonation = true
+  source               = "../.."
+  org_id               = var.org_id
+  billing_account      = var.billing_account
+  group_org_admins     = var.group_org_admins
+  group_billing_admins = var.group_billing_admins
+  org_project_creators = var.org_project_creators
+
+  project = {
+    project_id    = var.project_id
+    labels        = {} # No labels.
+    activate_apis = [] # Default activate_apis.
+  }
+
+  state_bucket = {
+    name     = var.state_bucket_name
+    location = var.default_region
+    labels   = {} # No labels.
+  }
+
+  service_account = {
+    account_id          = var.service_account_id
+    grant_billing_user  = true
+    allow_impersonation = true
+    root_roles          = [] # Default root roles.
+    seed_project_roles  = [] # No roles on seed project.
+  }
 }
+
 
 module "cloudbuild_bootstrap" {
   source                  = "../../modules/cloudbuild"
