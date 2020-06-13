@@ -46,21 +46,17 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| activate\_apis | List of APIs to enable in the seed project. | list(string) | `<list>` | no |
 | billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
-| default\_region | Default region to create resources where applicable. | string | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | string | `""` | no |
-| grant\_billing\_user | Grant roles/billing.user role to CFT service account | bool | `"true"` | no |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `<list>` | no |
 | org\_id | GCP Organization ID | string | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `<list>` | no |
-| project\_labels | Labels to apply to the project. | map(string) | `<map>` | no |
-| project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
+| project | The seed project to host Terraform related resources. | object | n/a | yes |
 | sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
-| sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `<list>` | no |
-| storage\_bucket\_labels | Labels to apply to the storage bucket. | map(string) | `<map>` | no |
+| service\_account | The service account to run Terraform operations. | object | n/a | yes |
+| state\_bucket | The bucket to store Terraform remote state. | object | n/a | yes |
 
 ## Outputs
 

@@ -13,6 +13,9 @@ This example combines the Organization bootstrap module with the Cloud Build sub
 | group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
 | org\_id | GCP Organization ID | string | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `<list>` | no |
+| project\_id | Seed project ID | string | n/a | yes |
+| service\_account\_id | Account id of service account | string | n/a | yes |
+| state\_bucket\_name | Name of state bucket | string | n/a | yes |
 
 ## Outputs
 

@@ -25,4 +25,5 @@ module "simple" {
   group_org_admins     = var.group_org_admins
   group_billing_admins = var.group_billing_admins
   org_project_creators = var.org_project_creators
+  default_region       = var.default_region
 }
