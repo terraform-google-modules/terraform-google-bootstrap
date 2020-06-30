@@ -134,3 +134,9 @@ variable "org_project_creators" {
   type        = list(string)
   default     = []
 }
+
+variable "skip_gcloud_download" {
+  description = "Whether to skip downloading gcloud (assumes gcloud is already available outside the module)"
+  type        = bool
+  default     = true
+}
