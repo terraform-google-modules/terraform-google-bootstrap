@@ -60,6 +60,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
 | sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `<list>` | no |
+| skip\_gcloud\_download | Whether to skip downloading gcloud (assumes gcloud is already available outside the module) | bool | `"true"` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | map(string) | `<map>` | no |
 
 ## Outputs
