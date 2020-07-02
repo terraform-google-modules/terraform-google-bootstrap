@@ -37,7 +37,6 @@ provider "random" {
 module "seed_bootstrap" {
   source               = "../.."
   org_id               = var.org_id
-  parent               = "organizations/${var.org_id}"
   billing_account      = var.billing_account
   group_org_admins     = var.group_org_admins
   group_billing_admins = var.group_billing_admins

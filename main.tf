@@ -20,8 +20,8 @@ locals {
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
   org_project_creators        = distinct(concat(var.org_project_creators, ["serviceAccount:${google_service_account.org_terraform.email}", "group:${var.group_org_admins}"]))
-  is_organization             = split("/", var.parent)[0] == "organizations" ? true : false
-  parent_id                   = split("/", var.parent)[1]
+  is_organization             = var.parent_folder == "" ? true : false
+  parent_id                   = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
 }
 
 resource "random_id" "suffix" {
@@ -185,7 +185,7 @@ resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
 }
 
 resource "google_folder_iam_member" "org_admin_serviceusage_consumer" {
-  count = var.sa_enable_impersonation && local.is_organization ? 0 : 1
+  count = var.sa_enable_impersonation && local.is_organization ? 1 : 0
 
   folder = local.parent_id
   role   = "roles/serviceusage.serviceUsageConsumer"

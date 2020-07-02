@@ -18,8 +18,9 @@
   Required variables
 *******************************************/
 
-variable "parent" {
-  description = "GCP Parent ID (organizations/{id} or folders/{id}"
+variable "parent_folder" {
+  description = "GCP parent folder ID in the form folders/{id}"
+  default     = ""
   type        = string
 }
 
