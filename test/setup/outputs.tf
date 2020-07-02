@@ -31,6 +31,10 @@ output "folder_id" {
   value = var.folder_id
 }
 
+output "parent_folder" {
+  value = google_folder.bootstrap.name
+}
+
 output "billing_account" {
   value = var.billing_account
 }

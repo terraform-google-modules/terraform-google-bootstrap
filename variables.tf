@@ -18,6 +18,11 @@
   Required variables
 *******************************************/
 
+variable "parent" {
+  description = "GCP Parent ID (organizations/{id} or folders/{id}"
+  type        = string
+}
+
 variable "org_id" {
   description = "GCP Organization ID"
   type        = string

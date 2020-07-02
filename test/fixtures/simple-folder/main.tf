@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,13 @@
  * limitations under the License.
  */
 
-provider "google" {
-  version = "~> 3.5.0"
-}
+module "simple" {
+  source = "../../../examples/simple-folder"
 
-provider "google-beta" {
-  version = "~> 3.5.0"
-}
-
-provider "null" {
-  version = "~> 2.1"
-}
-
-provider "random" {
-  version = "~> 2.2"
-}
-
-/*************************************************
-  Bootstrap GCP Organization.
-*************************************************/
-
-module "seed_bootstrap" {
-  source               = "../.."
   org_id               = var.org_id
-  parent               = "organizations/${var.org_id}"
+  parent               = var.parent_folder
   billing_account      = var.billing_account
   group_org_admins     = var.group_org_admins
   group_billing_admins = var.group_billing_admins
   default_region       = var.default_region
-  org_project_creators = var.org_project_creators
 }

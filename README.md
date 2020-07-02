@@ -56,6 +56,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `<list>` | no |
 | org\_id | GCP Organization ID | string | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `<list>` | no |
+| parent | GCP Parent ID (organizations/{id} or folders/{id} | string | n/a | yes |
 | project\_labels | Labels to apply to the project. | map(string) | `<map>` | no |
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |

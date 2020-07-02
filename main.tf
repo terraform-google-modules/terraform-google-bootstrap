@@ -20,14 +20,12 @@ locals {
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
   org_project_creators        = distinct(concat(var.org_project_creators, ["serviceAccount:${google_service_account.org_terraform.email}", "group:${var.group_org_admins}"]))
+  is_organization             = split("/", var.parent)[0] == "organizations" ? true : false
+  parent_id                   = split("/", var.parent)[1]
 }
 
 resource "random_id" "suffix" {
   byte_length = 2
-}
-
-data "google_organization" "org" {
-  organization = var.org_id
 }
 
 /*************************************************
@@ -35,7 +33,15 @@ data "google_organization" "org" {
 *************************************************/
 
 resource "google_organization_iam_member" "tmp_project_creator" {
-  org_id = var.org_id
+  count  = local.is_organization ? 1 : 0
+  org_id = local.parent_id
+  role   = "roles/resourcemanager.projectCreator"
+  member = "group:${var.group_org_admins}"
+}
+
+resource "google_folder_iam_member" "tmp_project_creator" {
+  count  = local.is_organization ? 0 : 1
+  folder = local.parent_id
   role   = "roles/resourcemanager.projectCreator"
   member = "group:${var.group_org_admins}"
 }
@@ -51,7 +57,7 @@ module "seed_project" {
   random_project_id           = true
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
-  org_id                      = google_organization_iam_member.tmp_project_creator.org_id
+  org_id                      = var.org_id
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
@@ -98,7 +104,15 @@ resource "google_organization_iam_binding" "billing_creator" {
 }
 
 resource "google_organization_iam_binding" "project_creator" {
-  org_id  = var.org_id
+  count   = local.is_organization ? 1 : 0
+  org_id  = local.parent_id
+  role    = "roles/resourcemanager.projectCreator"
+  members = local.org_project_creators
+}
+
+resource "google_folder_iam_binding" "project_creator" {
+  count   = local.is_organization ? 0 : 1
+  folder  = local.parent_id
   role    = "roles/resourcemanager.projectCreator"
   members = local.org_project_creators
 }
@@ -163,9 +177,17 @@ resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissio
 }
 
 resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
-  count = local.impersonation_enabled_count
+  count = var.sa_enable_impersonation && local.is_organization ? 1 : 0
 
-  org_id = var.org_id
+  org_id = local.parent_id
+  role   = "roles/serviceusage.serviceUsageConsumer"
+  member = "group:${var.group_org_admins}"
+}
+
+resource "google_folder_iam_member" "org_admin_serviceusage_consumer" {
+  count = var.sa_enable_impersonation && local.is_organization ? 0 : 1
+
+  folder = local.parent_id
   role   = "roles/serviceusage.serviceUsageConsumer"
   member = "group:${var.group_org_admins}"
 }

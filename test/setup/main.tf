@@ -35,3 +35,8 @@ module "project" {
     "cloudkms.googleapis.com"
   ]
 }
+
+resource "google_folder" "bootstrap" {
+  display_name = "ci-bootstrap-folder-mode"
+  parent       = "organizations/${var.org_id}"
+}
