@@ -36,7 +36,11 @@ module "project" {
   ]
 }
 
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
 resource "google_folder" "bootstrap" {
-  display_name = "ci-bootstrap-folder-mode"
+  display_name = "ci-bootstrap-folder-${random_id.suffix.hex}"
   parent       = "folders/${var.folder_id}"
 }
