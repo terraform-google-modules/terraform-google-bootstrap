@@ -22,6 +22,7 @@ locals {
   org_project_creators        = distinct(concat(var.org_project_creators, ["serviceAccount:${google_service_account.org_terraform.email}", "group:${var.group_org_admins}"]))
   is_organization             = var.parent_folder == "" ? true : false
   parent_id                   = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
+  seed_org_depends_on         = ! local.is_organization && google_folder_iam_member.tmp_project_creator.0.etag ? var.org_id : google_organization_iam_member.tmp_project_creator.0.org_id
 }
 
 resource "random_id" "suffix" {
@@ -57,7 +58,7 @@ module "seed_project" {
   random_project_id           = true
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
-  org_id                      = var.org_id
+  org_id                      = local.seed_org_depends_on
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
