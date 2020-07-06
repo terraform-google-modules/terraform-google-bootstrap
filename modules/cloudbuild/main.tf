@@ -19,6 +19,8 @@ locals {
   cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = distinct(var.activate_apis)
+  apply_branches_regex        = "(${join("|", var.terraform_apply_branches)})"
+  plan_branches_regex         = "[^${join("|", var.terraform_apply_branches)}]"
 }
 
 resource "random_id" "suffix" {
@@ -171,7 +173,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
   description = "${each.value} - terraform apply on push to master."
 
   trigger_template {
-    branch_name = "master"
+    branch_name = local.apply_branches_regex
     repo_name   = each.value
   }
 
@@ -183,9 +185,10 @@ resource "google_cloudbuild_trigger" "master_trigger" {
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
     _SEED_PROJECT_ID      = module.cloudbuild_project.project_id
+    _TF_ACTION            = "apply"
   }
 
-  filename = "cloudbuild-tf-apply.yaml"
+  filename = var.cloudbuild_apply_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
   ]
@@ -201,7 +204,7 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
   description = "${each.value} - terraform plan on all branches except master."
 
   trigger_template {
-    branch_name = "[^master]"
+    branch_name = local.plan_branches_regex
     repo_name   = each.value
   }
 
@@ -213,9 +216,10 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
     _SEED_PROJECT_ID      = module.cloudbuild_project.project_id
+    _TF_ACTION            = "plan"
   }
 
-  filename = "cloudbuild-tf-plan.yaml"
+  filename = var.cloudbuild_plan_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
   ]

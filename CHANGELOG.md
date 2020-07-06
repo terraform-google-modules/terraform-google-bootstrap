@@ -27,12 +27,6 @@ and this project adheres to
 
 * Upgrade to Project Factory 7.0 ([#9](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/9)) ([b0bb86b](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/b0bb86b666fc7e434f646ef35f7eaba6dc98e2d7))
 
-## [Unreleased]
-
-### Added
-
-- The `grant_billing_user` variable. [#18]
-
 ## [0.3.0] - 2019-12-18
 
 ### Fixed
