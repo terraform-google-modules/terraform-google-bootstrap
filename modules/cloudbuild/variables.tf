@@ -136,3 +136,24 @@ variable "skip_gcloud_download" {
   type        = bool
   default     = true
 }
+
+variable "cloudbuild_plan_filename" {
+  description = "Path and name of Cloud Build YAML definition used for terraform plan."
+  type        = string
+  default     = "cloudbuild-tf-plan.yaml"
+}
+
+variable "cloudbuild_apply_filename" {
+  description = "Path and name of Cloud Build YAML definition used for terraform apply."
+  type        = string
+  default     = "cloudbuild-tf-apply.yaml"
+}
+
+variable "terraform_apply_branches" {
+  description = "List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default."
+  type        = list(string)
+
+  default = [
+    "master"
+  ]
+}
