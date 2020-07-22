@@ -131,6 +131,12 @@ variable "terraform_version_sha256sum" {
   default     = "602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"
 }
 
+variable "terraform_validator_release" {
+  description = "Default terraform-validator release."
+  type        = string
+  default     = "2020-03-05"
+}
+
 variable "skip_gcloud_download" {
   description = "Whether to skip downloading gcloud (assumes gcloud is already available outside the module)"
   type        = bool
