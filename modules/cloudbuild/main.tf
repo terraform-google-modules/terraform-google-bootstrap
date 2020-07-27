@@ -170,7 +170,7 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
 resource "google_cloudbuild_trigger" "master_trigger" {
   for_each    = toset(var.cloud_source_repos)
   project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform apply on push to master."
+  description = "${each.value} - terraform apply."
 
   trigger_template {
     branch_name = local.apply_branches_regex
@@ -201,7 +201,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
 resource "google_cloudbuild_trigger" "non_master_trigger" {
   for_each    = toset(var.cloud_source_repos)
   project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform plan on all branches except master."
+  description = "${each.value} - terraform plan."
 
   trigger_template {
     branch_name = local.plan_branches_regex
