@@ -9,9 +9,9 @@ Basic usage of this module is as follows:
 ```hcl
 module "bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
-  version = "~> 1.0"
+  version = "~> 1.3"
 
-  org_id      = "<ORGANIZATION_ID>"
+  org_id               = "<ORGANIZATION_ID>"
   billing_account      = "<BILLING_ACCOUNT_ID>"
   group_org_admins     = "gcp-organization-admins@example.com"
   group_billing_admins = "gcp-billing-admins@example.com"
@@ -56,10 +56,12 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `<list>` | no |
 | org\_id | GCP Organization ID | string | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `<list>` | no |
+| parent\_folder | GCP parent folder ID in the form folders/{id} | string | `""` | no |
 | project\_labels | Labels to apply to the project. | map(string) | `<map>` | no |
 | project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
 | sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `<list>` | no |
+| skip\_gcloud\_download | Whether to skip downloading gcloud (assumes gcloud is already available outside the module) | bool | `"true"` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | map(string) | `<map>` | no |
 
 ## Outputs

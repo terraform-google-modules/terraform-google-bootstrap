@@ -16,7 +16,7 @@
 
 module "project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 5.0"
+  version = "~> 8.0"
 
   name              = "ci-bootstrap"
   random_project_id = true
@@ -34,4 +34,13 @@ module "project" {
     "sourcerepo.googleapis.com",
     "cloudkms.googleapis.com"
   ]
+}
+
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
+resource "google_folder" "bootstrap" {
+  display_name = "ci-bootstrap-folder-${random_id.suffix.hex}"
+  parent       = "folders/${var.folder_id}"
 }

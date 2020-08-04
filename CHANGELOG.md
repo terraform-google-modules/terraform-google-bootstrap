@@ -7,6 +7,36 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [1.3.2](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.3.1...v1.3.2) (2020-07-27)
+
+
+### Bug Fixes
+
+* make trigger names generic now that multiple branches are supported ([#48](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/48)) ([dc3c0c3](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/dc3c0c3eb363d936445cdef4e11fc5ec5de7347e))
+
+### [1.3.1](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.3.0...v1.3.1) (2020-07-23)
+
+
+### Bug Fixes
+
+* downgrade minimum provider version for better compatibility with existing usage of module ([#46](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/46)) ([2aec7c8](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/2aec7c842ca4990385077d5653ce9a9dddbda28b))
+
+## [1.3.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.2.0...v1.3.0) (2020-07-22)
+
+
+### Features
+
+* Add support for terraform validator ([#44](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/44)) ([d09725f](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/d09725f48054b2d0c08001b3650be7413d610c38))
+
+## [1.2.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.1.0...v1.2.0) (2020-07-06)
+
+
+### Features
+
+* Add ability to define custom list of branches to trigger apply and custom cloudbuild YAML for terraform builds ([#41](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/41)) ([02467c8](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/02467c860b68cfab4e65241cae4406feb95a5674))
+* Add skip_gcloud_download flag ([#39](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/39)) ([0e06b29](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/0e06b299a22c454cc0406c34de59fde150d33095))
+* option to target bootstrap module at a folder ([#40](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/40)) ([fa923a5](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/fa923a5242146837ca9d5001390f9200ccc40a7f))
+
 ## [1.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.0.0...v1.1.0) (2020-04-16)
 
 ### Features
@@ -26,12 +56,6 @@ and this project adheres to
 ### Features
 
 * Upgrade to Project Factory 7.0 ([#9](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/9)) ([b0bb86b](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/b0bb86b666fc7e434f646ef35f7eaba6dc98e2d7))
-
-## [Unreleased]
-
-### Added
-
-- The `grant_billing_user` variable. [#18]
 
 ## [0.3.0] - 2019-12-18
 

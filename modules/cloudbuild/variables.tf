@@ -130,3 +130,36 @@ variable "terraform_version_sha256sum" {
   type        = string
   default     = "602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"
 }
+
+variable "terraform_validator_release" {
+  description = "Default terraform-validator release."
+  type        = string
+  default     = "2020-03-05"
+}
+
+variable "skip_gcloud_download" {
+  description = "Whether to skip downloading gcloud (assumes gcloud is already available outside the module)"
+  type        = bool
+  default     = true
+}
+
+variable "cloudbuild_plan_filename" {
+  description = "Path and name of Cloud Build YAML definition used for terraform plan."
+  type        = string
+  default     = "cloudbuild-tf-plan.yaml"
+}
+
+variable "cloudbuild_apply_filename" {
+  description = "Path and name of Cloud Build YAML definition used for terraform apply."
+  type        = string
+  default     = "cloudbuild-tf-apply.yaml"
+}
+
+variable "terraform_apply_branches" {
+  description = "List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default."
+  type        = list(string)
+
+  default = [
+    "master"
+  ]
+}

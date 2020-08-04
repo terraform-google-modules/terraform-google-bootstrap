@@ -1,0 +1,26 @@
+name: bootstrap-folder
+depends:
+  - name: inspec-gcp
+    git: https://github.com/inspec/inspec-gcp.git
+    tag: v1.7.0
+attributes:
+  - name: group_org_admins
+    required: true
+  - name: seed_project_id
+    required: true
+    type: string
+  - name: terraform_sa_email
+    required: true
+    type: string
+  - name: terraform_sa_name
+    required: true
+    type: string
+  - name: gcs_bucket_tfstate
+    required: true
+    type: string
+  - name: parent_folder
+    required: true
+    type: string
+  - name: org_id
+    required: true
+    type: string

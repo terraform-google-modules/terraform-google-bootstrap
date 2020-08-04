@@ -19,6 +19,8 @@ locals {
   cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = distinct(var.activate_apis)
+  apply_branches_regex        = "(${join("|", var.terraform_apply_branches)})"
+  plan_branches_regex         = "[^${join("|", var.terraform_apply_branches)}]"
 }
 
 resource "random_id" "suffix" {
@@ -36,7 +38,7 @@ data "google_organization" "org" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 7.0"
+  version                     = "~> 8.0"
   name                        = local.cloudbuild_project_id
   random_project_id           = true
   disable_services_on_destroy = false
@@ -45,6 +47,7 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
+  skip_gcloud_download        = var.skip_gcloud_download
 }
 
 resource "google_project_service" "cloudbuild_apis" {
@@ -167,10 +170,10 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
 resource "google_cloudbuild_trigger" "master_trigger" {
   for_each    = toset(var.cloud_source_repos)
   project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform apply on push to master."
+  description = "${each.value} - terraform apply."
 
   trigger_template {
-    branch_name = "master"
+    branch_name = local.apply_branches_regex
     repo_name   = each.value
   }
 
@@ -182,9 +185,10 @@ resource "google_cloudbuild_trigger" "master_trigger" {
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
     _SEED_PROJECT_ID      = module.cloudbuild_project.project_id
+    _TF_ACTION            = "apply"
   }
 
-  filename = "cloudbuild-tf-apply.yaml"
+  filename = var.cloudbuild_apply_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
   ]
@@ -197,10 +201,10 @@ resource "google_cloudbuild_trigger" "master_trigger" {
 resource "google_cloudbuild_trigger" "non_master_trigger" {
   for_each    = toset(var.cloud_source_repos)
   project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform plan on all branches except master."
+  description = "${each.value} - terraform plan."
 
   trigger_template {
-    branch_name = "[^master]"
+    branch_name = local.plan_branches_regex
     repo_name   = each.value
   }
 
@@ -212,9 +216,10 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
     _SEED_PROJECT_ID      = module.cloudbuild_project.project_id
+    _TF_ACTION            = "plan"
   }
 
-  filename = "cloudbuild-tf-plan.yaml"
+  filename = var.cloudbuild_plan_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
   ]
@@ -236,7 +241,7 @@ resource "null_resource" "cloudbuild_terraform_builder" {
       gcloud builds submit ${path.module}/cloudbuild_builder/ \
       --project ${module.cloudbuild_project.project_id} \
       --config=${path.module}/cloudbuild_builder/cloudbuild.yaml \
-      --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum}
+      --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_TERRAFORM_VALIDATOR_RELEASE=${var.terraform_validator_release}
   EOT
   }
   depends_on = [
