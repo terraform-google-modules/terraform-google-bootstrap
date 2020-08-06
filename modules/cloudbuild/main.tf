@@ -19,8 +19,7 @@ locals {
   cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = distinct(var.activate_apis)
-  apply_branches_regex        = "(${join("|", var.terraform_apply_branches)})"
-  plan_branches_regex         = "[^${join("|", var.terraform_apply_branches)}]"
+  apply_branches_regex        = "^(${join("|", var.terraform_apply_branches)})$"
 }
 
 resource "random_id" "suffix" {
@@ -204,8 +203,9 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
   description = "${each.value} - terraform plan."
 
   trigger_template {
-    branch_name = local.plan_branches_regex
-    repo_name   = each.value
+    invert_regex = true
+    branch_name  = local.apply_branches_regex
+    repo_name    = each.value
   }
 
   substitutions = {
