@@ -90,7 +90,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 ### Software
 
 -   [gcloud sdk](https://cloud.google.com/sdk/install) >= 206.0.0
--   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.6
+-   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.20
 -   [terraform-provider-google] plugin 2.1.x
 -   [terraform-provider-google-beta] plugin 2.1.x
 
