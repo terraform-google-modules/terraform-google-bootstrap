@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.3.4...v1.4.0) (2020-10-14)
+
+
+### Features
+
+* Replaces deprecated bucket_policy_only for uniform_bucket_level_access ([#63](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/63)) ([a1ef992](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/a1ef9924a325331539bdb9eedbb8007d0b35be80))
+
 ### [1.3.4](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.3.3...v1.3.4) (2020-09-17)
 
 
