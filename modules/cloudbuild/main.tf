@@ -144,7 +144,7 @@ resource "google_kms_crypto_key_iam_binding" "cloud_build_crypto_key_encrypter" 
 *******************************************/
 
 resource "google_sourcerepo_repository" "gcp_repo" {
-  for_each = toset(var.cloud_source_repos)
+  for_each = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project  = module.cloudbuild_project.project_id
   name     = each.value
   depends_on = [
@@ -157,6 +157,7 @@ resource "google_sourcerepo_repository" "gcp_repo" {
 *******************************************/
 
 resource "google_project_iam_member" "org_admins_source_repo_admin" {
+  count   = var.create_cloud_source_repos ? 1 : 0
   project = module.cloudbuild_project.project_id
   role    = "roles/source.admin"
   member  = "group:${var.group_org_admins}"
@@ -167,7 +168,7 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "master_trigger" {
-  for_each    = toset(var.cloud_source_repos)
+  for_each    = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project     = module.cloudbuild_project.project_id
   description = "${each.value} - terraform apply."
 
@@ -198,7 +199,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "non_master_trigger" {
-  for_each    = toset(var.cloud_source_repos)
+  for_each    = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project     = module.cloudbuild_project.project_id
   description = "${each.value} - terraform plan."
 
