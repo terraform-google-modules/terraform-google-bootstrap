@@ -37,7 +37,7 @@ data "google_organization" "org" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 8.0"
+  version                     = "~> 9.2"
   name                        = local.cloudbuild_project_id
   random_project_id           = true
   disable_services_on_destroy = false
