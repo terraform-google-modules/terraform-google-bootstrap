@@ -33,7 +33,7 @@ cloudbuild_project_admin_roles = ["roles/cloudbuild.builds.editor", "roles/viewe
 control "bootstrap" do
   title "Bootstrap module GCP resources"
 
-  describe google_project(project_id: attribute("seed_project_id")) do
+  describe google_project(project: attribute("seed_project_id")) do
     it { should exist }
   end
 
@@ -41,9 +41,12 @@ control "bootstrap" do
     it { should exist }
   end
 
-  describe google_service_account(name: attribute("terraform_sa_name")) do
+  describe google_service_account(project: attribute("seed_project_id"), name: attribute("terraform_sa_name").split('/').last) do
     it { should exist }
-    its('has_user_managed_keys?') {should cmp false }
+  end
+
+  describe google_service_account_keys(project: attribute("seed_project_id"), service_account: attribute("terraform_sa_name").split('/').last) do
+    its('key_types') { should_not include 'USER_MANAGED' }
   end
 
   default_apis.each do |api|
@@ -58,7 +61,7 @@ end
 control "cloudbuild" do
   title "Cloudbuild sub-module GCP Resources"
 
-  describe google_project(project_id: attribute("cloudbuild_project_id")) do
+  describe google_project(project: attribute("cloudbuild_project_id")) do
     it { should exist }
   end
 
@@ -95,14 +98,14 @@ control "cloudbuild" do
       its('members') {should include 'serviceAccount:' + project_number.to_s + '@cloudbuild.gserviceaccount.com'}
     end
 
-    describe google_kms_crypto_key_iam_binding(crypto_key_url: attribute("kms_crypto_key")['self_link'],  role: "roles/cloudkms.cryptoKeyDecrypter") do
+    describe google_kms_crypto_key_iam_binding(project: attribute("cloudbuild_project_id"), location: "us-central1", key_ring_name: attribute("kms_crypto_key")[:key_ring].split('/').last, crypto_key_name: attribute("kms_crypto_key")[:name],  role: "roles/cloudkms.cryptoKeyDecrypter") do
       it { should exist }
       its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
       its('members') {should include 'serviceAccount:' + project_number.to_s + '@cloudbuild.gserviceaccount.com'}
     end
   end
 
-  describe google_kms_crypto_key_iam_binding(crypto_key_url: attribute("kms_crypto_key")['self_link'],  role: "roles/cloudkms.cryptoKeyEncrypter") do
+  describe google_kms_crypto_key_iam_binding(project: attribute("cloudbuild_project_id"), location: "us-central1", key_ring_name: attribute("kms_crypto_key")[:key_ring].split('/').last, crypto_key_name: attribute("kms_crypto_key")[:name],  role: "roles/cloudkms.cryptoKeyDecrypter") do
     it { should exist }
     its('members') {should include 'group:' + attribute("group_org_admins")}
   end
