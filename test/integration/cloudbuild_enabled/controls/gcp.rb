@@ -105,7 +105,7 @@ control "cloudbuild" do
     end
   end
 
-  describe google_kms_crypto_key_iam_binding(project: attribute("cloudbuild_project_id"), location: "us-central1", key_ring_name: attribute("kms_crypto_key")[:key_ring].split('/').last, crypto_key_name: attribute("kms_crypto_key")[:name],  role: "roles/cloudkms.cryptoKeyDecrypter") do
+  describe google_kms_crypto_key_iam_binding(project: attribute("cloudbuild_project_id"), location: "us-central1", key_ring_name: attribute("kms_crypto_key")[:key_ring].split('/').last, crypto_key_name: attribute("kms_crypto_key")[:name],  role: "roles/cloudkms.cryptoKeyEncrypter") do
     it { should exist }
     its('members') {should include 'group:' + attribute("group_org_admins")}
   end
