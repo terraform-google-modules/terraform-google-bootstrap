@@ -7,6 +7,14 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.4.0...v1.5.0) (2020-10-26)
+
+
+### Features
+
+* allow Cloud Source Repos to be optional ([#68](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/68)) ([6df33bc](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/6df33bc50b5d25176b01b722761c941c10baeaef))
+* relax tf version to allow terraform 0.13 ([#67](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/67)) ([af34b11](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/af34b11889e49fb3c50932ba7e14c33f3291eefe))
+
 ## [1.4.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.3.4...v1.4.0) (2020-10-14)
 
 
