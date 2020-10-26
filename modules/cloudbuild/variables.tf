@@ -102,8 +102,14 @@ variable "storage_bucket_labels" {
   default     = {}
 }
 
+variable "create_cloud_source_repos" {
+  description = "If shared Cloud Source Repos should be created."
+  type        = bool
+  default     = true
+}
+
 variable "cloud_source_repos" {
-  description = "List of Cloud Source Repo's to create with CloudBuild triggers."
+  description = "List of Cloud Source Repos to create with CloudBuild triggers."
   type        = list(string)
 
   default = [
