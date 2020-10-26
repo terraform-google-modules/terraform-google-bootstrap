@@ -128,19 +128,19 @@ variable "folder_id" {
 variable "terraform_version" {
   description = "Default terraform version."
   type        = string
-  default     = "0.12.24"
+  default     = "0.12.29"
 }
 
 variable "terraform_version_sha256sum" {
   description = "sha256sum for default terraform version."
   type        = string
-  default     = "602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"
+  default     = "872245d9c6302b24dc0d98a1e010aef1e4ef60865a2d1f60102c8ad03e9d5a1d"
 }
 
 variable "terraform_validator_release" {
   description = "Default terraform-validator release."
   type        = string
-  default     = "2020-03-05"
+  default     = "2020-09-24"
 }
 
 variable "skip_gcloud_download" {
