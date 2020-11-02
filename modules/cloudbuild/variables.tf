@@ -71,6 +71,12 @@ variable "project_prefix" {
   default     = "cft"
 }
 
+variable "project_id" {
+  description = "Custom project ID to use for project created."
+  default     = ""
+  type        = string
+}
+
 variable "activate_apis" {
   description = "List of APIs to enable in the Cloudbuild project."
   type        = list(string)

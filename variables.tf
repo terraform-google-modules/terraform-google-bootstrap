@@ -66,6 +66,12 @@ variable "project_prefix" {
   type        = string
 }
 
+variable "project_id" {
+  description = "Custom project ID to use for project created."
+  default     = ""
+  type        = string
+}
+
 variable "activate_apis" {
   description = "List of APIs to enable in the seed project."
   type        = list(string)

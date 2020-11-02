@@ -26,7 +26,7 @@ Functional examples are included in the
 
 The Organization Bootstrap module will take the following actions:
 
-1. Create a new GCP seed project using `project_prefix`.
+1. Create a new GCP seed project using `project_prefix`. Use `project_id` if you need to use custom project ID.
 1. Enable APIs in the seed project using `activate_apis`
 1. Create a new service account for terraform in seed project
 1. Create GCS bucket for Terraform state and grant access to service account
@@ -57,6 +57,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | `list(string)` | `[]` | no |
 | parent\_folder | GCP parent folder ID in the form folders/{id} | `string` | `""` | no |
+| project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
 | project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
