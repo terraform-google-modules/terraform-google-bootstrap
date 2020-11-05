@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.6.0...v1.7.0) (2020-11-05)
+
+
+### Features
+
+* custom seed project id ([#74](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/74)) ([4d44c4b](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/4d44c4ba57638f7aca081a3a3bcc2685437f17f4))
+
 ## [1.6.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.5.0...v1.6.0) (2020-10-26)
 
 
