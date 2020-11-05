@@ -15,7 +15,7 @@
  */
 
 locals {
-  cloudbuild_project_id       = format("%s-%s", var.project_prefix, "cloudbuild")
+  cloudbuild_project_id       = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "cloudbuild")
   cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = distinct(var.activate_apis)

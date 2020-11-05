@@ -61,6 +61,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
+| project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
 | project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |

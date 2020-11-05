@@ -15,7 +15,7 @@
  */
 
 locals {
-  seed_project_id             = format("%s-%s", var.project_prefix, "seed")
+  seed_project_id             = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "seed")
   impersonation_apis          = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
