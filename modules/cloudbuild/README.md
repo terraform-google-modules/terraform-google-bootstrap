@@ -65,7 +65,6 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
 | project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
-| skip\_gcloud\_download | Whether to skip downloading gcloud (assumes gcloud is already available outside the module) | `bool` | `true` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 | terraform\_apply\_branches | List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default. | `list(string)` | <pre>[<br>  "master"<br>]</pre> | no |
 | terraform\_sa\_email | Email for terraform service account. | `string` | n/a | yes |
@@ -92,9 +91,8 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 ### Software
 
 -   [gcloud sdk](https://cloud.google.com/sdk/install) >= 206.0.0
--   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.20
--   [terraform-provider-google] plugin 2.1.x
--   [terraform-provider-google-beta] plugin 2.1.x
+-   [Terraform](https://www.terraform.io/downloads.html) >= 0.13.0
+-   [terraform-provider-google] plugin 3.50.x
 
 ### Permissions
 

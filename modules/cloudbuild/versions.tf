@@ -15,10 +15,16 @@
  */
 
 terraform {
-  required_version = ">=0.12.20"
+  required_version = ">=0.13.0"
 
   required_providers {
-    google      = "~> 3.5"
-    google-beta = "~> 3.5"
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 3.50"
+    }
+  }
+
+  provider_meta "google" {
+    module_name = "blueprints/terraform/terraform-google-bootstrap:cloudbuild/v1.7.0"
   }
 }
