@@ -149,12 +149,6 @@ variable "terraform_validator_release" {
   default     = "2020-09-24"
 }
 
-variable "skip_gcloud_download" {
-  description = "Whether to skip downloading gcloud (assumes gcloud is already available outside the module)"
-  type        = bool
-  default     = true
-}
-
 variable "cloudbuild_plan_filename" {
   description = "Path and name of Cloud Build YAML definition used for terraform plan."
   type        = string

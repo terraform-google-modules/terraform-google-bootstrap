@@ -62,7 +62,6 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
 | sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/compute.networkAdmin",<br>  "roles/compute.xpnAdmin",<br>  "roles/iam.securityAdmin",<br>  "roles/iam.serviceAccountAdmin",<br>  "roles/logging.configWriter",<br>  "roles/orgpolicy.policyAdmin",<br>  "roles/resourcemanager.folderAdmin",<br>  "roles/resourcemanager.organizationViewer"<br>]</pre> | no |
-| skip\_gcloud\_download | Whether to skip downloading gcloud (assumes gcloud is already available outside the module) | `bool` | `true` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -81,9 +80,8 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 ### Software
 
 -   [gcloud sdk](https://cloud.google.com/sdk/install) >= 206.0.0
--   [Terraform](https://www.terraform.io/downloads.html) >= 0.12.20
--   [terraform-provider-google] plugin 2.1.x
--   [terraform-provider-google-beta] plugin 2.1.x
+-   [Terraform](https://www.terraform.io/downloads.html) >= 0.13.0
+-   [terraform-provider-google] plugin 3.50.x
 
 ### Permissions
 
