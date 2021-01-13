@@ -7,6 +7,17 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.7.0...v2.0.0) (2021-01-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade google-project-factory to v10, add Terraform 0.13 constraint and module attribution (#81)
+
+### Features
+
+* Upgrade google-project-factory to v10, add Terraform 0.13 constraint and module attribution ([#81](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/81)) ([4d00da3](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/4d00da341d22975137b6eacd910b61fce714938b))
+
 ## [1.7.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.6.0...v1.7.0) (2020-11-05)
 
 
