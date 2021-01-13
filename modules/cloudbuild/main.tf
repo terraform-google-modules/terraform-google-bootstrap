@@ -183,7 +183,6 @@ resource "google_cloudbuild_trigger" "master_trigger" {
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
-    _SEED_PROJECT_ID      = module.cloudbuild_project.project_id
     _TF_ACTION            = "apply"
   }
 
@@ -215,7 +214,6 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
-    _SEED_PROJECT_ID      = module.cloudbuild_project.project_id
     _TF_ACTION            = "plan"
   }
 
