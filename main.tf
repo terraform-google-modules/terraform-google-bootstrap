@@ -16,6 +16,7 @@
 
 locals {
   seed_project_id             = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "seed")
+  state_bucket_name           = var.state_bucket_name != "" ? var.state_bucket_name : format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
   impersonation_apis          = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
@@ -80,7 +81,7 @@ resource "google_service_account" "org_terraform" {
 
 resource "google_storage_bucket" "org_terraform_state" {
   project                     = module.seed_project.project_id
-  name                        = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
+  name                        = local.state_bucket_name
   location                    = var.default_region
   labels                      = var.storage_bucket_labels
   uniform_bucket_level_access = true
