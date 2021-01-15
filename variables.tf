@@ -67,7 +67,7 @@ variable "project_prefix" {
 }
 
 variable "project_id" {
-  description = "Custom project ID to use for project created."
+  description = "Custom project ID to use for project created. If not supplied, the default id is {project_prefix}-seed-{random suffix}."
   default     = ""
   type        = string
 }
@@ -112,6 +112,12 @@ variable "sa_enable_impersonation" {
   description = "Allow org_admins group to impersonate service account & enable APIs required."
   type        = bool
   default     = false
+}
+
+variable "state_bucket_name" {
+  description = "Custom state bucket name. If not supplied, the default name is {project_prefix}-tfstate-{random suffix}."
+  default     = ""
+  type        = string
 }
 
 variable "grant_billing_user" {
