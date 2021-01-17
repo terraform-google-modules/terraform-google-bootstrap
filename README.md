@@ -9,7 +9,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
-  version = "~> 2.0"
+  version = "~> 2.1"
 
   org_id               = "<ORGANIZATION_ID>"
   billing_account      = "<BILLING_ACCOUNT_ID>"

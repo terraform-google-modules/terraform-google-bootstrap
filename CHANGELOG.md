@@ -7,6 +7,18 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.0.0...v2.1.0) (2021-01-15)
+
+
+### Features
+
+* Add ability to customize state bucket name ([#86](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/86)) ([1af1405](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/1af1405be6455ff4a212e5977989bc597edb4067))
+
+
+### Bug Fixes
+
+* Remove incorrect substitution for seed project ([#84](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/84)) ([4ec9fa0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/4ec9fa083066712bcea317bcf9066646e07a66c6))
+
 ## [2.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v1.7.0...v2.0.0) (2021-01-12)
 
 
