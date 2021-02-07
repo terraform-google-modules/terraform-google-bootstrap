@@ -48,7 +48,6 @@ module "cloudbuild_bootstrap" {
   billing_account         = var.billing_account
   group_org_admins        = var.group_org_admins
   default_region          = var.default_region
-  project_prefix          = var.project_prefix
   sa_enable_impersonation = true
   terraform_sa_email      = module.seed_bootstrap.terraform_sa_email
   terraform_sa_name       = module.seed_bootstrap.terraform_sa_name

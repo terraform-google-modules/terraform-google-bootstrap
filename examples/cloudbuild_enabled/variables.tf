@@ -34,12 +34,6 @@ variable "group_billing_admins" {
   type        = string
 }
 
-variable "project_prefix" {
-  description = "Name prefix to use for projects created."
-  type        = string
-  default     = "prj"
-}
-
 variable "default_region" {
   description = "Default region to create resources where applicable."
   type        = string
