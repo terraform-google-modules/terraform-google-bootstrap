@@ -63,7 +63,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
-| project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
+| project\_prefix | Name prefix to use for projects created. | `string` | `"prj"` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 | terraform\_apply\_branches | List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default. | `list(string)` | <pre>[<br>  "master"<br>]</pre> | no |
