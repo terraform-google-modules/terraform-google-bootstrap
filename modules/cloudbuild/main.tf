@@ -86,6 +86,14 @@ resource "google_storage_bucket" "cloudbuild_artifacts" {
   }
 }
 
+resource "google_storage_bucket" "cloudbuild" {
+  project                     = module.cloudbuild_project.project_id
+  name                        = format("%s_%s", module.cloudbuild_project.project_id, "cloudbuild")
+  location                    = var.default_region
+  labels                      = var.storage_bucket_labels
+  uniform_bucket_level_access = true
+}
+
 /******************************************
   KMS Keyring
  *****************************************/
@@ -244,6 +252,7 @@ resource "null_resource" "cloudbuild_terraform_builder" {
   }
   depends_on = [
     google_project_service.cloudbuild_apis,
+    google_storage_bucket.cloudbuild,
   ]
 }
 
