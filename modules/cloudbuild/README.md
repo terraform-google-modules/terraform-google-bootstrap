@@ -71,8 +71,8 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | terraform\_sa\_name | Fully-qualified name of the terraform service account. | `string` | n/a | yes |
 | terraform\_state\_bucket | Default state bucket, used in Cloud Build substitutions. | `string` | n/a | yes |
 | terraform\_validator\_release | Default terraform-validator release. | `string` | `"2020-09-24"` | no |
-| terraform\_version | Default terraform version. | `string` | `"0.12.29"` | no |
-| terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"872245d9c6302b24dc0d98a1e010aef1e4ef60865a2d1f60102c8ad03e9d5a1d"` | no |
+| terraform\_version | Default terraform version. | `string` | `"0.13.6"` | no |
+| terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"b0bb7c6a8ff6a81af7bcc8b6261f393e0a0b53900647a472a700bc25c7f4a262"` | no |
 
 ## Outputs
 
