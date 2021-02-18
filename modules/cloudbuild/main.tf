@@ -269,6 +269,15 @@ resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   ]
 }
 
+resource "google_storage_bucket_iam_member" "cloudbuild_iam" {
+  bucket = google_storage_bucket.cloudbuild.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  depends_on = [
+    google_project_service.cloudbuild_apis,
+  ]
+}
+
 resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonate_permissions" {
   count = local.impersonation_enabled_count
 
