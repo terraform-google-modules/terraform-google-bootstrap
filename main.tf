@@ -54,7 +54,7 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 
 module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 10.0.1"
+  version                     = "~> 10.1.1"
   name                        = local.seed_project_id
   random_project_id           = true
   disable_services_on_destroy = false
