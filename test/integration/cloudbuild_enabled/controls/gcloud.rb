@@ -16,7 +16,6 @@ control "gcloud" do
     title "GAR Repo"
     describe command("gcloud --project=#{attribute("cloudbuild_project_id")} artifacts repositories describe #{attribute("tf_runner_artifact_repo")} --location=us-central1 --format=json") do
       its(:exit_status) { should eq 0 }
-  
       let!(:data) do
         if subject.exit_status == 0
           JSON.parse(subject.stdout)
@@ -34,7 +33,6 @@ control "gcloud" do
     title "GAR Repo TF Runner Image"
     describe command("gcloud --project=#{attribute("cloudbuild_project_id")} artifacts tags list --repository=#{attribute("tf_runner_artifact_repo")} --location=us-central1 --package=terraform --format=json") do
       its(:exit_status) { should eq 0 }
-  
       let!(:data) do
         if subject.exit_status == 0
           JSON.parse(subject.stdout)
