@@ -33,3 +33,6 @@ attributes:
   - name: kms_crypto_key
     required: true
     type: hash
+  - name: tf_runner_artifact_repo
+    required: true
+    type: string

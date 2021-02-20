@@ -32,7 +32,8 @@ module "project" {
     "serviceusage.googleapis.com",
     "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
-    "cloudkms.googleapis.com"
+    "cloudkms.googleapis.com",
+    "artifactregistry.googleapis.com"
   ]
 }
 

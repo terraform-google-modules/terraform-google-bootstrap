@@ -38,3 +38,8 @@ output "kms_crypto_key" {
   description = "KMS key created by the module."
   value       = google_kms_crypto_key.tf_key
 }
+
+output "tf_runner_artifact_repo" {
+  description = "GAR Repo created to store runner images"
+  value       = google_artifact_registry_repository.tf-image-repo.name
+}

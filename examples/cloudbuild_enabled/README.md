@@ -27,5 +27,6 @@ This example combines the Organization bootstrap module with the Cloud Build sub
 | seed\_project\_id | Project where service accounts and core APIs will be enabled. |
 | terraform\_sa\_email | Email for privileged service account for Terraform. |
 | terraform\_sa\_name | Fully qualified name for privileged service account for Terraform. |
+| tf\_runner\_artifact\_repo | GAR Repo created to store runner images |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
