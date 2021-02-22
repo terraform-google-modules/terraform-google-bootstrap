@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-organization_id = "000000000000"
+org_id = "000000000000"
 
 billing_account = "000000-000000-000000"
 
