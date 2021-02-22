@@ -140,7 +140,7 @@ variable "terraform_version" {
 variable "terraform_version_sha256sum" {
   description = "sha256sum for default terraform version."
   type        = string
-  default     = "b0bb7c6a8ff6a81af7bcc8b6261f393e0a0b53900647a472a700bc25c7f4a262"
+  default     = "55f2db00b05675026be9c898bdd3e8230ff0c5c78dd12d743ca38032092abfc9"
 }
 
 variable "terraform_validator_release" {
