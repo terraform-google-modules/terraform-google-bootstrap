@@ -7,6 +7,18 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.1.0...v2.2.0) (2021-02-23)
+
+
+### Features
+
+* migrate to GAR for runner images ([#94](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/94)) ([02bf581](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/02bf5813de4f0702835e768bc70aac7f16e79730))
+
+
+### Bug Fixes
+
+* upgrade project factory to 10.1.1 and terraform to 0.13.6 ([#93](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/93)) ([e04ab65](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/e04ab658516e8c7bda4689589d5ef8f01ba6ed88))
+
 ## [2.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.0.0...v2.1.0) (2021-01-15)
 
 
