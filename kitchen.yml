@@ -58,3 +58,7 @@ suites:
           controls:
             - bootstrap
             - cloudbuild
+        - name: cloudbuild_enabled gcloud
+          backend: local
+          controls:
+            - gcloud

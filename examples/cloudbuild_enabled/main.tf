@@ -19,6 +19,10 @@ provider "google" {
   version = ">= 3.50"
 }
 
+provider "google-beta" {
+  version = ">= 3.50"
+}
+
 provider "null" {
   version = "~> 2.1"
 }

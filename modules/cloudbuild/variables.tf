@@ -169,3 +169,9 @@ variable "terraform_apply_branches" {
     "master"
   ]
 }
+
+variable "gar_repo_name" {
+  description = "Custom name to use for GAR repo."
+  default     = ""
+  type        = string
+}
