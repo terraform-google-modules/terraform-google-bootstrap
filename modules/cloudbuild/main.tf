@@ -166,6 +166,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
     _ORG_ID               = var.org_id
     _BILLING_ID           = var.billing_account
     _DEFAULT_REGION       = var.default_region
+    _GAR_REPOSITORY       = local.gar_name
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
@@ -197,6 +198,7 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
     _ORG_ID               = var.org_id
     _BILLING_ID           = var.billing_account
     _DEFAULT_REGION       = var.default_region
+    _GAR_REPOSITORY       = local.gar_name
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
