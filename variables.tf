@@ -132,6 +132,18 @@ variable "storage_bucket_labels" {
   default     = {}
 }
 
+variable "storage_bucket_location" {
+  description = "The terraform state bucket location.  If not supplied then var.default_region is used.  Warning - this can be a destructive change on the bucket."
+  default     = null
+  type        = string
+}
+
+variable "storage_bucket_storage_class" {
+  description = "The terraform state bucket storage class.  Used in combination with storage_bucket_location.  Warning - this can be a destructive change on the bucket."
+  default     = "STANDARD"
+  type        = string
+}
+
 variable "org_admins_org_iam_permissions" {
   description = "List of permissions granted to the group supplied in group_org_admins variable across the GCP organization."
   type        = list(string)
