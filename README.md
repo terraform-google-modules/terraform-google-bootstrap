@@ -64,6 +64,8 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/compute.networkAdmin",<br>  "roles/compute.xpnAdmin",<br>  "roles/iam.securityAdmin",<br>  "roles/iam.serviceAccountAdmin",<br>  "roles/logging.configWriter",<br>  "roles/orgpolicy.policyAdmin",<br>  "roles/resourcemanager.folderAdmin",<br>  "roles/resourcemanager.organizationViewer"<br>]</pre> | no |
 | state\_bucket\_name | Custom state bucket name. If not supplied, the default name is {project\_prefix}-tfstate-{random suffix}. | `string` | `""` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
+| storage\_bucket\_location | The terraform state bucket location.  If not supplied then var.default\_region is used.  Warning - this can be a destructive change on the bucket. | `string` | `null` | no |
+| storage\_bucket\_storage\_class | The terraform state bucket storage class.  Used in combination with storage\_bucket\_location.  Warning - this can be a destructive change on the bucket. | `string` | `"STANDARD"` | no |
 
 ## Outputs
 
