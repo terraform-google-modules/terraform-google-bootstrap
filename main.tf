@@ -84,6 +84,7 @@ resource "google_storage_bucket" "org_terraform_state" {
   name                        = local.state_bucket_name
   location                    = var.default_region
   labels                      = var.storage_bucket_labels
+  force_destroy               = var.force_destroy
   uniform_bucket_level_access = true
   versioning {
     enabled = true

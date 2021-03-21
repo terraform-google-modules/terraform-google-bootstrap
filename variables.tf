@@ -132,6 +132,12 @@ variable "storage_bucket_labels" {
   default     = {}
 }
 
+variable "force_destroy" {
+  description = "If supplied, the state bucket will be deleted even while containing objects."
+  type        = bool
+  default     = false
+}
+
 variable "org_admins_org_iam_permissions" {
   description = "List of permissions granted to the group supplied in group_org_admins variable across the GCP organization."
   type        = list(string)
