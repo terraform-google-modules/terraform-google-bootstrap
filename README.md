@@ -50,6 +50,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | billing\_account | The ID of the billing account to associate projects with. | `string` | n/a | yes |
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
+| force\_destroy | If supplied, the state bucket will be deleted even while containing objects. | `bool` | `false` | no |
 | grant\_billing\_user | Grant roles/billing.user role to CFT service account | `bool` | `true` | no |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | `string` | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
