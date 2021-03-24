@@ -62,7 +62,7 @@ variable "project_labels" {
 
 variable "project_prefix" {
   description = "Name prefix to use for projects created."
-  default     = "prj"
+  default     = "cft"
   type        = string
 }
 
