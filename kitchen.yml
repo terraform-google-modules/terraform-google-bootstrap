@@ -16,6 +16,7 @@
 driver:
   name: terraform
   verify_version: false
+  command_timeout: 1200
 
 provisioner:
   name: terraform
@@ -58,3 +59,7 @@ suites:
           controls:
             - bootstrap
             - cloudbuild
+        - name: cloudbuild_enabled gcloud
+          backend: local
+          controls:
+            - gcloud

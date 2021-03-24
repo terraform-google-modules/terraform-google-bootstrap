@@ -134,13 +134,13 @@ variable "folder_id" {
 variable "terraform_version" {
   description = "Default terraform version."
   type        = string
-  default     = "0.12.29"
+  default     = "0.13.6"
 }
 
 variable "terraform_version_sha256sum" {
   description = "sha256sum for default terraform version."
   type        = string
-  default     = "872245d9c6302b24dc0d98a1e010aef1e4ef60865a2d1f60102c8ad03e9d5a1d"
+  default     = "55f2db00b05675026be9c898bdd3e8230ff0c5c78dd12d743ca38032092abfc9"
 }
 
 variable "terraform_validator_release" {
@@ -168,4 +168,10 @@ variable "terraform_apply_branches" {
   default = [
     "master"
   ]
+}
+
+variable "gar_repo_name" {
+  description = "Custom name to use for GAR repo."
+  default     = ""
+  type        = string
 }

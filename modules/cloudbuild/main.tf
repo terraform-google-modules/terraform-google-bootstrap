@@ -16,10 +16,12 @@
 
 locals {
   cloudbuild_project_id       = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "cloudbuild")
-  cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com"]
+  gar_repo_name               = var.gar_repo_name != "" ? var.gar_repo_name : format("%s-%s", var.project_prefix, "tf-runners")
+  cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com", "artifactregistry.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
-  activate_apis               = distinct(var.activate_apis)
+  activate_apis               = distinct(concat(var.activate_apis, local.cloudbuild_apis))
   apply_branches_regex        = "^(${join("|", var.terraform_apply_branches)})$"
+  gar_name                    = split("/", google_artifact_registry_repository.tf-image-repo.name)[length(split("/", google_artifact_registry_repository.tf-image-repo.name)) - 1]
 }
 
 resource "random_id" "suffix" {
@@ -37,7 +39,7 @@ data "google_organization" "org" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 10.0.1"
+  version                     = "~> 10.1.1"
   name                        = local.cloudbuild_project_id
   random_project_id           = true
   disable_services_on_destroy = false
@@ -46,13 +48,6 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
-}
-
-resource "google_project_service" "cloudbuild_apis" {
-  for_each           = toset(local.cloudbuild_apis)
-  project            = module.cloudbuild_project.project_id
-  service            = each.value
-  disable_on_destroy = false
 }
 
 /******************************************
@@ -94,9 +89,6 @@ resource "google_kms_key_ring" "tf_keyring" {
   project  = module.cloudbuild_project.project_id
   name     = "tf-keyring"
   location = var.default_region
-  depends_on = [
-    google_project_service.cloudbuild_apis,
-  ]
 }
 
 /******************************************
@@ -119,9 +111,6 @@ resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
   members = [
     "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com",
     "serviceAccount:${var.terraform_sa_email}"
-  ]
-  depends_on = [
-    google_project_service.cloudbuild_apis,
   ]
 }
 
@@ -146,9 +135,6 @@ resource "google_sourcerepo_repository" "gcp_repo" {
   for_each = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project  = module.cloudbuild_project.project_id
   name     = each.value
-  depends_on = [
-    google_project_service.cloudbuild_apis,
-  ]
 }
 
 /******************************************
@@ -180,6 +166,7 @@ resource "google_cloudbuild_trigger" "master_trigger" {
     _ORG_ID               = var.org_id
     _BILLING_ID           = var.billing_account
     _DEFAULT_REGION       = var.default_region
+    _GAR_REPOSITORY       = local.gar_name
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
@@ -211,6 +198,7 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
     _ORG_ID               = var.org_id
     _BILLING_ID           = var.billing_account
     _DEFAULT_REGION       = var.default_region
+    _GAR_REPOSITORY       = local.gar_name
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
@@ -224,6 +212,19 @@ resource "google_cloudbuild_trigger" "non_master_trigger" {
 }
 
 /***********************************************
+ Cloud Build - Terraform Image Repo
+ ***********************************************/
+resource "google_artifact_registry_repository" "tf-image-repo" {
+  provider = google-beta
+  project  = module.cloudbuild_project.project_id
+
+  location      = var.default_region
+  repository_id = local.gar_repo_name
+  description   = "Docker repository for Terraform runner images used by Cloud Build"
+  format        = "DOCKER"
+}
+
+/***********************************************
  Cloud Build - Terraform builder
  ***********************************************/
 
@@ -232,6 +233,8 @@ resource "null_resource" "cloudbuild_terraform_builder" {
     project_id_cloudbuild_project = module.cloudbuild_project.project_id
     terraform_version_sha256sum   = var.terraform_version_sha256sum
     terraform_version             = var.terraform_version
+    gar_name                      = local.gar_name
+    gar_location                  = google_artifact_registry_repository.tf-image-repo.location
   }
 
   provisioner "local-exec" {
@@ -239,11 +242,11 @@ resource "null_resource" "cloudbuild_terraform_builder" {
       gcloud builds submit ${path.module}/cloudbuild_builder/ \
       --project ${module.cloudbuild_project.project_id} \
       --config=${path.module}/cloudbuild_builder/cloudbuild.yaml \
-      --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_TERRAFORM_VALIDATOR_RELEASE=${var.terraform_validator_release}
+      --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_TERRAFORM_VALIDATOR_RELEASE=${var.terraform_validator_release},_REGION=${google_artifact_registry_repository.tf-image-repo.location},_REPOSITORY=${local.gar_name}
   EOT
   }
   depends_on = [
-    google_project_service.cloudbuild_apis,
+    google_artifact_registry_repository_iam_member.terraform-image-iam
   ]
 }
 
@@ -255,9 +258,16 @@ resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   bucket = google_storage_bucket.cloudbuild_artifacts.name
   role   = "roles/storage.admin"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
-  depends_on = [
-    google_project_service.cloudbuild_apis,
-  ]
+}
+
+resource "google_artifact_registry_repository_iam_member" "terraform-image-iam" {
+  provider = google-beta
+  project  = module.cloudbuild_project.project_id
+
+  location   = google_artifact_registry_repository.tf-image-repo.location
+  repository = google_artifact_registry_repository.tf-image-repo.name
+  role       = "roles/artifactregistry.writer"
+  member     = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
 }
 
 resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonate_permissions" {
@@ -266,9 +276,6 @@ resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonat
   service_account_id = var.terraform_sa_name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
-  depends_on = [
-    google_project_service.cloudbuild_apis,
-  ]
 }
 
 resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
@@ -277,9 +284,6 @@ resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
   org_id = var.org_id
   role   = "roles/serviceusage.serviceUsageConsumer"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
-  depends_on = [
-    google_project_service.cloudbuild_apis,
-  ]
 }
 
 # Required to allow cloud build to access state with impersonation.
@@ -289,7 +293,4 @@ resource "google_storage_bucket_iam_member" "cloudbuild_state_iam" {
   bucket = var.terraform_state_bucket
   role   = "roles/storage.admin"
   member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
-  depends_on = [
-    google_project_service.cloudbuild_apis,
-  ]
 }

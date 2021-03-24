@@ -59,6 +59,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | create\_cloud\_source\_repos | If shared Cloud Source Repos should be created. | `bool` | `true` | no |
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
+| gar\_repo\_name | Custom name to use for GAR repo. | `string` | `""` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | project\_id | Custom project ID to use for project created. | `string` | `""` | no |
@@ -71,8 +72,8 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | terraform\_sa\_name | Fully-qualified name of the terraform service account. | `string` | n/a | yes |
 | terraform\_state\_bucket | Default state bucket, used in Cloud Build substitutions. | `string` | n/a | yes |
 | terraform\_validator\_release | Default terraform-validator release. | `string` | `"2020-09-24"` | no |
-| terraform\_version | Default terraform version. | `string` | `"0.12.29"` | no |
-| terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"872245d9c6302b24dc0d98a1e010aef1e4ef60865a2d1f60102c8ad03e9d5a1d"` | no |
+| terraform\_version | Default terraform version. | `string` | `"0.13.6"` | no |
+| terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"55f2db00b05675026be9c898bdd3e8230ff0c5c78dd12d743ca38032092abfc9"` | no |
 
 ## Outputs
 
@@ -83,6 +84,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artefacts in CloudBuild project. |
 | kms\_crypto\_key | KMS key created by the module. |
 | kms\_keyring | KMS Keyring created by the module. |
+| tf\_runner\_artifact\_repo | GAR Repo created to store runner images |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
