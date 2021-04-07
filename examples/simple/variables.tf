@@ -45,3 +45,9 @@ variable "org_project_creators" {
   type        = list(string)
   default     = []
 }
+
+variable "project_prefix" {
+  description = "Name prefix to use for projects created."
+  default     = "cft"
+  type        = string
+}

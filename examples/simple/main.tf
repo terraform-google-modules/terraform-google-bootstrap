@@ -38,4 +38,5 @@ module "seed_bootstrap" {
   group_billing_admins = var.group_billing_admins
   default_region       = var.default_region
   org_project_creators = var.org_project_creators
+  project_prefix       = var.project_prefix
 }
