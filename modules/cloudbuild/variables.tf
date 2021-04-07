@@ -175,3 +175,10 @@ variable "gar_repo_name" {
   default     = ""
   type        = string
 }
+
+variable "random_suffix" {
+  description = "Appends a 4 character random suffix to project ID and GCS bucket name."
+  type        = bool
+  default     = true
+}
+

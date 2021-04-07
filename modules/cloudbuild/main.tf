@@ -41,7 +41,7 @@ module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
   version                     = "~> 10.1.1"
   name                        = local.cloudbuild_project_id
-  random_project_id           = true
+  random_project_id           = var.random_suffix
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = var.org_id
