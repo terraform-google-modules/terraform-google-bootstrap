@@ -158,3 +158,9 @@ variable "org_project_creators" {
   type        = list(string)
   default     = []
 }
+
+variable "random_suffix" {
+  description = "Appends a 4 character random suffix to project ID and GCS bucket name."
+  type        = bool
+  default     = true
+}

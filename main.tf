@@ -16,7 +16,9 @@
 
 locals {
   seed_project_id             = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "seed")
-  state_bucket_name           = var.state_bucket_name != "" ? var.state_bucket_name : format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
+  generated_bucket_name       = var.random_suffix == true ? format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex) : format("%s-%s", var.project_prefix, "tfstate")
+  supplied_bucket_name        = var.random_suffix == true ? format("%s-%s", var.state_bucket_name, random_id.suffix.hex) : var.state_bucket_name
+  state_bucket_name           = var.state_bucket_name != "" ? local.supplied_bucket_name : local.generated_bucket_name
   impersonation_apis          = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
@@ -56,7 +58,7 @@ module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
   version                     = "~> 10.1.1"
   name                        = local.seed_project_id
-  random_project_id           = true
+  random_project_id           = var.random_suffix
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = local.seed_org_depends_on
