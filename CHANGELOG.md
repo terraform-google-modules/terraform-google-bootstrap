@@ -7,6 +7,19 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.2.1...v2.3.0) (2021-04-08)
+
+
+### Features
+
+* add ability to specify random suffix for projects and GCS ([#102](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/102)) ([da4e8c1](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/da4e8c10a2b03f2a67d6217dba67ba7be5c83503))
+* add force_destroy option for state bucket ([#100](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/100)) ([50ce28f](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/50ce28f411eed79868f968c6fff9afa7eddc226a))
+
+
+### Bug Fixes
+
+* Update version of terraform-validator to 2021-03-22 ([#103](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/103)) ([fb2f372](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/fb2f37278384adb020bf0606acd8afa3c8bb04f5))
+
 ### [2.2.1](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.2.0...v2.2.1) (2021-02-25)
 
 
