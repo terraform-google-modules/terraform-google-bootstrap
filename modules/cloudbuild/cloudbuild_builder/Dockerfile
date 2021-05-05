@@ -34,7 +34,6 @@ RUN apt-get update && \
     rm -f terraform_linux_amd64.zip && \
     gsutil cp gs://terraform-validator/releases/${ENV_TERRAFORM_VALIDATOR_RELEASE}/terraform-validator-linux-amd64 /builder/terraform/terraform-validator && \
     chmod +x /builder/terraform/terraform-validator && \
-    apt-get remove --purge -y curl unzip && \
     apt-get --purge -y autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
