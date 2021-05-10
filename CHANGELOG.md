@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [2.3.1](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.3.0...v2.3.1) (2021-05-05)
+
+
+### Bug Fixes
+
+* Leave curl and unzip in Docker image ([#106](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/106)) ([8d24f65](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/8d24f6583b16e6bd97e3e7d2b809d689371796d1))
+
 ## [2.3.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.2.1...v2.3.0) (2021-04-08)
 
 
