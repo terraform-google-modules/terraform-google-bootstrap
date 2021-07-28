@@ -13,6 +13,8 @@ and this project adheres to
 ### ⚠ BREAKING CHANGES
 
 * Default trigger location in Terraform state changed, see upgrade guide for details.
+* Default branch trigger changed from `master` to `main`.
+* Default Terraform version changed to v1.0.2.
 
 ### Features
 
