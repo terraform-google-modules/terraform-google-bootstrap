@@ -149,10 +149,10 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
 }
 
 /***********************************************
- Cloud Build - Master branch triggers
+ Cloud Build - Main branch triggers
  ***********************************************/
 
-resource "google_cloudbuild_trigger" "master_trigger" {
+resource "google_cloudbuild_trigger" "main_trigger" {
   for_each    = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project     = module.cloudbuild_project.project_id
   description = "${each.value} - terraform apply."
@@ -180,10 +180,10 @@ resource "google_cloudbuild_trigger" "master_trigger" {
 }
 
 /***********************************************
- Cloud Build - Non Master branch triggers
+ Cloud Build - Non Main branch triggers
  ***********************************************/
 
-resource "google_cloudbuild_trigger" "non_master_trigger" {
+resource "google_cloudbuild_trigger" "non_main_trigger" {
   for_each    = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project     = module.cloudbuild_project.project_id
   description = "${each.value} - terraform plan."
