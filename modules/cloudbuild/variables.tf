@@ -1,6 +1,6 @@
 
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,19 +134,19 @@ variable "folder_id" {
 variable "terraform_version" {
   description = "Default terraform version."
   type        = string
-  default     = "0.13.6"
+  default     = "1.0.2"
 }
 
 variable "terraform_version_sha256sum" {
   description = "sha256sum for default terraform version."
   type        = string
-  default     = "55f2db00b05675026be9c898bdd3e8230ff0c5c78dd12d743ca38032092abfc9"
+  default     = "7329f887cc5a5bda4bedaec59c439a4af7ea0465f83e3c1b0f4d04951e1181f4"
 }
 
 variable "terraform_validator_release" {
   description = "Default terraform-validator release."
   type        = string
-  default     = "2021-03-22"
+  default     = "v0.4.0"
 }
 
 variable "cloudbuild_plan_filename" {
@@ -166,7 +166,7 @@ variable "terraform_apply_branches" {
   type        = list(string)
 
   default = [
-    "master"
+    "main"
   ]
 }
 
