@@ -7,6 +7,19 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.3.1...v3.0.0) (2021-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* Default trigger location in Terraform state changed, see upgrade guide for details.
+* Default branch trigger changed from `master` to `main`.
+* Default Terraform version changed to v1.0.2.
+
+### Features
+
+* Upgrade default Terraform version to v1.0.2 ([#112](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/112)) ([dac0483](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/dac0483368abd0e78a6f680aa949e860d9bb8e70))
+
 ### [2.3.1](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.3.0...v2.3.1) (2021-05-05)
 
 
