@@ -165,6 +165,7 @@ variable "random_suffix" {
   default     = true
 }
 
+<<<<<<< HEAD
 variable "tf_service_account_id" {
   description = "ID of service account for terraform in seed project"
   type        = string
@@ -175,4 +176,21 @@ variable "tf_service_account_name" {
   description = "Display name of service account for terraform in seed project"
   type        = string
   default     = "CFT Organization Terraform Account"
+=======
+variable "encrypt_gcs_bucket_tfstate" {
+  description = "Encrypt bucket used for storing terraform state files in seed project."
+  type        = bool
+  default     = false
+}
+
+variable "key_protection_level" {
+  type        = string
+  description = "The protection level to use when creating a version based on this template. Default value: \"SOFTWARE\" Possible values: [\"SOFTWARE\", \"HSM\"]"
+  default     = "SOFTWARE"
+}
+
+variable "key_rotation_period" {
+  type    = string
+  default = null
+>>>>>>> bd7cc88 (added CMEK support for tfstate gcs bucket)
 }

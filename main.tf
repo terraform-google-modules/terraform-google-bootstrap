@@ -80,6 +80,39 @@ resource "google_service_account" "org_terraform" {
 /***********************************************
   GCS Bucket - Terraform State
  ***********************************************/
+data "google_storage_project_service_account" "gcs_account" {
+  project = module.seed_project.project_id
+}
+
+resource "google_kms_key_ring" "key_ring" {
+  count    = var.encrypt_gcs_bucket_tfstate ? 1 : 0
+  name     = "${var.project_prefix}-keyring"
+  project  = module.seed_project.project_id
+  location = var.default_region
+}
+
+resource "google_kms_crypto_key" "gcs_key" {
+  count           = var.encrypt_gcs_bucket_tfstate ? 1 : 0
+  name            = "${var.project_prefix}-key"
+  key_ring        = google_kms_key_ring.key_ring[0].self_link
+  rotation_period = var.key_rotation_period
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  version_template {
+    algorithm        = "GOOGLE_SYMMETRIC_ENCRYPTION"
+    protection_level = var.key_protection_level
+  }
+
+}
+
+resource "google_kms_crypto_key_iam_member" "gcs_key_iam" {
+  crypto_key_id = google_kms_crypto_key.gcs_key[0].id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+}
 
 resource "google_storage_bucket" "org_terraform_state" {
   project                     = module.seed_project.project_id
@@ -90,6 +123,13 @@ resource "google_storage_bucket" "org_terraform_state" {
   uniform_bucket_level_access = true
   versioning {
     enabled = true
+  }
+
+  dynamic "encryption" {
+    for_each = var.encrypt_gcs_bucket_tfstate ? ["encryption"] : []
+    content {
+      default_kms_key_name = google_kms_crypto_key.gcs_key[0].id
+    }
   }
 }
 
