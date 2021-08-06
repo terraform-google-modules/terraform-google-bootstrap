@@ -109,6 +109,7 @@ resource "google_kms_crypto_key" "gcs_key" {
 }
 
 resource "google_kms_crypto_key_iam_member" "gcs_key_iam" {
+  count         = var.encrypt_gcs_bucket_tfstate ? 1 : 0
   crypto_key_id = google_kms_crypto_key.gcs_key[0].id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member        = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
