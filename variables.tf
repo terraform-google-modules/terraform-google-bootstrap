@@ -88,7 +88,8 @@ variable "activate_apis" {
     "admin.googleapis.com",
     "appengine.googleapis.com",
     "storage-api.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
+    "cloudkms.googleapis.com",
   ]
 }
 
@@ -193,4 +194,9 @@ variable "key_rotation_period" {
   type    = string
   default = null
 >>>>>>> bd7cc88 (added CMEK support for tfstate gcs bucket)
+}
+
+variable "prevent_destroy" {
+  description = "Set the prevent_destroy lifecycle attribute on keys."
+  default     = true
 }
