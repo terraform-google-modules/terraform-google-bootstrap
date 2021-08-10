@@ -120,7 +120,6 @@ resource "google_storage_bucket" "org_terraform_state" {
   dynamic "encryption" {
     for_each = var.encrypt_gcs_bucket_tfstate ? ["encryption"] : []
     content {
-      # default_kms_key_name = google_kms_crypto_key.gcs_key[0].id
       default_kms_key_name = module.kms[0].keys["${var.project_prefix}-key"]
     }
   }
