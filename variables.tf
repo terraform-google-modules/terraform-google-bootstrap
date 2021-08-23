@@ -164,3 +164,15 @@ variable "random_suffix" {
   type        = bool
   default     = true
 }
+
+variable "tf_service_account_id" {
+  description = "ID of service account for terraform in seed project"
+  type        = string
+  default     = "org-terraform"
+}
+
+variable "tf_service_account_name" {
+  description = "Display name of service account for terraform in seed project"
+  type        = string
+  default     = "CFT Organization Terraform Account"
+}

@@ -73,8 +73,8 @@ module "seed_project" {
 
 resource "google_service_account" "org_terraform" {
   project      = module.seed_project.project_id
-  account_id   = "org-terraform"
-  display_name = "CFT Organization Terraform Account"
+  account_id   = var.tf_service_account_id
+  display_name = var.tf_service_account_name
 }
 
 /***********************************************
