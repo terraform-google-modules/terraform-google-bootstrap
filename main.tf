@@ -80,6 +80,31 @@ resource "google_service_account" "org_terraform" {
 /***********************************************
   GCS Bucket - Terraform State
  ***********************************************/
+data "google_storage_project_service_account" "gcs_account" {
+  project = module.seed_project.project_id
+}
+
+module "kms" {
+  count   = var.encrypt_gcs_bucket_tfstate ? 1 : 0
+  source  = "terraform-google-modules/kms/google"
+  version = "~> 1.2"
+
+  project_id           = module.seed_project.project_id
+  location             = var.default_region
+  keyring              = "${var.project_prefix}-keyring"
+  keys                 = ["${var.project_prefix}-key"]
+  key_rotation_period  = var.key_rotation_period
+  key_protection_level = var.key_protection_level
+  set_decrypters_for   = ["${var.project_prefix}-key"]
+  set_encrypters_for   = ["${var.project_prefix}-key"]
+  decrypters = [
+    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
+  ]
+  encrypters = [
+    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
+  ]
+  prevent_destroy = var.kms_prevent_destroy
+}
 
 resource "google_storage_bucket" "org_terraform_state" {
   project                     = module.seed_project.project_id
@@ -90,6 +115,13 @@ resource "google_storage_bucket" "org_terraform_state" {
   uniform_bucket_level_access = true
   versioning {
     enabled = true
+  }
+
+  dynamic "encryption" {
+    for_each = var.encrypt_gcs_bucket_tfstate ? ["encryption"] : []
+    content {
+      default_kms_key_name = module.kms[0].keys["${var.project_prefix}-key"]
+    }
   }
 }
 

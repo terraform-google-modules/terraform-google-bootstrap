@@ -49,11 +49,15 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | activate\_apis | List of APIs to enable in the seed project. | `list(string)` | <pre>[<br>  "serviceusage.googleapis.com",<br>  "servicenetworking.googleapis.com",<br>  "compute.googleapis.com",<br>  "logging.googleapis.com",<br>  "bigquery.googleapis.com",<br>  "cloudresourcemanager.googleapis.com",<br>  "cloudbilling.googleapis.com",<br>  "iam.googleapis.com",<br>  "admin.googleapis.com",<br>  "appengine.googleapis.com",<br>  "storage-api.googleapis.com",<br>  "monitoring.googleapis.com"<br>]</pre> | no |
 | billing\_account | The ID of the billing account to associate projects with. | `string` | n/a | yes |
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
+| encrypt\_gcs\_bucket\_tfstate | Encrypt bucket used for storing terraform state files in seed project. | `bool` | `false` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
 | force\_destroy | If supplied, the state bucket will be deleted even while containing objects. | `bool` | `false` | no |
 | grant\_billing\_user | Grant roles/billing.user role to CFT service account | `bool` | `true` | no |
 | group\_billing\_admins | Google Group for GCP Billing Administrators | `string` | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
+| key\_protection\_level | The protection level to use when creating a version based on this template. Default value: "SOFTWARE" Possible values: ["SOFTWARE", "HSM"] | `string` | `"SOFTWARE"` | no |
+| key\_rotation\_period | n/a | `string` | `null` | no |
+| kms\_prevent\_destroy | Set the prevent\_destroy lifecycle attribute on keys. | `bool` | `true` | no |
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group\_org\_admins variable across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/resourcemanager.organizationAdmin"<br>]</pre> | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | `list(string)` | `[]` | no |

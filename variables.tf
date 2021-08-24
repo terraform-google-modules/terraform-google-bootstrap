@@ -176,3 +176,25 @@ variable "tf_service_account_name" {
   type        = string
   default     = "CFT Organization Terraform Account"
 }
+
+variable "encrypt_gcs_bucket_tfstate" {
+  description = "Encrypt bucket used for storing terraform state files in seed project."
+  type        = bool
+  default     = false
+}
+
+variable "key_protection_level" {
+  type        = string
+  description = "The protection level to use when creating a version based on this template. Default value: \"SOFTWARE\" Possible values: [\"SOFTWARE\", \"HSM\"]"
+  default     = "SOFTWARE"
+}
+
+variable "key_rotation_period" {
+  type    = string
+  default = null
+}
+
+variable "kms_prevent_destroy" {
+  description = "Set the prevent_destroy lifecycle attribute on keys."
+  default     = true
+}
