@@ -103,7 +103,7 @@ module "kms" {
   encrypters = [
     "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
   ]
-  prevent_destroy = var.prevent_destroy
+  prevent_destroy = var.kms_prevent_destroy
 }
 
 resource "google_storage_bucket" "org_terraform_state" {

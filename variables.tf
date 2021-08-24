@@ -88,8 +88,7 @@ variable "activate_apis" {
     "admin.googleapis.com",
     "appengine.googleapis.com",
     "storage-api.googleapis.com",
-    "monitoring.googleapis.com",
-    "cloudkms.googleapis.com",
+    "monitoring.googleapis.com"
   ]
 }
 
@@ -166,7 +165,6 @@ variable "random_suffix" {
   default     = true
 }
 
-<<<<<<< HEAD
 variable "tf_service_account_id" {
   description = "ID of service account for terraform in seed project"
   type        = string
@@ -177,7 +175,8 @@ variable "tf_service_account_name" {
   description = "Display name of service account for terraform in seed project"
   type        = string
   default     = "CFT Organization Terraform Account"
-=======
+}
+
 variable "encrypt_gcs_bucket_tfstate" {
   description = "Encrypt bucket used for storing terraform state files in seed project."
   type        = bool
@@ -193,10 +192,9 @@ variable "key_protection_level" {
 variable "key_rotation_period" {
   type    = string
   default = null
->>>>>>> bd7cc88 (added CMEK support for tfstate gcs bucket)
 }
 
-variable "prevent_destroy" {
+variable "kms_prevent_destroy" {
   description = "Set the prevent_destroy lifecycle attribute on keys."
   default     = true
 }
