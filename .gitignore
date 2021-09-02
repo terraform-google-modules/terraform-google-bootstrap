@@ -51,3 +51,6 @@ override.tf.json
 .idea/
 
 setup-tests.sh
+
+# tf lock file
+.terraform.lock.hcl
