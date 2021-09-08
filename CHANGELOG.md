@@ -7,6 +7,14 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v3.0.0...v3.1.0) (2021-09-02)
+
+
+### Features
+
+* Add KMS cmek support for state bucket ([#115](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/115)) ([2fea4be](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/2fea4be30af10b9f5880b0a29c02bf27ed00e6e3))
+* Add variables to allow customisation of terraform service account ([#116](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/116)) ([b7b0090](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/b7b0090d61ad578c395dc35c9b25967ab8b341f2))
+
 ## [3.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v2.3.1...v3.0.0) (2021-07-28)
 
 
