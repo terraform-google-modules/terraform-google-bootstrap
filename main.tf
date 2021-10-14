@@ -64,7 +64,7 @@ module "seed_project" {
   org_id                      = local.seed_org_depends_on
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
-  create_project_sa           = var.create_project_sa
+  create_project_sa           = false
   labels                      = var.project_labels
 }
 
