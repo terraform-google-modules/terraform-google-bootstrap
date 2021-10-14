@@ -198,3 +198,8 @@ variable "kms_prevent_destroy" {
   description = "Set the prevent_destroy lifecycle attribute on keys."
   default     = true
 }
+
+variable "create_project_sa" {
+  description = "Whether the default service account for the project shall be created"
+  default     = false
+}
