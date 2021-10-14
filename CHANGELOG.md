@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v3.1.0...v3.2.0) (2021-10-14)
+
+
+### Features
+
+* added capability to toggle creation of seed project service account ([#124](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/124)) ([0457e66](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/0457e668b7231690c748d91a0107233081da991c))
+
 ## [3.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v3.0.0...v3.1.0) (2021-09-02)
 
 
