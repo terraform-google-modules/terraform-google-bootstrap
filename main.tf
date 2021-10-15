@@ -83,6 +83,10 @@ resource "google_service_account" "org_terraform" {
  ***********************************************/
 data "google_storage_project_service_account" "gcs_account" {
   project = module.seed_project.project_id
+    
+  depends_on = [
+    module.seed_project.project_id
+  ]
 }
 
 module "kms" {
