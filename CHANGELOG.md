@@ -7,6 +7,23 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v3.1.0...v4.0.0) (2021-10-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* hardcode create_project_sa to false (#126)
+
+### Features
+
+* added capability to toggle creation of seed project service account ([#124](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/124)) ([0457e66](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/0457e668b7231690c748d91a0107233081da991c))
+* hardcode create_project_sa to false ([#126](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/126)) ([c1ee35e](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/c1ee35e0615d5da91ddc0fb10eba3235dd53eb46))
+
+
+### Bug Fixes
+
+* add explicit dependency for GCS service account ([#128](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/128)) ([62adacc](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/62adacc8ed8ad92e8ec3197ed05291fbaf8cbb07))
+
 ## [3.1.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v3.0.0...v3.1.0) (2021-09-02)
 
 
