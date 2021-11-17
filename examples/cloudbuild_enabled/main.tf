@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-
-provider "google" {
-  version = ">= 3.50"
-}
-
-provider "google-beta" {
-  version = ">= 3.50"
-}
-
-provider "null" {
-  version = "~> 2.1"
-}
-
-provider "random" {
-  version = "~> 2.2"
-}
-
 /*************************************************
   Bootstrap GCP Organization.
 *************************************************/
