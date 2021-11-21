@@ -38,7 +38,7 @@ submodules, and example modules are all functionally correct.
 ### Test Environment
 The easiest way to test the module is in an isolated test project. The setup for such a project is defined in [test/setup](./test/setup/) directory.
 
-To use this setup, you need a service account with Project Creator access on a folder. Export the Service Account credentials to your environment like so:
+To use this setup, you need a service account with Project Creator access on a folder and Billing Account User on the billing account. Export the Service Account credentials to your environment like so:
 
 ```
 export SERVICE_ACCOUNT_JSON=$(< credentials.json)
