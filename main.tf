@@ -66,6 +66,7 @@ module "seed_project" {
   activate_apis               = local.activate_apis
   create_project_sa           = false
   labels                      = var.project_labels
+  lien                        = true
 }
 
 /******************************************
