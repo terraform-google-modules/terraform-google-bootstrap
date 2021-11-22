@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [4.0.1](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v4.0.0...v4.0.1) (2021-11-22)
+
+
+### Bug Fixes
+
+* Remove incompatible escape characters with Windows systems (CMD and PowerShell) to make the command fits in one line ([#131](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/issues/131)) ([56dec3e](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/commit/56dec3e4e0496b01231e8e37c60e43b17dddaff0))
+
 ## [4.0.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v3.1.0...v4.0.0) (2021-10-15)
 
 
