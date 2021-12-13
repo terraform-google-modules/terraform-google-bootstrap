@@ -39,7 +39,7 @@ data "google_organization" "org" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 11.2"
+  version                     = "~> 11.3"
   name                        = local.cloudbuild_project_id
   random_project_id           = var.random_suffix
   disable_services_on_destroy = false
@@ -97,7 +97,7 @@ resource "google_kms_key_ring" "tf_keyring" {
 
 resource "google_kms_crypto_key" "tf_key" {
   name     = "tf-key"
-  key_ring = google_kms_key_ring.tf_keyring.self_link
+  key_ring = google_kms_key_ring.tf_keyring.id
 }
 
 /******************************************
@@ -105,7 +105,7 @@ resource "google_kms_crypto_key" "tf_key" {
  *****************************************/
 
 resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
-  crypto_key_id = google_kms_crypto_key.tf_key.self_link
+  crypto_key_id = google_kms_crypto_key.tf_key.id
   role          = "roles/cloudkms.cryptoKeyDecrypter"
 
   members = [
@@ -119,7 +119,7 @@ resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
  *****************************************/
 
 resource "google_kms_crypto_key_iam_binding" "cloud_build_crypto_key_encrypter" {
-  crypto_key_id = google_kms_crypto_key.tf_key.self_link
+  crypto_key_id = google_kms_crypto_key.tf_key.id
   role          = "roles/cloudkms.cryptoKeyEncrypter"
 
   members = [

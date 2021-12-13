@@ -56,7 +56,7 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 
 module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 11.2"
+  version                     = "~> 11.3"
   name                        = local.seed_project_id
   random_project_id           = var.random_suffix
   disable_services_on_destroy = false
@@ -93,7 +93,7 @@ data "google_storage_project_service_account" "gcs_account" {
 module "kms" {
   count   = var.encrypt_gcs_bucket_tfstate ? 1 : 0
   source  = "terraform-google-modules/kms/google"
-  version = "~> 1.2"
+  version = "~> 2.1"
 
   project_id           = module.seed_project.project_id
   location             = var.default_region
