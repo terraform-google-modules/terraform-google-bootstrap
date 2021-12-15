@@ -29,5 +29,5 @@ steps:
 substitutions:
   _TERRAFORM_VERSION: '1.0.2' # default value
   _TERRAFORM_VERSION_SHA256SUM: '7329f887cc5a5bda4bedaec59c439a4af7ea0465f83e3c1b0f4d04951e1181f4' # default value
-  _TERRAFORM_VALIDATOR_RELEASE: '0.4.0'
+  _TERRAFORM_VALIDATOR_RELEASE: 'v0.4.0'
 images: ['${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/terraform']

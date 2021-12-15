@@ -146,7 +146,7 @@ variable "terraform_version_sha256sum" {
 variable "terraform_validator_release" {
   description = "Default terraform-validator release."
   type        = string
-  default     = "0.4.0"
+  default     = "v0.4.0"
 }
 
 variable "cloudbuild_plan_filename" {
