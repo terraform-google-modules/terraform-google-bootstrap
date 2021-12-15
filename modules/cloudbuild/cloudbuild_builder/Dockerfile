@@ -17,11 +17,12 @@ FROM gcr.io/cloud-builders/gcloud-slim
 # Use ARG so that values can be overriden by user/cloudbuild
 ARG TERRAFORM_VERSION=0.13.6
 ARG TERRAFORM_VERSION_SHA256SUM=55f2db00b05675026be9c898bdd3e8230ff0c5c78dd12d743ca38032092abfc9
-ARG TERRAFORM_VALIDATOR_RELEASE=2021-03-22
+ARG TERRAFORM_VALIDATOR_RELEASE=0.6.0
 
 ENV ENV_TERRAFORM_VERSION=$TERRAFORM_VERSION
 ENV ENV_TERRAFORM_VERSION_SHA256SUM=$TERRAFORM_VERSION_SHA256SUM
 ENV ENV_TERRAFORM_VALIDATOR_RELEASE=$TERRAFORM_VALIDATOR_RELEASE
+ENV ENV_TERRAFORM_VALIDATOR_GCS_PATH=gs://terraform-validator/releases/v${ENV_TERRAFORM_VALIDATOR_RELEASE}/terraform-validator_linux_amd64-${ENV_TERRAFORM_VALIDATOR_RELEASE}.tar.gz
 
 RUN apt-get update && \
    /builder/google-cloud-sdk/bin/gcloud -q components install alpha beta && \
@@ -32,7 +33,7 @@ RUN apt-get update && \
     sha256sum -c terraform_SHA256SUMS --status && \
     unzip terraform_linux_amd64.zip -d /builder/terraform && \
     rm -f terraform_linux_amd64.zip && \
-    gsutil cp gs://terraform-validator/releases/${ENV_TERRAFORM_VALIDATOR_RELEASE}/terraform-validator-linux-amd64 /builder/terraform/terraform-validator && \
+    gsutil cat "${ENV_TERRAFORM_VALIDATOR_GCS_PATH}" | tar -zxv -C /builder/terraform && \
     chmod +x /builder/terraform/terraform-validator && \
     apt-get --purge -y autoremove && \
     apt-get clean && \
