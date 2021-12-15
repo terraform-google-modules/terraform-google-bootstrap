@@ -72,7 +72,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | terraform\_sa\_email | Email for terraform service account. | `string` | n/a | yes |
 | terraform\_sa\_name | Fully-qualified name of the terraform service account. | `string` | n/a | yes |
 | terraform\_state\_bucket | Default state bucket, used in Cloud Build substitutions. | `string` | n/a | yes |
-| terraform\_validator\_release | Default terraform-validator release. | `string` | `"v0.4.0"` | no |
+| terraform\_validator\_release | Default terraform-validator release. | `string` | `"0.4.0"` | no |
 | terraform\_version | Default terraform version. | `string` | `"1.0.2"` | no |
 | terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"7329f887cc5a5bda4bedaec59c439a4af7ea0465f83e3c1b0f4d04951e1181f4"` | no |
 
