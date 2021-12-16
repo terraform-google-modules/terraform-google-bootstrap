@@ -15,8 +15,8 @@
 FROM gcr.io/cloud-builders/gcloud-slim
 
 # Use ARG so that values can be overriden by user/cloudbuild
-ARG TERRAFORM_VERSION=0.13.6
-ARG TERRAFORM_VERSION_SHA256SUM=55f2db00b05675026be9c898bdd3e8230ff0c5c78dd12d743ca38032092abfc9
+ARG TERRAFORM_VERSION=0.13.7
+ARG TERRAFORM_VERSION_SHA256SUM=4a52886e019b4fdad2439da5ff43388bbcc6cce9784fde32c53dcd0e28ca9957
 ARG TERRAFORM_VALIDATOR_RELEASE=v0.6.0
 
 ENV ENV_TERRAFORM_VERSION=$TERRAFORM_VERSION
@@ -31,11 +31,14 @@ RUN apt-get update && \
     echo "${ENV_TERRAFORM_VERSION_SHA256SUM} terraform_linux_amd64.zip" > terraform_SHA256SUMS && \
     sha256sum -c terraform_SHA256SUMS --status && \
     unzip terraform_linux_amd64.zip -d /builder/terraform && \
-    rm -f terraform_linux_amd64.zip && \
-    TERRAFORM_VALIDATOR_VERSION=$(echo $ENV_TERRAFORM_VALIDATOR_RELEASE | sed -e 's/^v//') && \
-    TERRAFORM_VALIDATOR_GCS_PATH=gs://terraform-validator/releases/${ENV_TERRAFORM_VALIDATOR_RELEASE}/terraform-validator_linux_amd64-${TERRAFORM_VALIDATOR_VERSION}.tar.gz && \
-    gsutil cat "${TERRAFORM_VALIDATOR_GCS_PATH}" | tar -zxv -C /builder/terraform terraform-validator && \
-    chmod +x /builder/terraform/terraform-validator && \
+    rm -f terraform_linux_amd64.zip terraform_SHA256SUMS && \
+    TERRAFORM_VALIDATOR_VERSION="$(echo $ENV_TERRAFORM_VALIDATOR_RELEASE | sed -e 's/^v//')" && \
+    TERRAFORM_VALIDATOR_ARCHIVE="terraform-validator_linux_amd64-${TERRAFORM_VALIDATOR_VERSION}.tar.gz" && \
+    TERRAFORM_VALIDATOR_GCS_PATH="gs://terraform-validator/releases/${ENV_TERRAFORM_VALIDATOR_RELEASE}/${TERRAFORM_VALIDATOR_ARCHIVE}" && \
+    gsutil cp "${TERRAFORM_VALIDATOR_GCS_PATH}" . && \
+    tar -zxvf "${TERRAFORM_VALIDATOR_ARCHIVE}" --no-same-owner -C /builder/terraform terraform-validator && \
+    chmod 0755 /builder/terraform/terraform-validator && \
+    rm -f "${TERRAFORM_VALIDATOR_ARCHIVE}" && \
     apt-get --purge -y autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
