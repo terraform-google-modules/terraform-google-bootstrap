@@ -146,7 +146,12 @@ variable "terraform_version_sha256sum" {
 variable "terraform_validator_release" {
   description = "Default terraform-validator release."
   type        = string
-  default     = "v0.4.0"
+  default     = "v0.6.0"
+
+  validation {
+    condition     = try(tonumber(trimprefix(replace(var.terraform_validator_release, ".", ""), "v")), 0) >= 60
+    error_message = "Terraform-validator release must be >= v0.6.0."
+  }
 }
 
 variable "cloudbuild_plan_filename" {
