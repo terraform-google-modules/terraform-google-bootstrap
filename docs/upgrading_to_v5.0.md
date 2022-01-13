@@ -45,4 +45,4 @@ Now you can migrate this resource from the module to the newly added `google_kms
 tf state mv module.cloudbuild_bootstrap.google_kms_key_ring.tf_keyring google_kms_key_ring.tf_keyring
 ```
 
-This will need to be repeated for each resource like `google_kms_crypto_key`, `google_kms_crypto_key_iam_binding` and `google_kms_crypto_key_iam_binding`.
+This will need to be repeated for each resource like `google_kms_crypto_key` and `google_kms_crypto_key_iam_binding`.
