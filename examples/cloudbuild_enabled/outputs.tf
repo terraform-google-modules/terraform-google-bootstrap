@@ -49,16 +49,6 @@ output "csr_repos" {
   value       = module.cloudbuild_bootstrap.csr_repos
 }
 
-output "kms_keyring" {
-  description = "KMS Keyring created by the module."
-  value       = module.cloudbuild_bootstrap.kms_keyring
-}
-
-output "kms_crypto_key" {
-  description = "KMS key created by the module."
-  value       = module.cloudbuild_bootstrap.kms_crypto_key
-}
-
 output "tf_runner_artifact_repo" {
   description = "GAR Repo created to store runner images"
   value       = module.cloudbuild_bootstrap.tf_runner_artifact_repo

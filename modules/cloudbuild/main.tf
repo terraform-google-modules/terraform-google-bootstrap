@@ -82,52 +82,6 @@ resource "google_storage_bucket" "cloudbuild_artifacts" {
 }
 
 /******************************************
-  KMS Keyring
- *****************************************/
-
-resource "google_kms_key_ring" "tf_keyring" {
-  project  = module.cloudbuild_project.project_id
-  name     = "tf-keyring"
-  location = var.default_region
-}
-
-/******************************************
-  KMS Key
- *****************************************/
-
-resource "google_kms_crypto_key" "tf_key" {
-  name     = "tf-key"
-  key_ring = google_kms_key_ring.tf_keyring.id
-}
-
-/******************************************
-  Permissions to decrypt.
- *****************************************/
-
-resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
-  crypto_key_id = google_kms_crypto_key.tf_key.id
-  role          = "roles/cloudkms.cryptoKeyDecrypter"
-
-  members = [
-    "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com",
-    "serviceAccount:${var.terraform_sa_email}"
-  ]
-}
-
-/******************************************
-  Permissions for org admins to encrypt.
- *****************************************/
-
-resource "google_kms_crypto_key_iam_binding" "cloud_build_crypto_key_encrypter" {
-  crypto_key_id = google_kms_crypto_key.tf_key.id
-  role          = "roles/cloudkms.cryptoKeyEncrypter"
-
-  members = [
-    "group:${var.group_org_admins}",
-  ]
-}
-
-/******************************************
   Create Cloud Source Repos
 *******************************************/
 
