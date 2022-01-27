@@ -7,6 +7,19 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v4.2.0...v5.0.0) (2022-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove KMS resources in cloudbuild submodule (#143)
+* Drop old TFV version (< `v0.6.0`)  support (#141)
+
+### Features
+
+* Drop old TFV version (< `v0.6.0`)  support ([#141](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/141)) ([2b9bf2c](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/2b9bf2cdfa99ef098b4816a941733d34b023e45b))
+* remove KMS resources in cloudbuild submodule ([#143](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/143)) ([c1a52c7](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/c1a52c798d8d307681c02a3ac96222ee761ff735))
+
 ## [4.2.0](https://www.github.com/terraform-google-modules/terraform-google-bootstrap/compare/v4.1.0...v4.2.0) (2021-12-13)
 
 
