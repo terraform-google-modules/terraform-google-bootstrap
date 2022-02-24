@@ -167,9 +167,10 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "master_trigger" {
-  for_each    = toset(var.cloud_source_repos)
-  project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform apply."
+  for_each        = toset(var.cloud_source_repos)
+  project         = module.cloudbuild_project.project_id
+  description     = "${each.value} - terraform apply."
+  service_account = var.terraform_sa_email
 
   trigger_template {
     branch_name = local.apply_branches_regex
@@ -198,9 +199,10 @@ resource "google_cloudbuild_trigger" "master_trigger" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "non_master_trigger" {
-  for_each    = toset(var.cloud_source_repos)
-  project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform plan."
+  for_each        = toset(var.cloud_source_repos)
+  project         = module.cloudbuild_project.project_id
+  description     = "${each.value} - terraform plan."
+  service_account = var.terraform_sa_email
 
   trigger_template {
     invert_regex = true
