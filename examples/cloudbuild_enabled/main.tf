@@ -16,11 +16,11 @@
 
 
 provider "google" {
-  version = "~> 3.31.0"
+  version = "~> 4.11.0"
 }
 
 provider "google-beta" {
-  version = "~> 3.31.0"
+  version = "~> 4.11.0"
 }
 
 provider "null" {
