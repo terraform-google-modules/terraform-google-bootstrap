@@ -62,7 +62,6 @@ module "seed_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
-  skip_gcloud_download        = var.skip_gcloud_download
 }
 
 /******************************************
@@ -80,11 +79,11 @@ resource "google_service_account" "org_terraform" {
  ***********************************************/
 
 resource "google_storage_bucket" "org_terraform_state" {
-  project            = module.seed_project.project_id
-  name               = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
-  location           = var.default_region
-  labels             = var.storage_bucket_labels
-  bucket_policy_only = true
+  project                     = module.seed_project.project_id
+  name                        = format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex)
+  location                    = var.default_region
+  labels                      = var.storage_bucket_labels
+  uniform_bucket_level_access = true
   versioning {
     enabled = true
   }

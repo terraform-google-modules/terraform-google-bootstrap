@@ -46,7 +46,6 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
-  skip_gcloud_download        = var.skip_gcloud_download
 }
 
 resource "google_project_service" "cloudbuild_apis" {
@@ -77,11 +76,11 @@ resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
 *******************************************/
 
 resource "google_storage_bucket" "cloudbuild_artifacts" {
-  project            = module.cloudbuild_project.project_id
-  name               = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
-  location           = var.default_region
-  labels             = var.storage_bucket_labels
-  bucket_policy_only = true
+  project                     = module.cloudbuild_project.project_id
+  name                        = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
+  location                    = var.default_region
+  labels                      = var.storage_bucket_labels
+  uniform_bucket_level_access = true
   versioning {
     enabled = true
   }
@@ -106,7 +105,7 @@ resource "google_kms_key_ring" "tf_keyring" {
 
 resource "google_kms_crypto_key" "tf_key" {
   name     = "tf-key"
-  key_ring = google_kms_key_ring.tf_keyring.self_link
+  key_ring = google_kms_key_ring.tf_keyring.id
 }
 
 /******************************************
@@ -114,7 +113,7 @@ resource "google_kms_crypto_key" "tf_key" {
  *****************************************/
 
 resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
-  crypto_key_id = google_kms_crypto_key.tf_key.self_link
+  crypto_key_id = google_kms_crypto_key.tf_key.id
   role          = "roles/cloudkms.cryptoKeyDecrypter"
 
   members = [
@@ -131,7 +130,7 @@ resource "google_kms_crypto_key_iam_binding" "cloudbuild_crypto_key_decrypter" {
  *****************************************/
 
 resource "google_kms_crypto_key_iam_binding" "cloud_build_crypto_key_encrypter" {
-  crypto_key_id = google_kms_crypto_key.tf_key.self_link
+  crypto_key_id = google_kms_crypto_key.tf_key.id
   role          = "roles/cloudkms.cryptoKeyEncrypter"
 
   members = [
