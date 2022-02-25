@@ -53,7 +53,7 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 
 module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 8.0"
+  version                     = "~> 11.3.1"
   name                        = local.seed_project_id
   random_project_id           = true
   disable_services_on_destroy = false
@@ -186,7 +186,7 @@ resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
 }
 
 resource "google_folder_iam_member" "org_admin_serviceusage_consumer" {
-  count = var.sa_enable_impersonation && ! local.is_organization ? 1 : 0
+  count = var.sa_enable_impersonation && !local.is_organization ? 1 : 0
 
   folder = local.parent_id
   role   = "roles/serviceusage.serviceUsageConsumer"
