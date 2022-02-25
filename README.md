@@ -45,24 +45,24 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| activate\_apis | List of APIs to enable in the seed project. | list(string) | `<list>` | no |
-| billing\_account | The ID of the billing account to associate projects with. | string | n/a | yes |
-| default\_region | Default region to create resources where applicable. | string | `"us-central1"` | no |
-| folder\_id | The ID of a folder to host this project | string | `""` | no |
-| grant\_billing\_user | Grant roles/billing.user role to CFT service account | bool | `"true"` | no |
-| group\_billing\_admins | Google Group for GCP Billing Administrators | string | n/a | yes |
-| group\_org\_admins | Google Group for GCP Organization Administrators | string | n/a | yes |
-| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group_org_admins variable across the GCP organization. | list(string) | `<list>` | no |
-| org\_id | GCP Organization ID | string | n/a | yes |
-| org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | list(string) | `<list>` | no |
-| parent\_folder | GCP parent folder ID in the form folders/{id} | string | `""` | no |
-| project\_labels | Labels to apply to the project. | map(string) | `<map>` | no |
-| project\_prefix | Name prefix to use for projects created. | string | `"cft"` | no |
-| sa\_enable\_impersonation | Allow org_admins group to impersonate service account & enable APIs required. | bool | `"false"` | no |
-| sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | list(string) | `<list>` | no |
-| skip\_gcloud\_download | Whether to skip downloading gcloud (assumes gcloud is already available outside the module) | bool | `"true"` | no |
-| storage\_bucket\_labels | Labels to apply to the storage bucket. | map(string) | `<map>` | no |
+|------|-------------|------|---------|:--------:|
+| activate\_apis | List of APIs to enable in the seed project. | `list(string)` | <pre>[<br>  "serviceusage.googleapis.com",<br>  "servicenetworking.googleapis.com",<br>  "compute.googleapis.com",<br>  "logging.googleapis.com",<br>  "bigquery.googleapis.com",<br>  "cloudresourcemanager.googleapis.com",<br>  "cloudbilling.googleapis.com",<br>  "iam.googleapis.com",<br>  "admin.googleapis.com",<br>  "appengine.googleapis.com",<br>  "storage-api.googleapis.com",<br>  "monitoring.googleapis.com"<br>]</pre> | no |
+| billing\_account | The ID of the billing account to associate projects with. | `string` | n/a | yes |
+| default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
+| folder\_id | The ID of a folder to host this project | `string` | `""` | no |
+| grant\_billing\_user | Grant roles/billing.user role to CFT service account | `bool` | `true` | no |
+| group\_billing\_admins | Google Group for GCP Billing Administrators | `string` | n/a | yes |
+| group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
+| org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group\_org\_admins variable across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/resourcemanager.organizationAdmin"<br>]</pre> | no |
+| org\_id | GCP Organization ID | `string` | n/a | yes |
+| org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | `list(string)` | `[]` | no |
+| parent\_folder | GCP parent folder ID in the form folders/{id} | `string` | `""` | no |
+| project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
+| project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
+| sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
+| sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/compute.networkAdmin",<br>  "roles/compute.xpnAdmin",<br>  "roles/iam.securityAdmin",<br>  "roles/iam.serviceAccountAdmin",<br>  "roles/logging.configWriter",<br>  "roles/orgpolicy.policyAdmin",<br>  "roles/resourcemanager.folderAdmin",<br>  "roles/resourcemanager.organizationViewer"<br>]</pre> | no |
+| skip\_gcloud\_download | Whether to skip downloading gcloud (assumes gcloud is already available outside the module) | `bool` | `true` | no |
+| storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 
 ## Outputs
 
