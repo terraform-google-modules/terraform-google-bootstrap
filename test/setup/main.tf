@@ -16,7 +16,7 @@
 
 module "project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 8.0"
+  version = "~> 11.3.1"
 
   name              = "ci-bootstrap"
   random_project_id = true
