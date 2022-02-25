@@ -16,7 +16,7 @@ name: bootstrap-folder
 depends:
   - name: inspec-gcp
     git: https://github.com/inspec/inspec-gcp.git
-    tag: v1.10.19
+    tag: v1.7.0
 attributes:
   - name: group_org_admins
     required: true
