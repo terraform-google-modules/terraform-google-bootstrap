@@ -29,21 +29,24 @@ default_apis = [
 control "bootstrap" do
   title "Bootstrap module GCP resources"
 
-  describe google_project(project_id: attribute("seed_project_id")) do
+  describe google_project(project: attribute("seed_project_id")) do
     it { should exist }
   end
 
-  describe google_storage_bucket(name: attribute("gcs_bucket_tfstate")) do
+  describe google_storage_bucket(name: attribute("gcs_bucket_tfstate"), project: attribute("seed_project_id")) do
     it { should exist }
   end
 
-  describe google_storage_bucket_iam_binding(bucket: attribute("gcs_bucket_tfstate"),  role: 'roles/storage.admin') do
+  describe google_storage_bucket_iam_binding(bucket: attribute("gcs_bucket_tfstate"),  role: 'roles/storage.admin', project: attribute("seed_project_id")) do
     its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
   end
 
-  describe google_service_account(name: attribute("terraform_sa_name")) do
+  describe google_service_account(name: attribute("terraform_sa_email"), project: attribute("seed_project_id")) do
     it { should exist }
-    its('has_user_managed_keys?') {should cmp false }
+  end
+
+  describe google_service_account_keys(project: attribute("seed_project_id"), service_account: attribute("terraform_sa_email")) do
+	  its('key_types') { should_not include 'USER_MANAGED' }
   end
 
   default_apis.each do |api|

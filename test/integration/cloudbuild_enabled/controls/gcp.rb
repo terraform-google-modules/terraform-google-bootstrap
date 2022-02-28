@@ -41,9 +41,12 @@ control "bootstrap" do
     it { should exist }
   end
 
-  describe google_service_account(name: attribute("terraform_sa_name")) do
+   describe google_service_account(name: attribute("terraform_sa_email"), project: attribute("seed_project_id")) do
     it { should exist }
-    its('has_user_managed_keys?') {should cmp false }
+  end
+
+  describe google_service_account_keys(project: attribute("seed_project_id"), service_account: attribute("terraform_sa_email")) do
+	  its('key_types') { should_not include 'USER_MANAGED' }
   end
 
   default_apis.each do |api|
