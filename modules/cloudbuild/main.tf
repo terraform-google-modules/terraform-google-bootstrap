@@ -110,7 +110,7 @@ resource "google_cloudbuild_trigger" "main_trigger" {
   for_each        = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project         = module.cloudbuild_project.project_id
   description     = "${each.value} - terraform apply."
-  service_account = var.terraform_sa_email
+  service_account = var.terraform_sa_name
 
   trigger_template {
     branch_name = local.apply_branches_regex
@@ -142,7 +142,7 @@ resource "google_cloudbuild_trigger" "non_main_trigger" {
   for_each        = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
   project         = module.cloudbuild_project.project_id
   description     = "${each.value} - terraform plan."
-  service_account = var.terraform_sa_email
+  service_account = var.terraform_sa_name
 
   trigger_template {
     invert_regex = true
