@@ -131,6 +131,8 @@ resource "google_cloudbuild_trigger" "main_trigger" {
   filename = var.cloudbuild_apply_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
+    google_service_account_iam_member.org_admin_terraform_sa_impersonate,
+    google_service_account_iam_member.cloudbuild_terraform_sa_impersonate
   ]
 }
 
@@ -164,6 +166,8 @@ resource "google_cloudbuild_trigger" "non_main_trigger" {
   filename = var.cloudbuild_plan_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
+    google_service_account_iam_member.org_admin_terraform_sa_impersonate,
+    google_service_account_iam_member.cloudbuild_terraform_sa_impersonate
   ]
 }
 
@@ -223,12 +227,18 @@ resource "google_artifact_registry_repository_iam_member" "terraform-image-iam" 
   member     = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
 }
 
-resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonate_permissions" {
+resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonate" {
+  service_account_id = var.terraform_sa_name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_service_account_iam_member" "org_admin_terraform_sa_impersonate" {
   count = local.impersonation_enabled_count
 
   service_account_id = var.terraform_sa_name
-  role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "group:${var.group_org_admins}"
 }
 
 resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
