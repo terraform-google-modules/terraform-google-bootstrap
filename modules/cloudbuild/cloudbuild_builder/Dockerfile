@@ -43,8 +43,9 @@ RUN apt-get update && \
     rm -f "${TERRAFORM_VALIDATOR_ARCHIVE}" && \
     apt-get --purge -y autoremove && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    chmod +x /builder/entrypoint.bash
+    rm -rf /var/lib/apt/lists/*
 
 ENV PATH=/builder/terraform/:$PATH
+COPY entrypoint.bash /builder/entrypoint.bash
+RUN chmod +x /builder/entrypoint.bash
 ENTRYPOINT ["/builder/entrypoint.bash"]
