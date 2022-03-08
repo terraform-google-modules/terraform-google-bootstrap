@@ -23,6 +23,8 @@ ENV ENV_TERRAFORM_VERSION=$TERRAFORM_VERSION
 ENV ENV_TERRAFORM_VERSION_SHA256SUM=$TERRAFORM_VERSION_SHA256SUM
 ENV ENV_TERRAFORM_VALIDATOR_RELEASE=$TERRAFORM_VALIDATOR_RELEASE
 
+COPY entrypoint.bash /builder/entrypoint.bash
+
 RUN apt-get update && \
    /builder/google-cloud-sdk/bin/gcloud -q components install alpha beta && \
     apt-get -y install curl jq unzip git ca-certificates && \
@@ -41,8 +43,8 @@ RUN apt-get update && \
     rm -f "${TERRAFORM_VALIDATOR_ARCHIVE}" && \
     apt-get --purge -y autoremove && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    chmod +x /builder/entrypoint.bash
 
 ENV PATH=/builder/terraform/:$PATH
-COPY entrypoint.bash /builder/entrypoint.bash
 ENTRYPOINT ["/builder/entrypoint.bash"]
