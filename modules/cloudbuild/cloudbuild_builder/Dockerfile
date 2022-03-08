@@ -23,8 +23,6 @@ ENV ENV_TERRAFORM_VERSION=$TERRAFORM_VERSION
 ENV ENV_TERRAFORM_VERSION_SHA256SUM=$TERRAFORM_VERSION_SHA256SUM
 ENV ENV_TERRAFORM_VALIDATOR_RELEASE=$TERRAFORM_VALIDATOR_RELEASE
 
-COPY entrypoint.bash /builder/entrypoint.bash
-
 RUN apt-get update && \
    /builder/google-cloud-sdk/bin/gcloud -q components install alpha beta && \
     apt-get -y install curl jq unzip git ca-certificates && \
