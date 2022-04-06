@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [5.0.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v5.0.0...v5.0.1) (2022-03-09)
+
+
+### Bug Fixes
+
+* Guarantee the execution permission in the entrypoint.bash file ([#149](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/149)) ([f113076](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f113076264b71e0423c2bcd642eb63851311e604))
+
 ## [5.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v4.2.0...v5.0.0) (2022-01-13)
 
 
