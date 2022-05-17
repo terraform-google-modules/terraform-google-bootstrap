@@ -26,7 +26,7 @@ This module creates:
 - Artifact Registry Repository for storing TF Builder images
 - Cloud Scheduler job for periodically triggering the Workflow
 
-![](/assets/arch.png)
+![](./assets/arch.png)
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
