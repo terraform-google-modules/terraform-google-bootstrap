@@ -112,4 +112,3 @@ resource "google_sourcerepo_repository_iam_member" "member" {
   role       = "roles/viewer"
   member     = "serviceAccount:${local.cloudbuild_sa_email}"
 }
-

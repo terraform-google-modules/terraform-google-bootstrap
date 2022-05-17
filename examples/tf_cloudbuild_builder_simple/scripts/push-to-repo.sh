@@ -40,4 +40,3 @@ git checkout main || git checkout -b main
 git add Dockerfile
 git commit -m "init tf dockerfile"
 git push origin main -f
-
