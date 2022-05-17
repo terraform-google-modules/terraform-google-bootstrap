@@ -18,7 +18,7 @@ locals {
   gar_uri             = "${var.gar_repo_location}-docker.pkg.dev/${var.project_id}/${local.gar_name}/${var.image_name}"
   cloudbuild_sa       = coalesce(var.cloudbuild_sa, google_service_account.cb_sa[0].id)
   cloudbuild_sa_email = element(split("/", local.cloudbuild_sa), length(split("/", local.cloudbuild_sa)) - 1)
-  # substitutions available in the CB trigger 
+  # substitutions available in the CB trigger
   tags_subst = {
     "_TERRAFORM_FULL_VERSION"  = "1.1.0",
     "_TERRAFORM_MINOR_VERSION" = "1.1",

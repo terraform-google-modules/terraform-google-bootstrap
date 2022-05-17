@@ -29,9 +29,9 @@ DOCKERFILE_PATH=$3
 tmp_dir=$(mktemp -d)
 # # shellcheck disable=SC2064
 # trap "rm -rf $tmp_dir" EXIT
-gcloud source repos clone ${CSR_NAME} ${tmp_dir} --project ${CSR_PROJECT_ID}
-cp ${DOCKERFILE_PATH} ${tmp_dir}
-pushd ${tmp_dir}
+gcloud source repos clone "${CSR_NAME}" "${tmp_dir}" --project "${CSR_PROJECT_ID}"
+cp "${DOCKERFILE_PATH}" "${tmp_dir}"
+pushd "${tmp_dir}"
 git config credential.helper gcloud.sh
 git config init.defaultBranch main
 git config user.email "terraform-robot@example.com"

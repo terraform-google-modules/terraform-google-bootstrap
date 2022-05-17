@@ -28,7 +28,7 @@ main:
                         - condition: $${e.code == 404}
                           next: triggerRunnerBuild
                 - unhandled_exception:
-                    raise: $${e}                    
+                    raise: $${e}
     - logAndExit:
         return: $${"Found latest runner for "+latestTFReleaseVersion+" as "+currentRunner.body.version+", skipping build."}
     - triggerRunnerBuild:

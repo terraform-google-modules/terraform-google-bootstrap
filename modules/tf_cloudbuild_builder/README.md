@@ -21,7 +21,7 @@ Sample Dockerfile and functional examples are included in the [examples](../../e
 ## Resources created
 
 This module creates:
-- Cloud Workflow for querying upstream Terraform releases, existing TF Builder images and triggering a Cloud Build build if an image does not exist for the latest Terraform release 
+- Cloud Workflow for querying upstream Terraform releases, existing TF Builder images and triggering a Cloud Build build if an image does not exist for the latest Terraform release
 - Cloud Build trigger with an inline build configuration for building and pushing a Dockerfile to an Artifact repository
 - Artifact Registry Repository for storing TF Builder images
 - Cloud Scheduler job for periodically triggering the Workflow
