@@ -91,9 +91,13 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 			if latestWorkflowRunStatus == "SUCCEEDED" {
 				return false, nil
 			}
+			// if failed it maybe due to eventually consistent IAM, retry trigger
+			if latestWorkflowRunStatus == "FAILED" {
+				triggerWorkflowFn()
+			}
 			return true, nil
 		}
-		utils.Poll(t, pollWorkflowFn, 100, 10*time.Second)
+		utils.Poll(t, pollWorkflowFn, 100, 20*time.Second)
 
 		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags", artifactRepoDockerRegistry).Array()
 		assert.Equal(1, len(images), "only one image is in registry")
