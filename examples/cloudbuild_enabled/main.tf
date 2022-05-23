@@ -37,6 +37,7 @@ module "cloudbuild_bootstrap" {
   group_org_admins        = var.group_org_admins
   default_region          = var.default_region
   sa_enable_impersonation = true
+  seed_project_id         = module.seed_bootstrap.seed_project_id
   terraform_sa_email      = module.seed_bootstrap.terraform_sa_email
   terraform_sa_name       = module.seed_bootstrap.terraform_sa_name
   terraform_state_bucket  = module.seed_bootstrap.gcs_bucket_tfstate

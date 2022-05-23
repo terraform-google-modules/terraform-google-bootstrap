@@ -55,6 +55,11 @@ variable "terraform_state_bucket" {
   type        = string
 }
 
+variable "seed_project_id" {
+  description = "Seed project created by the main module."
+  type        = string
+}
+
 /******************************************
   Optional variables
 *******************************************/

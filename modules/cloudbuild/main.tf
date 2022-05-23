@@ -32,6 +32,17 @@ data "google_organization" "org" {
   organization = var.org_id
 }
 
+module "enable_cross_project_service_account_usage" {
+  source  = "terraform-google-modules/org-policy/google"
+  version = "~> 5.1"
+
+  project_id  = var.seed_project_id
+  policy_for  = "project"
+  policy_type = "boolean"
+  enforce     = "false"
+  constraint  = "constraints/iam.disableCrossProjectServiceAccountUsage"
+}
+
 
 /******************************************
   Cloudbuild project
@@ -48,6 +59,10 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
+
+  depends_on = [
+    module.enable_cross_project_service_account_usage
+  ]
 }
 
 /******************************************
@@ -132,7 +147,8 @@ resource "google_cloudbuild_trigger" "main_trigger" {
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
     google_service_account_iam_member.org_admin_terraform_sa_impersonate,
-    google_service_account_iam_member.cloudbuild_terraform_sa_impersonate
+    google_service_account_iam_member.cloudbuild_terraform_sa_impersonate,
+    google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
   ]
 }
 
@@ -167,7 +183,8 @@ resource "google_cloudbuild_trigger" "non_main_trigger" {
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
     google_service_account_iam_member.org_admin_terraform_sa_impersonate,
-    google_service_account_iam_member.cloudbuild_terraform_sa_impersonate
+    google_service_account_iam_member.cloudbuild_terraform_sa_impersonate,
+    google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
   ]
 }
 
@@ -210,6 +227,12 @@ resource "null_resource" "cloudbuild_terraform_builder" {
 /***********************************************
   Cloud Build - IAM
  ***********************************************/
+
+resource "google_service_account_iam_member" "cloud_build_service_agent_sa_impersonate" {
+  service_account_id = var.terraform_sa_name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:service-${module.cloudbuild_project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
 
 resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   bucket = google_storage_bucket.cloudbuild_artifacts.name

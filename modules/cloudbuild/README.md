@@ -15,6 +15,7 @@ module "bootstrap" {
   group_org_admins        = "gcp-organization-admins@example.com"
   default_region          = "australia-southeast1"
   sa_enable_impersonation = true
+  seed_project_id         = "<SEED_PROJECT_ID>"
   terraform_sa_email      = "<SERVICE_ACCOUNT_EMAIL>"
   terraform_sa_name       = "<SERVICE_ACCOUNT_NAME>"
   terraform_state_bucket  = "<GCS_STATE_BUCKET_NAME>"
@@ -67,6 +68,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
 | random\_suffix | Appends a 4 character random suffix to project ID and GCS bucket name. | `bool` | `true` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
+| seed\_project\_id | Seed project created by the main module. | `string` | n/a | yes |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 | terraform\_apply\_branches | List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default. | `list(string)` | <pre>[<br>  "main"<br>]</pre> | no |
 | terraform\_sa\_email | Email for terraform service account. | `string` | n/a | yes |
