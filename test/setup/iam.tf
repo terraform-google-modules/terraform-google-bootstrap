@@ -21,6 +21,7 @@ locals {
   int_org_required_roles = [
     "roles/billing.user",
     "roles/resourcemanager.organizationAdmin",
+    "roles/orgpolicy.policyAdmin",
     "roles/resourcemanager.projectCreator"
   ]
 }

@@ -101,6 +101,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 
 - `roles/billing.user` on supplied billing account
 - `roles/resourcemanager.organizationAdmin` on GCP Organization
+- `roles/orgpolicy.policyAdmin` on GCP Organization
 - `roles/resourcemanager.projectCreator` on GCP Organization or folder
 
 ### APIs
