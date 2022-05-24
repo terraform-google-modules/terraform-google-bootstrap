@@ -22,6 +22,7 @@ locals {
   activate_apis               = distinct(concat(var.activate_apis, local.cloudbuild_apis))
   apply_branches_regex        = "^(${join("|", var.terraform_apply_branches)})$"
   gar_name                    = split("/", google_artifact_registry_repository.tf-image-repo.name)[length(split("/", google_artifact_registry_repository.tf-image-repo.name)) - 1]
+  impersonate_service_account = var.impersonate_service_account != "" ? "--impersonate-service-account=${var.impersonate_service_account}" : ""
 }
 
 resource "random_id" "suffix" {
@@ -193,7 +194,7 @@ resource "null_resource" "cloudbuild_terraform_builder" {
 
   provisioner "local-exec" {
     command = <<EOT
-      gcloud builds submit ${path.module}/cloudbuild_builder/ --project ${module.cloudbuild_project.project_id} --config=${path.module}/cloudbuild_builder/cloudbuild.yaml --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_TERRAFORM_VALIDATOR_RELEASE=${var.terraform_validator_release},_REGION=${google_artifact_registry_repository.tf-image-repo.location},_REPOSITORY=${local.gar_name}
+    gcloud ${local.impersonate_service_account} builds submit ${path.module}/cloudbuild_builder/ --project ${module.cloudbuild_project.project_id} --config=${path.module}/cloudbuild_builder/cloudbuild.yaml --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_TERRAFORM_VALIDATOR_RELEASE=${var.terraform_validator_release},_REGION=${google_artifact_registry_repository.tf-image-repo.location},_REPOSITORY=${local.gar_name}
   EOT
   }
   depends_on = [
