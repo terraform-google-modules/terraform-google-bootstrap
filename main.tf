@@ -69,6 +69,18 @@ module "seed_project" {
   lien                        = true
 }
 
+module "enable_cross_project_service_account_usage" {
+  source  = "terraform-google-modules/org-policy/google"
+  version = "~> 5.1"
+
+  project_id  = module.seed_project.project_id
+  policy_for  = "project"
+  policy_type = "boolean"
+  enforce     = "false"
+  constraint  = "constraints/iam.disableCrossProjectServiceAccountUsage"
+}
+
+
 /******************************************
   Service Account - Terraform for Org
 *******************************************/
