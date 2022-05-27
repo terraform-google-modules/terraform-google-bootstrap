@@ -7,6 +7,14 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v5.0.1...v5.1.0) (2022-05-27)
+
+
+### Features
+
+* add TF cloudbuilder blueprint ([#154](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/154)) ([34120e5](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/34120e579528dfb72dddace0485d38efaf9202bd))
+* Allow service account impersonation in the local-exec gcloud runs. ([#151](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/151)) ([6a7463b](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/6a7463b12cd140905fd5a60fc0d030359b94607a))
+
 ### [5.0.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v5.0.0...v5.0.1) (2022-03-09)
 
 
