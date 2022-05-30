@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">=0.13.0"
-
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 3.50, < 5.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 3.50, < 5.0"
-    }
-  }
-
-  provider_meta "google" {
-    module_name = "blueprints/terraform/terraform-google-bootstrap:cloudbuild/v5.0.1"
-  }
+variable "project_id" {
+  default = "test-builder-workflow-4"
 }

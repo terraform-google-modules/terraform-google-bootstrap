@@ -61,6 +61,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
 | gar\_repo\_name | Custom name to use for GAR repo. | `string` | `""` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
+| impersonate\_service\_account | The service account to impersonate while running the gcloud builds submit command. | `string` | `""` | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |

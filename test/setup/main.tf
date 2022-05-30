@@ -33,7 +33,9 @@ module "project" {
     "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
     "cloudkms.googleapis.com",
-    "artifactregistry.googleapis.com"
+    "artifactregistry.googleapis.com",
+    "workflows.googleapis.com",
+    "cloudscheduler.googleapis.com"
   ]
 }
 

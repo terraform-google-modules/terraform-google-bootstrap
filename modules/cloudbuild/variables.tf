@@ -187,3 +187,8 @@ variable "random_suffix" {
   default     = true
 }
 
+variable "impersonate_service_account" {
+  description = "The service account to impersonate while running the gcloud builds submit command."
+  type        = string
+  default     = ""
+}
