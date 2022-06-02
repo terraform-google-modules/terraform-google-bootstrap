@@ -49,7 +49,6 @@ output "gcs_bucket_cloudbuild_logs" {
   value       = module.cloudbuild_bootstrap.gcs_bucket_cloudbuild_logs
 }
 
-
 output "csr_repos" {
   description = "List of Cloud Source Repos created by the module, linked to Cloud Build triggers."
   value       = module.cloudbuild_bootstrap.csr_repos

@@ -62,10 +62,14 @@ resource "google_project_iam_member" "terraform_sa_log_writer" {
   member  = "serviceAccount:${var.terraform_sa_email}"
 }
 
-resource "google_project_iam_member" "terraform_sa_artifact_registry_reader" {
-  project = module.cloudbuild_project.project_id
-  role    = "roles/artifactregistry.reader"
-  member  = "serviceAccount:${var.terraform_sa_email}"
+resource "google_artifact_registry_repository_iam_member" "terraform_sa_artifact_registry_reader" {
+  provider = google-beta
+
+  project    = module.cloudbuild_project.project_id
+  location   = google_artifact_registry_repository.tf-image-repo.location
+  repository = google_artifact_registry_repository.tf-image-repo.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${var.terraform_sa_email}"
 }
 
 resource "google_service_account_iam_member" "terraform_sa_self_impersonate" {
