@@ -96,6 +96,20 @@ resource "google_storage_bucket_iam_member" "terraform_sa_logs_iam" {
   member = "serviceAccount:${var.terraform_sa_email}"
 }
 
+resource "google_service_account_iam_member" "cloud_build_service_agent_sa_impersonate" {
+  service_account_id = var.terraform_sa_name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:service-${module.cloudbuild_project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+resource "time_sleep" "impersonate_propagation" {
+  create_duration = "30s"
+
+  depends_on = [
+    google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
+  ]
+}
+
 /******************************************
   Cloudbuild IAM for admins
 *******************************************/
@@ -191,7 +205,7 @@ resource "google_cloudbuild_trigger" "main_trigger" {
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
     google_service_account_iam_member.org_admin_terraform_sa_impersonate,
-    google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
+    time_sleep.impersonate_propagation
   ]
 }
 
@@ -227,7 +241,7 @@ resource "google_cloudbuild_trigger" "non_main_trigger" {
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
     google_service_account_iam_member.org_admin_terraform_sa_impersonate,
-    google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
+    time_sleep.impersonate_propagation
   ]
 }
 
@@ -270,12 +284,6 @@ resource "null_resource" "cloudbuild_terraform_builder" {
 /***********************************************
   Cloud Build - IAM
  ***********************************************/
-
-resource "google_service_account_iam_member" "cloud_build_service_agent_sa_impersonate" {
-  service_account_id = var.terraform_sa_name
-  role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "serviceAccount:service-${module.cloudbuild_project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
 
 resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
   bucket = google_storage_bucket.cloudbuild_artifacts.name
