@@ -143,17 +143,6 @@ variable "terraform_version_sha256sum" {
   default     = "7329f887cc5a5bda4bedaec59c439a4af7ea0465f83e3c1b0f4d04951e1181f4"
 }
 
-variable "terraform_validator_release" {
-  description = "Default terraform-validator release."
-  type        = string
-  default     = "v0.6.0"
-
-  validation {
-    condition     = try(tonumber(trimprefix(replace(var.terraform_validator_release, ".", ""), "v")), 0) >= 60
-    error_message = "Terraform-validator release must be >= v0.6.0."
-  }
-}
-
 variable "cloudbuild_plan_filename" {
   description = "Path and name of Cloud Build YAML definition used for terraform plan."
   type        = string
