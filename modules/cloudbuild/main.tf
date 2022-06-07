@@ -33,7 +33,6 @@ data "google_organization" "org" {
   organization = var.org_id
 }
 
-
 /******************************************
   Cloudbuild project
 *******************************************/
@@ -52,6 +51,66 @@ module "cloudbuild_project" {
 }
 
 /******************************************
+  Cloudbuild IAM for terraform SA
+*******************************************/
+// See https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts
+// for details regarding the configuration of the Terraform service account to run Cloud Build
+
+resource "google_project_iam_member" "terraform_sa_log_writer" {
+  project = module.cloudbuild_project.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${var.terraform_sa_email}"
+}
+
+resource "google_artifact_registry_repository_iam_member" "terraform_sa_artifact_registry_reader" {
+  provider = google-beta
+
+  project    = module.cloudbuild_project.project_id
+  location   = google_artifact_registry_repository.tf-image-repo.location
+  repository = google_artifact_registry_repository.tf-image-repo.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${var.terraform_sa_email}"
+}
+
+resource "google_service_account_iam_member" "terraform_sa_self_impersonate" {
+  service_account_id = var.terraform_sa_name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${var.terraform_sa_email}"
+}
+
+resource "google_service_account_iam_member" "terraform_sa_self_impersonate_token" {
+  service_account_id = var.terraform_sa_name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${var.terraform_sa_email}"
+}
+
+resource "google_storage_bucket_iam_member" "terraform_sa_artifacts_iam" {
+  bucket = google_storage_bucket.cloudbuild_artifacts.name
+  role   = "roles/storage.objectCreator"
+  member = "serviceAccount:${var.terraform_sa_email}"
+}
+
+resource "google_storage_bucket_iam_member" "terraform_sa_logs_iam" {
+  bucket = google_storage_bucket.cloudbuild_logs.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${var.terraform_sa_email}"
+}
+
+resource "google_service_account_iam_member" "cloud_build_service_agent_sa_impersonate" {
+  service_account_id = var.terraform_sa_name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:service-${module.cloudbuild_project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+resource "time_sleep" "impersonate_propagation" {
+  create_duration = "30s"
+
+  depends_on = [
+    google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
+  ]
+}
+
+/******************************************
   Cloudbuild IAM for admins
 *******************************************/
 
@@ -65,6 +124,18 @@ resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
   project = module.cloudbuild_project.project_id
   role    = "roles/viewer"
   member  = "group:${var.group_org_admins}"
+}
+
+/******************************************
+  Cloudbuild Logs bucket
+*******************************************/
+
+resource "google_storage_bucket" "cloudbuild_logs" {
+  project                     = module.cloudbuild_project.project_id
+  name                        = format("%s-%s-%s", module.cloudbuild_project.project_id, "cloudbuild-logs", random_id.suffix.hex)
+  location                    = var.default_region
+  labels                      = var.storage_bucket_labels
+  uniform_bucket_level_access = true
 }
 
 /******************************************
@@ -108,9 +179,10 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "main_trigger" {
-  for_each    = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
-  project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform apply."
+  for_each        = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
+  project         = module.cloudbuild_project.project_id
+  description     = "${each.value} - terraform apply."
+  service_account = var.terraform_sa_name
 
   trigger_template {
     branch_name = local.apply_branches_regex
@@ -125,12 +197,15 @@ resource "google_cloudbuild_trigger" "main_trigger" {
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
+    _LOGS_BUCKET_NAME     = google_storage_bucket.cloudbuild_logs.name
     _TF_ACTION            = "apply"
   }
 
   filename = var.cloudbuild_apply_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
+    google_service_account_iam_member.org_admin_terraform_sa_impersonate,
+    time_sleep.impersonate_propagation
   ]
 }
 
@@ -139,9 +214,10 @@ resource "google_cloudbuild_trigger" "main_trigger" {
  ***********************************************/
 
 resource "google_cloudbuild_trigger" "non_main_trigger" {
-  for_each    = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
-  project     = module.cloudbuild_project.project_id
-  description = "${each.value} - terraform plan."
+  for_each        = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
+  project         = module.cloudbuild_project.project_id
+  description     = "${each.value} - terraform plan."
+  service_account = var.terraform_sa_name
 
   trigger_template {
     invert_regex = true
@@ -157,12 +233,15 @@ resource "google_cloudbuild_trigger" "non_main_trigger" {
     _TF_SA_EMAIL          = var.terraform_sa_email
     _STATE_BUCKET_NAME    = var.terraform_state_bucket
     _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
+    _LOGS_BUCKET_NAME     = google_storage_bucket.cloudbuild_logs.name
     _TF_ACTION            = "plan"
   }
 
   filename = var.cloudbuild_plan_filename
   depends_on = [
     google_sourcerepo_repository.gcp_repo,
+    google_service_account_iam_member.org_admin_terraform_sa_impersonate,
+    time_sleep.impersonate_propagation
   ]
 }
 
@@ -222,27 +301,10 @@ resource "google_artifact_registry_repository_iam_member" "terraform-image-iam" 
   member     = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
 }
 
-resource "google_service_account_iam_member" "cloudbuild_terraform_sa_impersonate_permissions" {
+resource "google_service_account_iam_member" "org_admin_terraform_sa_impersonate" {
   count = local.impersonation_enabled_count
 
   service_account_id = var.terraform_sa_name
-  role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
-}
-
-resource "google_organization_iam_member" "cloudbuild_serviceusage_consumer" {
-  count = local.impersonation_enabled_count
-
-  org_id = var.org_id
-  role   = "roles/serviceusage.serviceUsageConsumer"
-  member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
-}
-
-# Required to allow cloud build to access state with impersonation.
-resource "google_storage_bucket_iam_member" "cloudbuild_state_iam" {
-  count = local.impersonation_enabled_count
-
-  bucket = var.terraform_state_bucket
-  role   = "roles/storage.admin"
-  member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "group:${var.group_org_admins}"
 }

@@ -83,7 +83,8 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 |------|-------------|
 | cloudbuild\_project\_id | Project where CloudBuild configuration and terraform container image will reside. |
 | csr\_repos | List of Cloud Source Repos created by the module, linked to Cloud Build triggers. |
-| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artefacts in CloudBuild project. |
+| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artifacts in CloudBuild project. |
+| gcs\_bucket\_cloudbuild\_logs | Bucket used to store Cloud/Build logs in CloudBuild project. |
 | tf\_runner\_artifact\_repo | GAR Repo created to store runner images |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
