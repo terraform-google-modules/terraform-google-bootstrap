@@ -20,8 +20,13 @@ output "cloudbuild_project_id" {
 }
 
 output "gcs_bucket_cloudbuild_artifacts" {
-  description = "Bucket used to store Cloud/Build artefacts in CloudBuild project."
+  description = "Bucket used to store Cloud/Build artifacts in CloudBuild project."
   value       = google_storage_bucket.cloudbuild_artifacts.name
+}
+
+output "gcs_bucket_cloudbuild_logs" {
+  description = "Bucket used to store Cloud/Build logs in CloudBuild project."
+  value       = google_storage_bucket.cloudbuild_logs.name
 }
 
 output "csr_repos" {

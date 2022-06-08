@@ -46,4 +46,24 @@ control "gcloud" do
         end
       end
     end
+
+    title "Terraform SA in Trigger"
+    describe command("gcloud beta --project=#{attribute("cloudbuild_project_id")} builds triggers list --format=json") do
+      its(:exit_status) { should eq 0 }
+      let!(:data) do
+        if subject.exit_status == 0
+          JSON.parse(subject.stdout)
+        else
+          {}
+        end
+      end
+      describe "Terraform SA" do
+        it "exists" do
+          expect(data[0]['serviceAccount']).to include "#{attribute("terraform_sa_email")}"
+        end
+        it "exists" do
+          expect(data[1]['serviceAccount']).to include "#{attribute("terraform_sa_email")}"
+        end
+      end
+    end
   end
