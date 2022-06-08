@@ -2,9 +2,9 @@
 
 The v5.0 release of *bootstrap* is a backwards incompatible release.
 
-## Terraform Validator < `v0.6.0` no longer supported
+## Terraform Validator is migrated to gcloud terraform-tools component
 
-TFV versions older than `v0.6.0` are no longer supported. New default version is `v0.6.0`.
+terraform-validator is migrated to `gcloud beta terraform vet`[https://cloud.google.com/docs/terraform/policy-validation].
 
 ## KMS Resources in CloudBuild sub-module have been removed
 
