@@ -19,6 +19,7 @@ steps:
   args: [
     'build',
     '--tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/terraform',
+    '--build-arg=GCLOUD_VERSION=${_GCLOUD_VERSION}',
     '--build-arg=TERRAFORM_VERSION=${_TERRAFORM_VERSION}',
     '--build-arg=TERRAFORM_VERSION_SHA256SUM=${_TERRAFORM_VERSION_SHA256SUM}',
     '.'
