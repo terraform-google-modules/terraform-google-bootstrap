@@ -273,7 +273,7 @@ resource "null_resource" "cloudbuild_terraform_builder" {
 
   provisioner "local-exec" {
     command = <<EOT
-    gcloud ${local.impersonate_service_account} builds submit ${path.module}/cloudbuild_builder/ --project ${module.cloudbuild_project.project_id} --config=${path.module}/cloudbuild_builder/cloudbuild.yaml --substitutions=_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_TERRAFORM_VALIDATOR_RELEASE=${var.terraform_validator_release},_REGION=${google_artifact_registry_repository.tf-image-repo.location},_REPOSITORY=${local.gar_name}
+    gcloud ${local.impersonate_service_account} builds submit ${path.module}/cloudbuild_builder/ --project ${module.cloudbuild_project.project_id} --config=${path.module}/cloudbuild_builder/cloudbuild.yaml --substitutions=_GCLOUD_VERSION=${var.gcloud_version},_TERRAFORM_VERSION=${var.terraform_version},_TERRAFORM_VERSION_SHA256SUM=${var.terraform_version_sha256sum},_REGION=${google_artifact_registry_repository.tf-image-repo.location},_REPOSITORY=${local.gar_name}
   EOT
   }
   depends_on = [
