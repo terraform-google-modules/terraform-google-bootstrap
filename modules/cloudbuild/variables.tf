@@ -137,6 +137,12 @@ variable "terraform_version" {
   default     = "1.0.2"
 }
 
+variable "gcloud_version" {
+  description = "Default gcloud image version."
+  type        = string
+  default     = "388.0.0-slim"
+}
+
 variable "terraform_version_sha256sum" {
   description = "sha256sum for default terraform version."
   type        = string

@@ -60,6 +60,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
 | gar\_repo\_name | Custom name to use for GAR repo. | `string` | `""` | no |
+| gcloud\_version | Default gcloud image version. | `string` | `"388.0.0-slim"` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | impersonate\_service\_account | The service account to impersonate while running the gcloud builds submit command. | `string` | `""` | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
