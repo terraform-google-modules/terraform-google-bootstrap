@@ -7,6 +7,19 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v5.1.0...v6.0.0) (2022-06-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Update Dockerfile to install terraform-validator from gcloud (#156)
+* Use user defined SA for cb triggers (#148)
+
+### Features
+
+* Update Dockerfile to install terraform-validator from gcloud ([#156](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/156)) ([a300b9c](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/a300b9c27796200f2a565173484eb997d8e296a8))
+* Use user defined SA for cb triggers ([#148](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/148)) ([5a925f8](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/5a925f8d3c742b9846e71743197fbbd22550bb7a))
+
 ## [5.1.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v5.0.1...v5.1.0) (2022-05-27)
 
 
