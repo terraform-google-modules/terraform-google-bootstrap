@@ -76,6 +76,10 @@ control "cloudbuild" do
     it { should exist }
   end
 
+  describe google_storage_bucket(name: attribute("gcs_bucket_cloudbuild_logs")) do
+    it { should exist }
+  end
+
   default_apis.each do |api|
     describe google_project_service(project: attribute("cloudbuild_project_id"), name: api) do
       it { should exist }
@@ -95,7 +99,6 @@ control "cloudbuild" do
       it { should exist }
       its('members') {should include 'group:' + attribute("group_org_admins")}
       its('members') {should include 'serviceAccount:' + attribute("terraform_sa_email")}
-      its('members') {should include 'serviceAccount:' + project_number.to_s + '@cloudbuild.gserviceaccount.com'}
     end
   end
 

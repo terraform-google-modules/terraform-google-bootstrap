@@ -60,6 +60,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
 | gar\_repo\_name | Custom name to use for GAR repo. | `string` | `""` | no |
+| gcloud\_version | Default gcloud image version. | `string` | `"388.0.0-slim"` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | impersonate\_service\_account | The service account to impersonate while running the gcloud builds submit command. | `string` | `""` | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
@@ -73,7 +74,6 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | terraform\_sa\_email | Email for terraform service account. | `string` | n/a | yes |
 | terraform\_sa\_name | Fully-qualified name of the terraform service account. | `string` | n/a | yes |
 | terraform\_state\_bucket | Default state bucket, used in Cloud Build substitutions. | `string` | n/a | yes |
-| terraform\_validator\_release | Default terraform-validator release. | `string` | `"v0.6.0"` | no |
 | terraform\_version | Default terraform version. | `string` | `"1.0.2"` | no |
 | terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"7329f887cc5a5bda4bedaec59c439a4af7ea0465f83e3c1b0f4d04951e1181f4"` | no |
 
@@ -83,7 +83,8 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 |------|-------------|
 | cloudbuild\_project\_id | Project where CloudBuild configuration and terraform container image will reside. |
 | csr\_repos | List of Cloud Source Repos created by the module, linked to Cloud Build triggers. |
-| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artefacts in CloudBuild project. |
+| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artifacts in CloudBuild project. |
+| gcs\_bucket\_cloudbuild\_logs | Bucket used to store Cloud/Build logs in CloudBuild project. |
 | tf\_runner\_artifact\_repo | GAR Repo created to store runner images |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

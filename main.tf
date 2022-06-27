@@ -56,7 +56,7 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 
 module "seed_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 11.3"
+  version                     = "~> 13.0"
   name                        = local.seed_project_id
   random_project_id           = var.random_suffix
   disable_services_on_destroy = false
@@ -68,6 +68,18 @@ module "seed_project" {
   labels                      = var.project_labels
   lien                        = true
 }
+
+module "enable_cross_project_service_account_usage" {
+  source  = "terraform-google-modules/org-policy/google"
+  version = "~> 5.1"
+
+  project_id  = module.seed_project.project_id
+  policy_for  = "project"
+  policy_type = "boolean"
+  enforce     = "false"
+  constraint  = "constraints/iam.disableCrossProjectServiceAccountUsage"
+}
+
 
 /******************************************
   Service Account - Terraform for Org
@@ -210,6 +222,14 @@ resource "google_storage_bucket_iam_member" "org_terraform_state_iam" {
   as org admin.
  ***********************************************/
 
+resource "google_service_account_iam_member" "org_admin_sa_user" {
+  count = local.impersonation_enabled_count
+
+  service_account_id = google_service_account.org_terraform.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "group:${var.group_org_admins}"
+}
+
 resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissions" {
   count = local.impersonation_enabled_count
 
@@ -223,6 +243,14 @@ resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
 
   org_id = local.parent_id
   role   = "roles/serviceusage.serviceUsageConsumer"
+  member = "group:${var.group_org_admins}"
+}
+
+resource "google_folder_iam_member" "org_admin_service_account_user" {
+  count = var.sa_enable_impersonation && !local.is_organization ? 1 : 0
+
+  folder = local.parent_id
+  role   = "roles/iam.serviceAccountUser"
   member = "group:${var.group_org_admins}"
 }
 
