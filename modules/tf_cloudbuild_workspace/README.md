@@ -22,7 +22,7 @@ Functional examples are included in the [examples](../../examples/) directory.
 ## Resources created
 
 This module creates:
-- Two Cloud Build triggers with an inline build configuration for planning and applying Terraform configuration. Optionaly custom in repo build configs can be specified.
+- Two Cloud Build triggers with an inline build configuration for planning and applying Terraform configuration. Optionally custom in repo build configs can be specified.
 - Optional custom Service Account and roles for that SA used by Cloud Build triggers.
 - GCS buckets for storing Terraform state, logs and plans.
 
