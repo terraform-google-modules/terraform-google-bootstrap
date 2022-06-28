@@ -38,7 +38,7 @@ This module creates:
 | cloudbuild\_env\_vars | Optional list of environment variables to be used in builds. List of strings of form KEY=VALUE expected. | `list(string)` | `[]` | no |
 | cloudbuild\_plan\_filename | Optional Cloud Build YAML definition used for terraform plan. Defaults to using inline definition. | `string` | `null` | no |
 | cloudbuild\_sa | Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
-| cloudbuild\_sa\_roles | Optional to assign to custom CloudBuild SA. Map of project id to list of roles expected. | `map(list(string))` | `{}` | no |
+| cloudbuild\_sa\_roles | Optional to assign to custom CloudBuild SA. Map of project name or any static key to object with project\_id and list of roles. | <pre>map(object({<br>    project_id = string<br>    roles      = list(string)<br>  }))</pre> | `{}` | no |
 | location | Location for build logs/state bucket | `string` | `"us-central1"` | no |
 | prefix | Prefix of the state/log buckets and triggers planning/applying config. If unset computes a prefix from tf\_repo\_uri and tf\_repo\_dir variables. | `string` | `""` | no |
 | project\_id | GCP project for Cloud Build triggers, state and log buckets. | `string` | n/a | yes |
