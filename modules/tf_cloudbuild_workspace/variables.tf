@@ -38,9 +38,12 @@ variable "state_bucket_self_link" {
 }
 
 variable "cloudbuild_sa_roles" {
-  description = "Optional to assign to custom CloudBuild SA. Map of project id to list of roles expected."
-  type        = map(list(string))
-  default     = {}
+  description = "Optional to assign to custom CloudBuild SA. Map of project name or any static key to object with project_id and list of roles."
+  type = map(object({
+    project_id = string
+    roles      = list(string)
+  }))
+  default = {}
 }
 
 variable "cloudbuild_plan_filename" {

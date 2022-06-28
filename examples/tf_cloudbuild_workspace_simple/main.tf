@@ -21,8 +21,12 @@ module "tf_workspace" {
   tf_repo_uri = google_sourcerepo_repository.tf_config_repo.url
   # allow log/state buckets to be destroyed
   buckets_force_destroy = true
-  cloudbuild_sa_roles   = { (module.enabled_google_apis.project_id) = ["roles/compute.networkAdmin"] }
-  cloudbuild_env_vars   = ["TF_VAR_project_id=${var.project_id}"]
+  cloudbuild_sa_roles = { (module.enabled_google_apis.project_id) = {
+    project_id = module.enabled_google_apis.project_id,
+    roles      = ["roles/compute.networkAdmin"]
+    }
+  }
+  cloudbuild_env_vars = ["TF_VAR_project_id=${var.project_id}"]
 
 }
 

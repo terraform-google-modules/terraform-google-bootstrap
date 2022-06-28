@@ -24,9 +24,15 @@ locals {
   diff_sa_project = try(google_service_account.cb_sa[0].project, local.cloudbuild_sa_project) != var.project_id
 
   # Optional roles for CB SA
-  cb_sa_roles_expand = distinct(flatten([for project, roles in var.cloudbuild_sa_roles : [for role in roles : { project = project, role = role }]]))
-  # https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#permissions
-  cb_sa_roles_with_log = toset(concat(local.cb_sa_roles_expand, [{ project = var.project_id, role = "roles/logging.logWriter" }]))
+  cb_sa_roles_expand = merge(
+    [for project_name, pr in var.cloudbuild_sa_roles :
+      { for role in pr.roles : "${project_name}/${role}" =>
+        {
+          project_id = pr.project_id, role = role
+        }
+      }
+    ]...
+  )
 }
 
 
@@ -38,9 +44,15 @@ resource "google_service_account" "cb_sa" {
 }
 
 # https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#permissions
+resource "google_project_iam_member" "cb_sa_logging" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${local.cloudbuild_sa_email}"
+}
+
 resource "google_project_iam_member" "cb_sa_roles" {
-  for_each = { for pr in local.cb_sa_roles_with_log : "${pr.project}/${pr.role}" => pr }
-  project  = each.value.project
+  for_each = local.cb_sa_roles_expand
+  project  = each.value.project_id
   role     = each.value.role
   member   = "serviceAccount:${local.cloudbuild_sa_email}"
 }
