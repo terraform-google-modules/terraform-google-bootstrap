@@ -50,6 +50,13 @@ locals {
   # default prefix computed from repo name and dir if specified of form ${repo}-${dir?}-${plan/apply}
   repo           = local.is_source_repo ? local.source_repo_name : local.gh_name
   default_prefix = var.prefix != "" ? var.prefix : replace(var.tf_repo_dir != "" ? "${local.repo}-${var.tf_repo_dir}" : local.repo, "/", "-")
+
+  # default substitutions
+  default_subst = {
+    "_TF_SA_EMAIL"       = local.cloudbuild_sa,
+    "_STATE_BUCKET_NAME" = local.state_bucket_name,
+    "_LOG_BUCKET_NAME"   = local.log_bucket_name,
+  }
 }
 
 resource "google_cloudbuild_trigger" "triggers" {
@@ -121,7 +128,7 @@ resource "google_cloudbuild_trigger" "triggers" {
     }
   }
 
-  substitutions   = var.substitutions
+  substitutions   = merge(local.default_subst, var.substitutions)
   service_account = local.cloudbuild_sa
   filename        = local.default_triggers_explicit[each.key]
 

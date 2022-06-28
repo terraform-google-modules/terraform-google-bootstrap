@@ -31,7 +31,7 @@ output "cloudbuild_sa" {
 
 output "state_bucket" {
   description = "Bucket for storing TF state"
-  value       = module.state_bucket.bucket.self_link
+  value       = local.state_bucket_self_link
 }
 
 output "logs_bucket" {
