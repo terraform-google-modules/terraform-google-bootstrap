@@ -11,9 +11,9 @@ module "tf-net-workspace" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_workspace"
   version = "~> 6.1"
 
-  project_id              = var.project_id
-  tf_repo_uri             = "https://github.com/org/tf-config-repo"
-  cloudbuild_sa_roles     = { var.project_id = ["roles/compute.networkAdmin"] }
+  project_id          = var.project_id
+  tf_repo_uri         = "https://github.com/org/tf-config-repo"
+  cloudbuild_sa_roles = { var.project_id = ["roles/compute.networkAdmin"] }
 }
 ```
 
@@ -28,6 +28,10 @@ This module creates:
 
 ![](./assets/arch.png)
 
+## Notes
+- When a custom Service Account is provided via `cloudbuild_sa` and `diff_sa_project` is `true` (i.e SA is in a different project) follow [these instructions](https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up) to confirm `iam.disableCrossProjectServiceAccountUsage` org policy is not enforced in the SA project.
+- If a custom build config is specified via `cloudbuild_plan/apply_filename`, a log bucket must be specified in the build config. For ease of use, we populate `_LOG_BUCKET_NAME` as a [substitution](https://cloud.google.com/build/docs/configuring-builds/substitute-variable-values) and can be used like `logsBucket: 'gs://$_LOG_BUCKET_NAME'`.
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
@@ -37,8 +41,11 @@ This module creates:
 | cloudbuild\_apply\_filename | Optional Cloud Build YAML definition used for terraform apply. Defaults to using inline definition. | `string` | `null` | no |
 | cloudbuild\_env\_vars | Optional list of environment variables to be used in builds. List of strings of form KEY=VALUE expected. | `list(string)` | `[]` | no |
 | cloudbuild\_plan\_filename | Optional Cloud Build YAML definition used for terraform plan. Defaults to using inline definition. | `string` | `null` | no |
-| cloudbuild\_sa | Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
+| cloudbuild\_sa | Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
 | cloudbuild\_sa\_roles | Optional to assign to custom CloudBuild SA. Map of project name or any static key to object with project\_id and list of roles. | <pre>map(object({<br>    project_id = string<br>    roles      = list(string)<br>  }))</pre> | `{}` | no |
+| create\_cloudbuild\_sa | Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified. | `bool` | `true` | no |
+| create\_state\_bucket | Create a GCS bucket for storing state. If false `state_bucket_self_link` has to be specified. | `bool` | `true` | no |
+| diff\_sa\_project | Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up. | `bool` | `false` | no |
 | location | Location for build logs/state bucket | `string` | `"us-central1"` | no |
 | prefix | Prefix of the state/log buckets and triggers planning/applying config. If unset computes a prefix from tf\_repo\_uri and tf\_repo\_dir variables. | `string` | `""` | no |
 | project\_id | GCP project for Cloud Build triggers, state and log buckets. | `string` | n/a | yes |
