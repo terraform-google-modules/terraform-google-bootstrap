@@ -25,10 +25,28 @@ variable "location" {
   default     = "us-central1"
 }
 
+variable "create_cloudbuild_sa" {
+  description = "Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified."
+  type        = bool
+  default     = true
+}
+
 variable "cloudbuild_sa" {
-  description = "Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty."
+  description = "Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by the CloudBuild trigger. Defaults to being created if empty."
   type        = string
   default     = ""
+}
+
+variable "diff_sa_project" {
+  description = "Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up."
+  type        = bool
+  default     = false
+}
+
+variable "create_state_bucket" {
+  description = "Create a GCS bucket for storing state. If false `state_bucket_self_link` has to be specified."
+  type        = bool
+  default     = true
 }
 
 variable "state_bucket_self_link" {

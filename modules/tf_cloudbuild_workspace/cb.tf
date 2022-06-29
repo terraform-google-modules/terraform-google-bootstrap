@@ -53,7 +53,7 @@ locals {
 
   # default substitutions
   default_subst = {
-    "_TF_SA_EMAIL"       = local.cloudbuild_sa,
+    "_TF_SA_EMAIL"       = local.cloudbuild_sa_email,
     "_STATE_BUCKET_NAME" = local.state_bucket_name,
     "_LOG_BUCKET_NAME"   = local.log_bucket_name,
   }

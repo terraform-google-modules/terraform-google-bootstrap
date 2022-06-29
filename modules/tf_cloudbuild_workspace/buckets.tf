@@ -20,7 +20,7 @@
 
 locals {
   # selflink of form https://www.googleapis.com/storage/v1/b/bucket-name
-  state_bucket_self_link = var.state_bucket_self_link != "" ? var.state_bucket_self_link : module.state_bucket[0].bucket.self_link
+  state_bucket_self_link = var.create_state_bucket ? module.state_bucket[0].bucket.self_link : var.state_bucket_self_link
   state_bucket_name      = split("/", local.state_bucket_self_link)[length(split("/", local.state_bucket_self_link)) - 1]
   log_bucket_name        = split("/", module.log_bucket.bucket.self_link)[length(split("/", module.log_bucket.bucket.self_link)) - 1]
 }
@@ -45,7 +45,7 @@ resource "google_storage_bucket_iam_member" "log_admin" {
 module "state_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
   version = "~> 3.2"
-  count   = var.state_bucket_self_link != "" ? 0 : 1
+  count   = var.create_state_bucket ? 1 : 0
 
   name          = "${local.default_prefix}-build-state-${var.project_id}"
   project_id    = var.project_id
