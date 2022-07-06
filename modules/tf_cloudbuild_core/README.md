@@ -1,0 +1,74 @@
+## Overview
+
+## Usage
+
+Basic usage of this module is as follows:
+
+```hcl
+
+```
+
+Functional examples are included in the [examples](../../examples/) directory.
+
+## Resources created
+
+This module creates:
+
+- a
+- b
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| activate\_apis | List of APIs to enable in the Cloudbuild project. | `list(string)` | <pre>[<br>  "serviceusage.googleapis.com",<br>  "servicenetworking.googleapis.com",<br>  "compute.googleapis.com",<br>  "logging.googleapis.com",<br>  "bigquery.googleapis.com",<br>  "cloudresourcemanager.googleapis.com",<br>  "cloudbilling.googleapis.com",<br>  "iam.googleapis.com",<br>  "admin.googleapis.com",<br>  "appengine.googleapis.com",<br>  "storage-api.googleapis.com"<br>]</pre> | no |
+| billing\_account | The ID of the billing account to associate projects with. | `string` | n/a | yes |
+| buckets\_force\_destroy | When deleting CloudBuild buckets, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
+| cloud\_source\_repos | List of Cloud Source Repos to create with CloudBuild triggers. | `list(string)` | <pre>[<br>  "gcp-policies",<br>  "gcp-org",<br>  "gcp-envs",<br>  "gcp-networks",<br>  "gcp-projects"<br>]</pre> | no |
+| create\_cloud\_source\_repos | If shared Cloud Source Repos should be created. | `bool` | `true` | no |
+| create\_worker\_pool | Create a private worker pool. | `bool` | `false` | no |
+| folder\_id | The ID of a folder to host this project | `string` | `""` | no |
+| group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
+| location | Location for build artifacts bucket | `string` | `"us-central1"` | no |
+| org\_id | GCP Organization ID | `string` | n/a | yes |
+| project\_id | Custom project ID to use for project created. | `string` | `""` | no |
+| project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
+| project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
+| random\_suffix | Appends a 4 character random suffix to project ID and GCS bucket name. | `bool` | `true` | no |
+| storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
+| worker\_pool\_disk\_size\_gb | Size of the disk attached to the worker, in GB. | `number` | `100` | no |
+| worker\_pool\_machine\_type | Machine type of a worker. | `string` | `"e2-medium"` | no |
+| worker\_pool\_no\_external\_ip | If true, workers are created without any public address, which prevents network egress to public IPs. | `bool` | `false` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| cloudbuild\_project\_id | Project where CloudBuild configuration and terraform container image will reside. |
+| csr\_repos | List of Cloud Source Repos created by the module. |
+| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artifacts in CloudBuild project. |
+| gcs\_cloudbuild\_default\_bucket | Bucket used to store temporary files in CloudBuild project. |
+| private\_worker\_pool | A private worker pool created in CloudBuild project. |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Requirements
+
+### Software
+
+- [Terraform](https://www.terraform.io/downloads.html) >= 0.13.0
+- [terraform-provider-google] plugin >= 3.50.x
+
+### Permissions
+
+- a
+
+### APIs
+
+TBD
+
+## Contributing
+
+Refer to the [contribution guidelines](../../CONTRIBUTING.md) for
+information on contributing to this module.
