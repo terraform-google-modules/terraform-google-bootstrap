@@ -5,7 +5,14 @@
 Basic usage of this module is as follows:
 
 ```hcl
+module "tf-cloudbuild-core" {
+  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_core"
+  version = "~> 6.1"
 
+  org_id           = var.org_id
+  billing_account  = var.billing_account
+  group_org_admins = var.group_org_admins
+}
 ```
 
 Functional examples are included in the [examples](../../examples/) directory.
@@ -14,8 +21,12 @@ Functional examples are included in the [examples](../../examples/) directory.
 
 This module creates:
 
-- a
-- b
+- Project for Cloud Build.
+- Default Cloud Build bucket.
+- Bucket for Cloud Build artifacts.
+- Set of Cloud Source Repos.
+- Optional [private pool](https://cloud.google.com/build/docs/private-pools/private-pools-overview).
+- Optional Organization policy for [enforcing the usage of private pool](https://cloud.google.com/build/docs/private-pools/use-in-private-network#enforcing_the_usage_of_private_pools).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
@@ -62,11 +73,8 @@ This module creates:
 
 ### Permissions
 
-- a
-
-### APIs
-
-TBD
+- `roles/resourcemanager.projectCreator`
+- `roles/billing.user`
 
 ## Contributing
 

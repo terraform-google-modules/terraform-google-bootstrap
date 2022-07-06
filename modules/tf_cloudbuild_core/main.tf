@@ -20,8 +20,10 @@ locals {
   cloudbuild_apis = [
     "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
-    "cloudkms.googleapis.com",
-    "artifactregistry.googleapis.com"
+    "storage-api.googleapis.com",
+    "iam.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "cloudbilling.googleapis.com"
   ]
 
   activate_apis = distinct(concat(var.activate_apis, local.cloudbuild_apis))
