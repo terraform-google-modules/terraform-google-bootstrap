@@ -25,8 +25,6 @@ This module creates:
 - Default Cloud Build bucket.
 - Bucket for Cloud Build artifacts.
 - Set of Cloud Source Repos.
-- Optional [private pool](https://cloud.google.com/build/docs/private-pools/private-pools-overview).
-- Optional Organization policy for [enforcing the usage of private pool](https://cloud.google.com/build/docs/private-pools/use-in-private-network#enforcing_the_usage_of_private_pools).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
