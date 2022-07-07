@@ -38,7 +38,7 @@ module "cloudbuild_project" {
   version = "~> 13.0"
 
   name                        = local.cloudbuild_project_id
-  random_project_id           = var.random_suffix
+  random_project_id           = var.use_random_suffix
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = var.org_id
@@ -74,33 +74,6 @@ resource "google_sourcerepo_repository" "gcp_repo" {
 
   project = module.cloudbuild_project.project_id
   name    = each.value
-}
-
-resource "google_cloudbuild_worker_pool" "private_pool" {
-  count = var.create_worker_pool ? 1 : 0
-
-  name     = "private-cb-pool-${random_id.suffix.hex}"
-  project  = module.cloudbuild_project.project_id
-  location = var.location
-
-  worker_config {
-    disk_size_gb   = var.worker_pool_disk_size_gb
-    machine_type   = var.worker_pool_machine_type
-    no_external_ip = var.worker_pool_no_external_ip
-  }
-}
-
-module "allowed_worker_pools" {
-  source  = "terraform-google-modules/org-policy/google"
-  version = "~> 5.1"
-  count   = var.create_worker_pool ? 1 : 0
-
-  project_id        = module.cloudbuild_project.project_id
-  policy_for        = "project"
-  policy_type       = "list"
-  allow             = ["under:projects/${module.cloudbuild_project.project_id}"]
-  allow_list_length = "1"
-  constraint        = "constraints/cloudbuild.allowedWorkerPools"
 }
 
 resource "google_project_iam_member" "org_admins_cloudbuild_editor" {

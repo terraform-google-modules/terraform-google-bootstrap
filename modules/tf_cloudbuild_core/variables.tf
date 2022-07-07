@@ -14,36 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_labels" {
-  description = "Labels to apply to the project."
-  type        = map(string)
-  default     = {}
-}
-
-variable "storage_bucket_labels" {
-  description = "Labels to apply to the storage bucket."
-  type        = map(string)
-  default     = {}
-}
-
-variable "project_prefix" {
-  description = "Name prefix to use for projects created."
-  type        = string
-  default     = "cft"
-}
-
-variable "project_id" {
-  description = "Custom project ID to use for project created."
-  default     = ""
-  type        = string
-}
-
-variable "random_suffix" {
-  description = "Appends a 4 character random suffix to project ID and GCS bucket name."
-  type        = bool
-  default     = true
-}
-
 variable "org_id" {
   description = "GCP Organization ID"
   type        = string
@@ -55,14 +25,34 @@ variable "folder_id" {
   default     = ""
 }
 
-variable "billing_account" {
-  description = "The ID of the billing account to associate projects with."
+variable "project_id" {
+  description = "Custom project ID to use for project created."
+  default     = ""
   type        = string
 }
 
-variable "group_org_admins" {
-  description = "Google Group for GCP Organization Administrators"
+variable "project_prefix" {
+  description = "Name prefix to use for projects created."
   type        = string
+  default     = "cft"
+}
+
+variable "project_labels" {
+  description = "Labels to apply to the project."
+  type        = map(string)
+  default     = {}
+}
+
+variable "use_random_suffix" {
+  description = "Appends a 4 character random suffix to project ID."
+  type        = bool
+  default     = true
+}
+
+variable "storage_bucket_labels" {
+  description = "Labels to apply to the storage bucket."
+  type        = map(string)
+  default     = {}
 }
 
 variable "location" {
@@ -75,6 +65,16 @@ variable "buckets_force_destroy" {
   description = "When deleting CloudBuild buckets, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects."
   type        = bool
   default     = false
+}
+
+variable "billing_account" {
+  description = "The ID of the billing account to associate projects with."
+  type        = string
+}
+
+variable "group_org_admins" {
+  description = "Google Group for GCP Organization Administrators"
+  type        = string
 }
 
 variable "activate_apis" {
@@ -113,28 +113,4 @@ variable "cloud_source_repos" {
     "gcp-networks",
     "gcp-projects",
   ]
-}
-
-variable "create_worker_pool" {
-  description = "Create a private worker pool."
-  type        = bool
-  default     = false
-}
-
-variable "worker_pool_disk_size_gb" {
-  description = "Size of the disk attached to the worker, in GB."
-  type        = number
-  default     = 100
-}
-
-variable "worker_pool_machine_type" {
-  description = "Machine type of a worker."
-  type        = string
-  default     = "e2-medium"
-}
-
-variable "worker_pool_no_external_ip" {
-  description = "If true, workers are created without any public address, which prevents network egress to public IPs."
-  type        = bool
-  default     = false
 }

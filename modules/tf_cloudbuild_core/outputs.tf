@@ -33,8 +33,3 @@ output "gcs_cloudbuild_default_bucket" {
   description = "Bucket used to store temporary files in CloudBuild project."
   value       = module.cloudbuild_bucket.bucket.name
 }
-
-output "private_worker_pool" {
-  description = "A private worker pool created in CloudBuild project."
-  value       = try(google_cloudbuild_worker_pool.private_pool[0].id, null)
-}
