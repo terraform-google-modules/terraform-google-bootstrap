@@ -53,7 +53,7 @@ func TestTFCloudBuildCoreSimple(t *testing.T) {
 		}
 		for _, repo := range repos {
 			url := fmt.Sprintf("https://source.developers.google.com/p/%s/r/%s", projectID, repo)
-			repoOP := gcloud.Runf(t, "gcloud source repos describe %s --project %s", repo, projectID)
+			repoOP := gcloud.Runf(t, "source repos describe %s --project %s", repo, projectID)
 			assert.Equalf(url, repoOP.Get("url"), "source repo %s should have url %s", repo, url)
 		}
 	})
