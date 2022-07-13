@@ -24,7 +24,7 @@ Functional examples are included in the [examples](../../examples/) directory.
 This module creates:
 - Two Cloud Build triggers with an inline build configuration for planning and applying Terraform configuration. Optionally custom in repo build configs can be specified.
 - Optional custom Service Account and roles for that SA used by Cloud Build triggers.
-- GCS buckets for storing Terraform state, logs and plans.
+- GCS buckets for storing Terraform state, logs, and plans.
 
 ![](./assets/arch.png)
 
@@ -61,10 +61,11 @@ This module creates:
 
 | Name | Description |
 |------|-------------|
+| artifacts\_bucket | Bucket for storing TF plans |
 | cloudbuild\_apply\_trigger\_id | Trigger used for running TF apply |
 | cloudbuild\_plan\_trigger\_id | Trigger used for running TF plan |
 | cloudbuild\_sa | SA used by Cloud Build triggers |
-| logs\_bucket | Bucket for storing TF logs/plans |
+| logs\_bucket | Bucket for storing TF logs |
 | state\_bucket | Bucket for storing TF state |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -53,9 +53,10 @@ locals {
 
   # default substitutions
   default_subst = {
-    "_TF_SA_EMAIL"       = local.cloudbuild_sa_email,
-    "_STATE_BUCKET_NAME" = local.state_bucket_name,
-    "_LOG_BUCKET_NAME"   = local.log_bucket_name,
+    "_TF_SA_EMAIL"          = local.cloudbuild_sa_email,
+    "_STATE_BUCKET_NAME"    = local.state_bucket_name,
+    "_LOG_BUCKET_NAME"      = local.log_bucket_name,
+    "_ARTIFACT_BUCKET_NAME" = local.artifacts_bucket_name,
   }
 }
 
@@ -118,7 +119,7 @@ resource "google_cloudbuild_trigger" "triggers" {
       # upload tfplan artifacts per build
       artifacts {
         objects {
-          location = join("/", [module.log_bucket.bucket.url, each.key, "$BUILD_ID"])
+          location = join("/", [module.artifacts_bucket.bucket.url, each.key, "$BUILD_ID"])
           paths    = [join("/", compact([var.tf_repo_dir, "*.tfplan"]))]
         }
       }

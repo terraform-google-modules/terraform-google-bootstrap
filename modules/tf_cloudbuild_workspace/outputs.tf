@@ -35,6 +35,11 @@ output "state_bucket" {
 }
 
 output "logs_bucket" {
-  description = "Bucket for storing TF logs/plans"
+  description = "Bucket for storing TF logs"
   value       = module.log_bucket.bucket.self_link
+}
+
+output "artifacts_bucket" {
+  description = "Bucket for storing TF plans"
+  value       = module.artifacts_bucket.bucket.self_link
 }
