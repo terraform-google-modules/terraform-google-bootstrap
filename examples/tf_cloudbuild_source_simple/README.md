@@ -1,6 +1,6 @@
 ## Overview
 
-This example demonstrates the simplest usage of the [tf_cloudbuild_core](../../modules/tf_cloudbuild_core/) module.
+This example demonstrates the simplest usage of the [tf_cloudbuild_source](../../modules/tf_cloudbuild_source/) module.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs

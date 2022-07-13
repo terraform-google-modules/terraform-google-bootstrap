@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-module "tf_core" {
-  source = "../../modules/tf_cloudbuild_core"
+module "tf_source" {
+  source = "../../modules/tf_cloudbuild_source"
 
   org_id                = var.org_id
   folder_id             = var.parent_folder
