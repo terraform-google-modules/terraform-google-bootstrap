@@ -23,7 +23,6 @@ This module creates:
 
 - Project for Cloud Build.
 - Default Cloud Build bucket.
-- Bucket for Cloud Build artifacts.
 - Set of Cloud Source Repos.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -50,7 +49,6 @@ This module creates:
 |------|-------------|
 | cloudbuild\_project\_id | Project for CloudBuild and Cloud Source Repositories. |
 | csr\_repos | List of Cloud Source Repos created by the module. |
-| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artifacts in CloudBuild project. |
 | gcs\_cloudbuild\_default\_bucket | Bucket used to store temporary files in CloudBuild project. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

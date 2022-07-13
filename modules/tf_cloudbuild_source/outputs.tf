@@ -19,20 +19,10 @@ output "cloudbuild_project_id" {
   value       = module.cloudbuild_project.project_id
 
   depends_on = [
-    google_storage_bucket_iam_member.cloudbuild_artifacts_iam,
     google_storage_bucket_iam_member.cloudbuild_iam,
     google_project_iam_member.org_admins_cloudbuild_editor,
     google_project_iam_member.org_admins_cloudbuild_viewer,
     google_project_iam_member.org_admins_source_repo_admin
-  ]
-}
-
-output "gcs_bucket_cloudbuild_artifacts" {
-  description = "Bucket used to store Cloud/Build artifacts in CloudBuild project."
-  value       = module.cloudbuild_artifacts.bucket.name
-
-  depends_on = [
-    google_storage_bucket_iam_member.cloudbuild_artifacts_iam,
   ]
 }
 

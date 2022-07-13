@@ -58,16 +58,7 @@ module "cloudbuild_bucket" {
   force_destroy = var.buckets_force_destroy
 }
 
-module "cloudbuild_artifacts" {
-  source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 3.2"
 
-  name          = "${module.cloudbuild_project.project_id}-cloudbuild-artifacts"
-  project_id    = module.cloudbuild_project.project_id
-  location      = var.location
-  labels        = var.storage_bucket_labels
-  force_destroy = var.buckets_force_destroy
-}
 
 resource "google_sourcerepo_repository" "gcp_repo" {
   for_each = length(var.cloud_source_repos) > 0 ? toset(var.cloud_source_repos) : []
@@ -93,12 +84,6 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
   project = module.cloudbuild_project.project_id
   role    = "roles/source.admin"
   member  = "group:${var.group_org_admins}"
-}
-
-resource "google_storage_bucket_iam_member" "cloudbuild_artifacts_iam" {
-  bucket = module.cloudbuild_artifacts.bucket.name
-  role   = "roles/storage.admin"
-  member = "serviceAccount:${module.cloudbuild_project.project_number}@cloudbuild.gserviceaccount.com"
 }
 
 resource "google_storage_bucket_iam_member" "cloudbuild_iam" {

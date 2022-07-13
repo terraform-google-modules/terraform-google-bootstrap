@@ -18,7 +18,6 @@ This example demonstrates the simplest usage of the [tf_cloudbuild_source](../..
 |------|-------------|
 | cloudbuild\_project\_id | Project where CloudBuild configuration and terraform container image will reside. |
 | csr\_repos | List of Cloud Source Repos created by the module. |
-| gcs\_bucket\_cloudbuild\_artifacts | Bucket used to store Cloud/Build artifacts in CloudBuild project. |
 | gcs\_cloudbuild\_default\_bucket | Bucket used to store temporary files in CloudBuild project. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

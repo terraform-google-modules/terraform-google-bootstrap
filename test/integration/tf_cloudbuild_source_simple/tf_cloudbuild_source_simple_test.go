@@ -31,17 +31,13 @@ func TestTFCloudBuildSourceSimple(t *testing.T) {
 
 		projectID := bpt.GetStringOutput("cloudbuild_project_id")
 
-		// cloudbuild and artifacts buckets
-		artifactsBucket := bpt.GetStringOutput("gcs_bucket_cloudbuild_artifacts")
+		// cloudbuild buckets
 		cloudbuildBucket := bpt.GetStringOutput("gcs_cloudbuild_default_bucket")
-		buckets := []string{artifactsBucket, cloudbuildBucket}
-		for _, bucket := range buckets {
-			// we can't use runf since we need to override --format json with --json for alpha storage
-			bucketOP := gcloud.Run(t, fmt.Sprintf("alpha storage ls --buckets gs://%s", bucket), gcloud.WithCommonArgs([]string{"--project", projectID, "--json"})).Array()
-			assert.Equalf(1, len(bucketOP), "%s bucket should exist", bucket)
-			assert.Truef(bucketOP[0].Get("metadata.iamConfiguration.uniformBucketLevelAccess.enabled").Bool(), "%s bucket uniformBucketLevelAccess should be enabled", bucket)
-			assert.Truef(bucketOP[0].Get("metadata.versioning.enabled").Bool(), "%s bucket versioning should be enabled", bucket)
-		}
+		// we can't use runf since we need to override --format json with --json for alpha storage
+		bucketOP := gcloud.Run(t, fmt.Sprintf("alpha storage ls --buckets gs://%s", cloudbuildBucket), gcloud.WithCommonArgs([]string{"--project", projectID, "--json"})).Array()
+		assert.Equalf(1, len(bucketOP), "%s bucket should exist", cloudbuildBucket)
+		assert.Truef(bucketOP[0].Get("metadata.iamConfiguration.uniformBucketLevelAccess.enabled").Bool(), "%s bucket uniformBucketLevelAccess should be enabled", cloudbuildBucket)
+		assert.Truef(bucketOP[0].Get("metadata.versioning.enabled").Bool(), "%s bucket versioning should be enabled", cloudbuildBucket)
 
 		//source repos
 		repos := []string{
