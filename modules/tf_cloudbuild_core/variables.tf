@@ -31,12 +31,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "project_prefix" {
-  description = "Name prefix to use for projects created."
-  type        = string
-  default     = "cft"
-}
-
 variable "project_labels" {
   description = "Labels to apply to the project."
   type        = map(string)
@@ -86,20 +80,9 @@ variable "activate_apis" {
     "servicenetworking.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
-    "bigquery.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "cloudbilling.googleapis.com",
     "iam.googleapis.com",
-    "admin.googleapis.com",
-    "appengine.googleapis.com",
-    "storage-api.googleapis.com"
+    "admin.googleapis.com"
   ]
-}
-
-variable "create_cloud_source_repos" {
-  description = "If shared Cloud Source Repos should be created."
-  type        = bool
-  default     = true
 }
 
 variable "cloud_source_repos" {

@@ -22,6 +22,7 @@ variable "org_id" {
 variable "parent_folder" {
   description = "The bootstrap parent folder"
   type        = string
+  default     = ""
 }
 
 variable "billing_account" {

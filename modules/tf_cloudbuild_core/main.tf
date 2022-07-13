@@ -15,7 +15,7 @@
  */
 
 locals {
-  cloudbuild_project_id = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "cloudbuild")
+  cloudbuild_project_id = var.project_id != "" ? var.project_id : "tf-cloudbuild-${random_id.suffix.hex}"
 
   cloudbuild_apis = [
     "cloudbuild.googleapis.com",
@@ -62,7 +62,7 @@ module "cloudbuild_artifacts" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
   version = "~> 3.2"
 
-  name          = "${var.project_prefix}-cloudbuild-artifacts-${random_id.suffix.hex}"
+  name          = "${module.cloudbuild_project.project_id}-cloudbuild-artifacts"
   project_id    = module.cloudbuild_project.project_id
   location      = var.location
   labels        = var.storage_bucket_labels
@@ -70,7 +70,7 @@ module "cloudbuild_artifacts" {
 }
 
 resource "google_sourcerepo_repository" "gcp_repo" {
-  for_each = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
+  for_each = length(var.cloud_source_repos) > 0 ? toset(var.cloud_source_repos) : []
 
   project = module.cloudbuild_project.project_id
   name    = each.value
@@ -89,7 +89,7 @@ resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
 }
 
 resource "google_project_iam_member" "org_admins_source_repo_admin" {
-  count   = var.create_cloud_source_repos ? 1 : 0
+  count   = length(var.cloud_source_repos) > 0 ? 1 : 0
   project = module.cloudbuild_project.project_id
   role    = "roles/source.admin"
   member  = "group:${var.group_org_admins}"

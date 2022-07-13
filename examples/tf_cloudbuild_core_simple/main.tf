@@ -21,7 +21,6 @@ module "tf_core" {
   folder_id             = var.parent_folder
   billing_account       = var.billing_account
   group_org_admins      = var.group_org_admins
-  project_prefix        = "cft-test-core"
   buckets_force_destroy = true
 }
 

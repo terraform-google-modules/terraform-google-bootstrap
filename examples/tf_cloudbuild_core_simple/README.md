@@ -10,7 +10,7 @@ This example demonstrates the simplest usage of the [tf_cloudbuild_core](../../m
 | billing\_account | The ID of the billing account to associate projects with. | `string` | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
-| parent\_folder | The bootstrap parent folder | `string` | n/a | yes |
+| parent\_folder | The bootstrap parent folder | `string` | `""` | no |
 
 ## Outputs
 

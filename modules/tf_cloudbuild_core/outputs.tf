@@ -15,7 +15,7 @@
  */
 
 output "cloudbuild_project_id" {
-  description = "Project where CloudBuild configuration and terraform container image will reside."
+  description = "Project for CloudBuild and Cloud Source Repositories."
   value       = module.cloudbuild_project.project_id
 
   depends_on = [
