@@ -30,6 +30,17 @@ output "seed_project_id" {
 output "terraform_sa_email" {
   description = "Email for privileged service account for Terraform."
   value       = google_service_account.org_terraform.email
+  depends_on = [
+    google_organization_iam_member.tf_sa_org_perms,
+    google_billing_account_iam_member.tf_billing_user,
+    google_storage_bucket_iam_member.org_terraform_state_iam,
+    google_service_account_iam_member.org_admin_sa_user,
+    google_service_account_iam_member.org_admin_sa_impersonate_permissions,
+    google_organization_iam_member.org_admin_serviceusage_consumer,
+    google_folder_iam_member.org_admin_service_account_user,
+    google_folder_iam_member.org_admin_serviceusage_consumer,
+    google_storage_bucket_iam_member.orgadmins_state_iam
+  ]
 }
 
 output "terraform_sa_name" {
