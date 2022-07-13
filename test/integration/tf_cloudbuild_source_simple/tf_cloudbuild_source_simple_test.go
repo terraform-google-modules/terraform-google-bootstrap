@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTFCloudBuildCoreSimple(t *testing.T) {
+func TestTFCloudBuildSourceSimple(t *testing.T) {
 	bpt := tft.NewTFBlueprintTest(t)
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
