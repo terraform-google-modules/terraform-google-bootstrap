@@ -23,6 +23,3 @@ module "tf_source" {
   group_org_admins      = var.group_org_admins
   buckets_force_destroy = true
 }
-
-
-
