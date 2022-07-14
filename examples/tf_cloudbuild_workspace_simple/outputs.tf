@@ -35,8 +35,13 @@ output "state_bucket" {
 }
 
 output "logs_bucket" {
-  description = "Bucket for storing TF logs/plans"
+  description = "Bucket for storing TF logs"
   value       = module.tf_workspace.logs_bucket
+}
+
+output "artifacts_bucket" {
+  description = "Bucket for storing TF plans"
+  value       = module.tf_workspace.artifacts_bucket
 }
 
 output "csr_repo_url" {

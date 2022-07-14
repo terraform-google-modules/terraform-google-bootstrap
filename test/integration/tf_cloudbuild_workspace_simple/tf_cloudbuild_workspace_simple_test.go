@@ -46,10 +46,11 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-tf-configs@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
-		// state and log buckets
+		// artifacts, state and log buckets
 		logsBucket := lastElem(bpt.GetStringOutput("logs_bucket"), "/")
 		stateBucket := lastElem(bpt.GetStringOutput("state_bucket"), "/")
-		buckets := []string{logsBucket, stateBucket}
+		artifactsBucket := lastElem(bpt.GetStringOutput("artifacts_bucket"), "/")
+		buckets := []string{artifactsBucket, logsBucket, stateBucket}
 		for _, bucket := range buckets {
 			// we can't use runf since we need to override --format json with --json for alpha storage
 			bucketOP := gcloud.Run(t, fmt.Sprintf("alpha storage ls --buckets gs://%s", bucket), gcloud.WithCommonArgs([]string{"--project", projectID, "--json"})).Array()
@@ -113,10 +114,10 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 			switch branch {
 			case "plan":
 				assert.Equal(planTrigger, build.Get("buildTriggerId").String(), "was triggered by plan trigger")
-				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(logsBucket, "plan"), "artifacts were uploaded to the correct location")
+				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(artifactsBucket, "plan"), "artifacts were uploaded to the correct location")
 			case "main":
 				assert.Equal(applyTrigger, build.Get("buildTriggerId").String(), "was triggered by apply trigger")
-				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(logsBucket, "apply"), "artifacts were uploaded to the correct location")
+				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(artifactsBucket, "apply"), "artifacts were uploaded to the correct location")
 			}
 		}
 	})
