@@ -23,6 +23,24 @@ locals {
   state_bucket_self_link = var.create_state_bucket ? module.state_bucket[0].bucket.self_link : var.state_bucket_self_link
   state_bucket_name      = split("/", local.state_bucket_self_link)[length(split("/", local.state_bucket_self_link)) - 1]
   log_bucket_name        = split("/", module.log_bucket.bucket.self_link)[length(split("/", module.log_bucket.bucket.self_link)) - 1]
+  artifacts_bucket_name  = split("/", module.artifacts_bucket.bucket.self_link)[length(split("/", module.artifacts_bucket.bucket.self_link)) - 1]
+}
+
+
+module "artifacts_bucket" {
+  source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
+  version = "~> 3.2"
+
+  name          = "${local.default_prefix}-build-artifacts-${var.project_id}"
+  project_id    = var.project_id
+  location      = var.location
+  force_destroy = var.buckets_force_destroy
+}
+
+resource "google_storage_bucket_iam_member" "artifacts_admin" {
+  bucket = module.artifacts_bucket.bucket.self_link
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 
 module "log_bucket" {
