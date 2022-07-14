@@ -41,7 +41,6 @@ This module creates:
 | project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
-| use\_random\_suffix | Appends a 4 character random suffix to project ID. | `bool` | `true` | no |
 
 ## Outputs
 

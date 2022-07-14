@@ -37,12 +37,6 @@ variable "project_labels" {
   default     = {}
 }
 
-variable "use_random_suffix" {
-  description = "Appends a 4 character random suffix to project ID."
-  type        = bool
-  default     = true
-}
-
 variable "storage_bucket_labels" {
   description = "Labels to apply to the storage bucket."
   type        = map(string)

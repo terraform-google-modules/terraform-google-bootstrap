@@ -15,7 +15,8 @@
  */
 
 locals {
-  cloudbuild_project_id = var.project_id != "" ? var.project_id : "tf-cloudbuild-${random_id.suffix.hex}"
+  cloudbuild_project_id = var.project_id != "" ? var.project_id : "tf-cloudbuild-"
+  use_random_suffix     = var.project_id == ""
 
   cloudbuild_apis = [
     "cloudbuild.googleapis.com",
@@ -29,16 +30,12 @@ locals {
   activate_apis = distinct(concat(var.activate_apis, local.cloudbuild_apis))
 }
 
-resource "random_id" "suffix" {
-  byte_length = 2
-}
-
 module "cloudbuild_project" {
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 13.0"
 
   name                        = local.cloudbuild_project_id
-  random_project_id           = var.use_random_suffix
+  random_project_id           = local.use_random_suffix
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = var.org_id
@@ -47,6 +44,11 @@ module "cloudbuild_project" {
   labels                      = var.project_labels
 }
 
+// On the first run of cloud build submit, a bucket is automaticaly created with name "[PROJECT_ID]_cloudbuild"
+// https://cloud.google.com/sdk/gcloud/reference/builds/submit#:~:text=%5BPROJECT_ID%5D_cloudbuild
+// This bucket is create in the default region "US"
+// https://cloud.google.com/storage/docs/json_api/v1/buckets/insert#:~:text=or%20multi%2Dregion.-,Defaults%20to%20%22US%22,-.%20See%20Cloud%20Storage
+// Creating the bucket beforehand make it is possible to define a custom location.
 module "cloudbuild_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
   version = "~> 3.2"
@@ -57,8 +59,6 @@ module "cloudbuild_bucket" {
   labels        = var.storage_bucket_labels
   force_destroy = var.buckets_force_destroy
 }
-
-
 
 resource "google_sourcerepo_repository" "gcp_repo" {
   for_each = length(var.cloud_source_repos) > 0 ? toset(var.cloud_source_repos) : []
