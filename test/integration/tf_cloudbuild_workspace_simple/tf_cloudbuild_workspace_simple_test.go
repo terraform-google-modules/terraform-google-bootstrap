@@ -114,10 +114,10 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 			switch branch {
 			case "plan":
 				assert.Equal(planTrigger, build.Get("buildTriggerId").String(), "was triggered by plan trigger")
-				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(logsBucket, "plan"), "artifacts were uploaded to the correct location")
+				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(artifactsBucket, "plan"), "artifacts were uploaded to the correct location")
 			case "main":
 				assert.Equal(applyTrigger, build.Get("buildTriggerId").String(), "was triggered by apply trigger")
-				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(logsBucket, "apply"), "artifacts were uploaded to the correct location")
+				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(artifactsBucket, "apply"), "artifacts were uploaded to the correct location")
 			}
 		}
 	})
