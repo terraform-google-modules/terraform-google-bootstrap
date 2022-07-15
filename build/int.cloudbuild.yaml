@@ -73,6 +73,28 @@ steps:
 - id: destroy-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy simple-folder-default']
+
+- id: init-tfsource
+  waitFor:
+      - prepare
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage init --verbose']
+- id: apply-tfsource
+  waitFor:
+      - init-tfsource
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage apply --verbose']
+- id: verify-tfsource
+  waitFor:
+      - apply-tfsource
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage verify --verbose']
+- id: teardown-tfsource
+  waitFor:
+      - verify-tfsource
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage teardown --verbose']
+
 - id: init-tfbuilder
   waitFor:
       - prepare
@@ -93,6 +115,7 @@ steps:
       - verify-tfbuilder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilder --stage teardown --verbose']
+
 - id: init-tfworkspace
   waitFor:
       - prepare
@@ -113,6 +136,7 @@ steps:
       - verify-tfworkspace
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
+
 tags:
 - 'ci'
 - 'integration'
