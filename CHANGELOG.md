@@ -7,6 +7,20 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.0.0...v6.1.0) (2022-07-15)
+
+
+### Features
+
+* add artifacts bucket to tf workspace module ([#170](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/170)) ([fceee53](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/fceee53b9128db532f11290650e7cc94f04f4ea4))
+* CloudBuild workspace blueprint ([#162](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/162)) ([bcbbed2](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/bcbbed2ae09ded98e25d0462dfc920cfbb0f121c))
+* create Cloudbuild Source submodule ([#167](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/167)) ([2dc083f](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/2dc083f0f9e2d2c4442e93b022d6787f6007b049))
+
+
+### Bug Fixes
+
+* wait on IAM to return terraform_sa_email ([#166](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/166)) ([45830b7](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/45830b70a194e7f2169fd10ae7859bf97e786d20))
+
 ## [6.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v5.1.0...v6.0.0) (2022-06-23)
 
 
