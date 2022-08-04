@@ -16,7 +16,7 @@
 
 module "test-vpc-module" {
   source       = "terraform-google-modules/network/google"
-  version      = "~> 4.0.1"
+  version      = "~> 5.1.0"
   project_id   = var.project_id
   network_name = "my-custom-mode-network"
   mtu          = 1460
