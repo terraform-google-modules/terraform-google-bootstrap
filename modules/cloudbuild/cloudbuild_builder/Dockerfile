@@ -23,6 +23,7 @@ ENV ENV_TERRAFORM_VERSION=$TERRAFORM_VERSION
 ENV ENV_TERRAFORM_VERSION_SHA256SUM=$TERRAFORM_VERSION_SHA256SUM
 
 RUN apt-get update && \
+    apt-get -y install google-cloud-sdk-terraform-tools && \
     apt-get -y install curl jq unzip git ca-certificates && \
     curl https://releases.hashicorp.com/terraform/${ENV_TERRAFORM_VERSION}/terraform_${ENV_TERRAFORM_VERSION}_linux_amd64.zip \
       > terraform_linux_amd64.zip && \
