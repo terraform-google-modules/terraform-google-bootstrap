@@ -18,11 +18,16 @@ locals {
   gar_uri             = "${var.gar_repo_location}-docker.pkg.dev/${var.project_id}/${local.gar_name}/${var.image_name}"
   cloudbuild_sa       = coalesce(var.cloudbuild_sa, google_service_account.cb_sa[0].id)
   cloudbuild_sa_email = element(split("/", local.cloudbuild_sa), length(split("/", local.cloudbuild_sa)) - 1)
+  tf_version_parts    = split(".", var.terraform_version)
+  tf_full_version     = var.terraform_version
+  tf_minor_version    = "${local.tf_version_parts[0]}.${local.tf_version_parts[1]}"
+  tf_major_version    = local.tf_version_parts[0]
+
   # substitutions available in the CB trigger
   tags_subst = {
-    "_TERRAFORM_FULL_VERSION"  = "1.1.0",
-    "_TERRAFORM_MINOR_VERSION" = "1.1",
-    "_TERRAFORM_MAJOR_VERSION" = "1",
+    "_TERRAFORM_FULL_VERSION"  = "${local.tf_full_version}",
+    "_TERRAFORM_MINOR_VERSION" = "${local.tf_minor_version}",
+    "_TERRAFORM_MAJOR_VERSION" = "${local.tf_major_version}",
   }
   img_tags_subst = [for tag in keys(local.tags_subst) : "${local.gar_uri}:v$${${tag}}"]
 

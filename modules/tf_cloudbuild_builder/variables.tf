@@ -67,6 +67,12 @@ variable "gar_repo_location" {
   default     = "us"
 }
 
+variable "terraform_version" {
+  description = "The initial terraform version in semantic version format."
+  type        = string
+  default     = "1.1.0"
+}
+
 variable "image_name" {
   description = "Name of the image for the Terraform builder."
   type        = string
