@@ -43,6 +43,7 @@ This module creates:
 | gar\_repo\_name | Name of the Google Artifact Repository where the Terraform builder images are stored. | `string` | `"tf-runners"` | no |
 | image\_name | Name of the image for the Terraform builder. | `string` | `"terraform"` | no |
 | project\_id | GCP project for Cloud Build trigger,workflow and scheduler. | `string` | n/a | yes |
+| terraform\_version | The initial terraform version in semantic version format. | `string` | `"1.1.0"` | no |
 | trigger\_name | Name of the Cloud Build trigger building the Terraform builder. | `string` | `"tf-cloud-builder-build"` | no |
 | workflow\_name | Name of the workflow managing builds. | `string` | `"terraform-runner-workflow"` | no |
 | workflow\_region | The region of the workflow. | `string` | `"us-central1"` | no |
