@@ -7,6 +7,18 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.1.0...v6.2.0) (2022-08-19)
+
+
+### Features
+
+* allow configuration of initial terraform version in tf_cloudbuild_builder ([#189](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/189)) ([4f38396](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/4f3839608edf6d8c078e22b41b1a0ae27685b7fd))
+
+
+### Bug Fixes
+
+* add terraform-tools to the docker images ([#186](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/186)) ([c2d7b3f](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/c2d7b3ff2b878d9555338b465021db0c2c651d50))
+
 ## [6.1.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.0.0...v6.1.0) (2022-07-15)
 
 
