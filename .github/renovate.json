@@ -23,8 +23,12 @@
     {
       "matchDepTypes": ["require"],
       "groupName": "GO modules",
-      "postUpdateOptions": ["gomodTidy"],
       "separateMajorMinor":false
+    },
+    {
+      "matchPackageNames": ["go"],
+      "allowedVersions": "<1.19.0",
+      "postUpdateOptions": ["gomodTidy"]
     }
   ]
 }
