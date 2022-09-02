@@ -192,6 +192,12 @@ resource "google_organization_iam_member" "org_billing_admin" {
   member = "group:${var.group_billing_admins}"
 }
 
+resource "google_organization_iam_member" "org_billing_viewer" {
+  org_id = var.org_id
+  role   = "roles/resourcemanager.organizationViewer"
+  member = "group:${var.group_billing_admins}"
+}
+
 /***********************************************
   Organization permissions for Terraform.
  ***********************************************/
