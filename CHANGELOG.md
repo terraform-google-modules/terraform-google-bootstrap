@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.2.0...v6.2.1) (2022-09-07)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/stretchr/testify to v1.8.0 ([#179](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/179)) ([7779446](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/7779446644d672af6856c447ca6a2b52279fb2f7))
+
 ## [6.2.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.1.0...v6.2.0) (2022-08-19)
 
 
