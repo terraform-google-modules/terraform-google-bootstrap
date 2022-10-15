@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ruby '2.7.6'
+ruby '3.1.2'
 
 source 'https://rubygems.org/' do
   gem 'kitchen-terraform', '~> 4.8'
