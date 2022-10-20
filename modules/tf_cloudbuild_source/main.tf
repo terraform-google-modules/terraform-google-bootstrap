@@ -32,7 +32,7 @@ locals {
 
 module "cloudbuild_project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 13.0"
+  version = "~> 14.0"
 
   name                        = local.cloudbuild_project_id
   random_project_id           = local.use_random_suffix
