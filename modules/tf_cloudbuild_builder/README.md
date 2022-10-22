@@ -39,12 +39,14 @@ This module creates:
 | dockerfile\_repo\_ref | The branch or tag to use. Use refs/heads/branchname for branches or refs/tags/tagname for tags. | `string` | `"refs/heads/main"` | no |
 | dockerfile\_repo\_type | Type of repo | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
 | dockerfile\_repo\_uri | The URI of the repo where the Dockerfile for Terraform builder is stored | `string` | n/a | yes |
+| enable\_worker\_pool | Set to true to use a private worker pool in the Cloud Build Trigger. | `bool` | `false` | no |
 | gar\_repo\_location | Name of the location for the Google Artifact Repository. | `string` | `"us"` | no |
 | gar\_repo\_name | Name of the Google Artifact Repository where the Terraform builder images are stored. | `string` | `"tf-runners"` | no |
 | image\_name | Name of the image for the Terraform builder. | `string` | `"terraform"` | no |
 | project\_id | GCP project for Cloud Build trigger,workflow and scheduler. | `string` | n/a | yes |
 | terraform\_version | The initial terraform version in semantic version format. | `string` | `"1.1.0"` | no |
 | trigger\_name | Name of the Cloud Build trigger building the Terraform builder. | `string` | `"tf-cloud-builder-build"` | no |
+| worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
 | workflow\_name | Name of the workflow managing builds. | `string` | `"terraform-runner-workflow"` | no |
 | workflow\_region | The region of the workflow. | `string` | `"us-central1"` | no |
 | workflow\_sa | Custom SA email to be used by the workflow. Defaults to being created if empty. | `string` | `""` | no |

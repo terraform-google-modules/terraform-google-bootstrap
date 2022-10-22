@@ -18,6 +18,7 @@ locals {
   # extract email from CB SA id form projects/{{project}}/serviceAccounts/{{email}}
   cloudbuild_sa       = var.create_cloudbuild_sa ? google_service_account.cb_sa[0].id : var.cloudbuild_sa
   cloudbuild_sa_email = element(split("/", local.cloudbuild_sa), length(split("/", local.cloudbuild_sa)) - 1)
+  worker_pool_project = var.enable_worker_pool ? element(split("/", var.worker_pool_id), index(split("/", var.worker_pool_id), "projects") + 1, ) : ""
 
   # Optional roles for CB SA
   cb_sa_roles_expand = merge(
@@ -51,6 +52,14 @@ resource "google_project_iam_member" "cb_sa_roles" {
   project  = each.value.project_id
   role     = each.value.role
   member   = "serviceAccount:${local.cloudbuild_sa_email}"
+}
+
+resource "google_project_iam_member" "pool_user" {
+  count = var.enable_worker_pool ? 1 : 0
+
+  project = local.worker_pool_project
+  role    = "roles/cloudbuild.workerPoolUser"
+  member  = "serviceAccount:${data.google_project.cloudbuild_project[0].number}@cloudbuild.gserviceaccount.com"
 }
 
 # cross project impersonation if a custom CB SA is specified from a different project
