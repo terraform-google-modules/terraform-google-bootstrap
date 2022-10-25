@@ -52,18 +52,12 @@ locals {
   default_prefix = var.prefix != "" ? var.prefix : replace(var.tf_repo_dir != "" ? "${local.repo}-${var.tf_repo_dir}" : local.repo, "/", "-")
 
   # default substitutions
-  default_subst = var.enable_worker_pool ? {
+  default_subst = merge({
     "_TF_SA_EMAIL"          = local.cloudbuild_sa_email,
     "_STATE_BUCKET_NAME"    = local.state_bucket_name,
     "_LOG_BUCKET_NAME"      = local.log_bucket_name,
     "_ARTIFACT_BUCKET_NAME" = local.artifacts_bucket_name,
-    "_PRIVATE_POOL"         = var.worker_pool_id,
-    } : {
-    "_TF_SA_EMAIL"          = local.cloudbuild_sa_email,
-    "_STATE_BUCKET_NAME"    = local.state_bucket_name,
-    "_LOG_BUCKET_NAME"      = local.log_bucket_name,
-    "_ARTIFACT_BUCKET_NAME" = local.artifacts_bucket_name,
-  }
+  }, var.enable_worker_pool ? { "_PRIVATE_POOL" = var.worker_pool_id, } : {})
 
   # triggers that use private pools should have the same location of the pool
   worker_pool_location = var.enable_worker_pool ? element(split("/", var.worker_pool_id), index(split("/", var.worker_pool_id), "locations") + 1, ) : ""
