@@ -132,3 +132,15 @@ variable "tf_repo_type" {
     error_message = "Must be one of CLOUD_SOURCE_REPOSITORIES or GITHUB."
   }
 }
+
+variable "enable_worker_pool" {
+  description = "Set to true to use a private worker pool in the Cloud Build Trigger."
+  type        = bool
+  default     = false
+}
+
+variable "worker_pool_id" {
+  description = "Custom private worker pool ID. Format: 'projects/PROJECT_ID/locations/REGION/workerPools/PRIVATE_POOL_ID'."
+  type        = string
+  default     = ""
+}
