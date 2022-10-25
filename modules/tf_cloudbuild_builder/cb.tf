@@ -37,10 +37,15 @@ locals {
   source_repo_url_split = local.is_source_repo ? split("/", var.dockerfile_repo_uri) : []
   source_repo_project   = local.is_source_repo ? local.source_repo_url_split[4] : ""
   source_repo_name      = local.is_source_repo ? local.source_repo_url_split[6] : ""
+
+  # triggers that use private pools should have the same location of the pool
+  worker_pool_location = var.enable_worker_pool ? element(split("/", var.worker_pool_id), index(split("/", var.worker_pool_id), "locations") + 1, ) : ""
+  trigger_location     = var.enable_worker_pool ? local.worker_pool_location : "global"
 }
 
 resource "google_cloudbuild_trigger" "build_trigger" {
   project     = var.project_id
+  location    = local.trigger_location
   name        = var.trigger_name
   description = "Builds a Terraform runner image. Managed by Terraform."
   source_to_build {
@@ -66,6 +71,13 @@ resource "google_cloudbuild_trigger" "build_trigger" {
     }
     images      = local.img_tags_subst
     logs_bucket = module.bucket.bucket.url
+
+    dynamic "options" {
+      for_each = var.enable_worker_pool ? ["worker_pool"] : []
+      content {
+        worker_pool = var.worker_pool_id
+      }
+    }
   }
 
   substitutions   = local.tags_subst
