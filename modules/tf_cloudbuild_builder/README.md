@@ -45,6 +45,7 @@ This module creates:
 | image\_name | Name of the image for the Terraform builder. | `string` | `"terraform"` | no |
 | project\_id | GCP project for Cloud Build trigger,workflow and scheduler. | `string` | n/a | yes |
 | terraform\_version | The initial terraform version in semantic version format. | `string` | `"1.1.0"` | no |
+| trigger\_location | Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool. | `string` | `"global"` | no |
 | trigger\_name | Name of the Cloud Build trigger building the Terraform builder. | `string` | `"tf-cloud-builder-build"` | no |
 | worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
 | workflow\_name | Name of the workflow managing builds. | `string` | `"terraform-runner-workflow"` | no |
