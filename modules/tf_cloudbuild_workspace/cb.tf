@@ -58,17 +58,13 @@ locals {
     "_LOG_BUCKET_NAME"      = local.log_bucket_name,
     "_ARTIFACT_BUCKET_NAME" = local.artifacts_bucket_name,
   }, var.enable_worker_pool ? { "_PRIVATE_POOL" = var.worker_pool_id, } : {})
-
-  # triggers that use private pools should have the same location of the pool
-  worker_pool_location = var.enable_worker_pool ? element(split("/", var.worker_pool_id), index(split("/", var.worker_pool_id), "locations") + 1, ) : ""
-  trigger_location     = var.enable_worker_pool ? local.worker_pool_location : "global"
 }
 
 resource "google_cloudbuild_trigger" "triggers" {
   for_each = local.default_triggers_steps
 
   project     = var.project_id
-  location    = local.trigger_location
+  location    = var.trigger_location
   name        = "${local.default_prefix}-${each.key}"
   description = "${title(each.key)} Terraform configs for ${var.tf_repo_uri} ${var.tf_repo_dir}. Managed by Terraform."
 
