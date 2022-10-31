@@ -85,6 +85,12 @@ variable "trigger_name" {
   default     = "tf-cloud-builder-build"
 }
 
+variable "trigger_location" {
+  description = "Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool."
+  type        = string
+  default     = "global"
+}
+
 variable "dockerfile_repo_uri" {
   description = "The URI of the repo where the Dockerfile for Terraform builder is stored"
   type        = string
