@@ -114,7 +114,7 @@ variable "sa_enable_impersonation" {
   default     = false
 }
 
-variable "create_terraform_service_account" {
+variable "create_terraform_sa" {
   description = "If the Terraform service account should be created."
   type        = bool
   default     = true

@@ -21,7 +21,7 @@ locals {
   state_bucket_name          = var.state_bucket_name != "" ? local.supplied_bucket_name : local.generated_bucket_name
   impersonation_apis         = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
   activate_apis              = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
-  org_project_creators_tf_sa = var.create_terraform_service_account ? ["serviceAccount:${google_service_account.org_terraform[0].email}"] : []
+  org_project_creators_tf_sa = var.create_terraform_sa ? ["serviceAccount:${google_service_account.org_terraform[0].email}"] : []
   org_project_creators       = distinct(concat(var.org_project_creators, local.org_project_creators_tf_sa, ["group:${var.group_org_admins}"]))
   is_organization            = var.parent_folder == "" ? true : false
   parent_id                  = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
@@ -88,7 +88,7 @@ module "enable_cross_project_service_account_usage" {
 *******************************************/
 
 resource "google_service_account" "org_terraform" {
-  count = var.create_terraform_service_account ? 1 : 0
+  count = var.create_terraform_sa ? 1 : 0
 
   project      = module.seed_project.project_id
   account_id   = var.tf_service_account_id
@@ -204,7 +204,7 @@ resource "google_organization_iam_member" "org_billing_admin" {
  ***********************************************/
 
 resource "google_organization_iam_member" "tf_sa_org_perms" {
-  for_each = var.create_terraform_service_account ? toset(var.sa_org_iam_permissions) : []
+  for_each = var.create_terraform_sa ? toset(var.sa_org_iam_permissions) : []
 
   org_id = var.org_id
   role   = each.value
@@ -212,7 +212,7 @@ resource "google_organization_iam_member" "tf_sa_org_perms" {
 }
 
 resource "google_billing_account_iam_member" "tf_billing_user" {
-  count = var.grant_billing_user && var.create_terraform_service_account ? 1 : 0
+  count = var.grant_billing_user && var.create_terraform_sa ? 1 : 0
 
   billing_account_id = var.billing_account
   role               = "roles/billing.user"
@@ -220,7 +220,7 @@ resource "google_billing_account_iam_member" "tf_billing_user" {
 }
 
 resource "google_storage_bucket_iam_member" "org_terraform_state_iam" {
-  count = var.create_terraform_service_account ? 1 : 0
+  count = var.create_terraform_sa ? 1 : 0
 
   bucket = google_storage_bucket.org_terraform_state.name
   role   = "roles/storage.admin"
@@ -233,7 +233,7 @@ resource "google_storage_bucket_iam_member" "org_terraform_state_iam" {
  ***********************************************/
 
 resource "google_service_account_iam_member" "org_admin_sa_user" {
-  count = var.sa_enable_impersonation && var.create_terraform_service_account ? 1 : 0
+  count = var.sa_enable_impersonation && var.create_terraform_sa ? 1 : 0
 
   service_account_id = google_service_account.org_terraform[0].name
   role               = "roles/iam.serviceAccountUser"
@@ -241,7 +241,7 @@ resource "google_service_account_iam_member" "org_admin_sa_user" {
 }
 
 resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissions" {
-  count = var.sa_enable_impersonation && var.create_terraform_service_account ? 1 : 0
+  count = var.sa_enable_impersonation && var.create_terraform_sa ? 1 : 0
 
   service_account_id = google_service_account.org_terraform[0].name
   role               = "roles/iam.serviceAccountTokenCreator"
