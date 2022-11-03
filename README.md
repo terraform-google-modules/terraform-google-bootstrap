@@ -48,6 +48,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 |------|-------------|------|---------|:--------:|
 | activate\_apis | List of APIs to enable in the seed project. | `list(string)` | <pre>[<br>  "serviceusage.googleapis.com",<br>  "servicenetworking.googleapis.com",<br>  "compute.googleapis.com",<br>  "logging.googleapis.com",<br>  "bigquery.googleapis.com",<br>  "cloudresourcemanager.googleapis.com",<br>  "cloudbilling.googleapis.com",<br>  "iam.googleapis.com",<br>  "admin.googleapis.com",<br>  "appengine.googleapis.com",<br>  "storage-api.googleapis.com",<br>  "monitoring.googleapis.com"<br>]</pre> | no |
 | billing\_account | The ID of the billing account to associate projects with. | `string` | n/a | yes |
+| create\_terraform\_sa | If the Terraform service account should be created. | `bool` | `true` | no |
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
 | encrypt\_gcs\_bucket\_tfstate | Encrypt bucket used for storing terraform state files in seed project. | `bool` | `false` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
