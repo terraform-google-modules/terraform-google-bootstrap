@@ -88,6 +88,18 @@ variable "cloudbuild_env_vars" {
   default     = []
 }
 
+variable "cloudbuild_included_files" {
+  description = "Optional list. Changes affecting at least one of these files will invoke a build."
+  type        = list(string)
+  default     = []
+}
+
+variable "cloudbuild_ignored_files" {
+  description = "Optional list. Changes only affecting ignored files will not invoke a build."
+  type        = list(string)
+  default     = []
+}
+
 variable "buckets_force_destroy" {
   description = "When deleting the bucket for storing CloudBuild logs/TF state, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects."
   type        = bool

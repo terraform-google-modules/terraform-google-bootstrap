@@ -29,7 +29,7 @@ output "seed_project_id" {
 
 output "terraform_sa_email" {
   description = "Email for privileged service account for Terraform."
-  value       = google_service_account.org_terraform.email
+  value       = var.create_terraform_sa ? google_service_account.org_terraform[0].email : ""
   depends_on = [
     google_organization_iam_member.tf_sa_org_perms,
     google_billing_account_iam_member.tf_billing_user,
@@ -45,7 +45,7 @@ output "terraform_sa_email" {
 
 output "terraform_sa_name" {
   description = "Fully qualified name for privileged service account for Terraform."
-  value       = google_service_account.org_terraform.name
+  value       = var.create_terraform_sa ? google_service_account.org_terraform[0].name : ""
 }
 
 /******************************************

@@ -114,6 +114,12 @@ variable "sa_enable_impersonation" {
   default     = false
 }
 
+variable "create_terraform_sa" {
+  description = "If the Terraform service account should be created."
+  type        = bool
+  default     = true
+}
+
 variable "state_bucket_name" {
   description = "Custom state bucket name. If not supplied, the default name is {project_prefix}-tfstate-{random suffix}."
   default     = ""
