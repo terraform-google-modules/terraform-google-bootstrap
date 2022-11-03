@@ -134,6 +134,8 @@ resource "google_cloudbuild_trigger" "triggers" {
   substitutions   = merge(local.default_subst, var.substitutions)
   service_account = local.cloudbuild_sa
   filename        = local.default_triggers_explicit[each.key]
+  included_files  = var.cloudbuild_included_files
+  ignored_files   = var.cloudbuild_ignored_files
 
   depends_on = [
     google_project_iam_member.cb_sa_roles
