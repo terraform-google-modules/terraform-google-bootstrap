@@ -9,7 +9,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "tfbuilder" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
-  version = "~> 5.0"
+  version = "~> 6.3"
 
   project_id          = module.enabled_google_apis.project_id
   dockerfile_repo_uri = "https://github.com/org/repo"

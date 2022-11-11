@@ -7,6 +7,16 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.2.0...v6.3.0) (2022-11-08)
+
+
+### Features
+
+* add support for `included_files` and `ignored_files` of `google_cloudbuild_trigger` ([#207](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/207)) ([d2e5a75](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/d2e5a7519e0374a82fd5ab2489de4d94e772c392))
+* add support for optional private worker pool usage ([#201](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/201)) ([d1035ed](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/d1035ed7635917c197032917d361b10880cea4c0))
+* create variable for providing the trigger location ([#206](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/206)) ([54ca307](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/54ca30787eb8cd599ea6de1a586c19db13f55968))
+* creation of the Terraform service account should be optional ([#209](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/209)) ([9bb2800](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/9bb280044f1430cb3f042b05906736f0b9754a05))
+
 ## [6.2.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.1.0...v6.2.0) (2022-08-19)
 
 
