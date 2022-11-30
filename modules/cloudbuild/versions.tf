@@ -28,6 +28,18 @@ terraform {
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
       version = ">= 3.50, < 5.0, != 4.31.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.1"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.9"
+    }
   }
 
   provider_meta "google" {

@@ -196,11 +196,13 @@ variable "key_protection_level" {
 }
 
 variable "key_rotation_period" {
-  type    = string
-  default = null
+  description = "The rotation period of the key."
+  type        = string
+  default     = null
 }
 
 variable "kms_prevent_destroy" {
   description = "Set the prevent_destroy lifecycle attribute on keys."
+  type        = bool
   default     = true
 }

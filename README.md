@@ -57,7 +57,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | group\_billing\_admins | Google Group for GCP Billing Administrators | `string` | n/a | yes |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | key\_protection\_level | The protection level to use when creating a version based on this template. Default value: "SOFTWARE" Possible values: ["SOFTWARE", "HSM"] | `string` | `"SOFTWARE"` | no |
-| key\_rotation\_period | n/a | `string` | `null` | no |
+| key\_rotation\_period | The rotation period of the key. | `string` | `null` | no |
 | kms\_prevent\_destroy | Set the prevent\_destroy lifecycle attribute on keys. | `bool` | `true` | no |
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group\_org\_admins variable across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/resourcemanager.organizationAdmin"<br>]</pre> | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
