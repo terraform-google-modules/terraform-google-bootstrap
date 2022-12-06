@@ -61,6 +61,18 @@ variable "state_bucket_self_link" {
   default     = ""
 }
 
+variable "log_bucket_name" {
+  description = "Custom bucket name for Cloud Build logs."
+  type        = string
+  default     = ""
+}
+
+variable "artifacts_bucket_name" {
+  description = "Custom bucket name for Cloud Build artifacts."
+  type        = string
+  default     = ""
+}
+
 variable "cloudbuild_sa_roles" {
   description = "Optional to assign to custom CloudBuild SA. Map of project name or any static key to object with project_id and list of roles."
   type = map(object({
