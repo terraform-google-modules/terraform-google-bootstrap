@@ -128,3 +128,8 @@ variable "worker_pool_id" {
   default     = ""
 }
 
+variable "bucket_name" {
+  description = "Custom bucket name for Cloud Build logs."
+  type        = string
+  default     = ""
+}

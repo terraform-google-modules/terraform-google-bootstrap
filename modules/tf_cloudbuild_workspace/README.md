@@ -37,6 +37,7 @@ This module creates:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| artifacts\_bucket\_name | Custom bucket name for Cloud Build artifacts. | `string` | `""` | no |
 | buckets\_force\_destroy | When deleting the bucket for storing CloudBuild logs/TF state, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_apply\_filename | Optional Cloud Build YAML definition used for terraform apply. Defaults to using inline definition. | `string` | `null` | no |
 | cloudbuild\_env\_vars | Optional list of environment variables to be used in builds. List of strings of form KEY=VALUE expected. | `list(string)` | `[]` | no |
@@ -50,6 +51,7 @@ This module creates:
 | diff\_sa\_project | Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up. | `bool` | `false` | no |
 | enable\_worker\_pool | Set to true to use a private worker pool in the Cloud Build Trigger. | `bool` | `false` | no |
 | location | Location for build logs/state bucket | `string` | `"us-central1"` | no |
+| log\_bucket\_name | Custom bucket name for Cloud Build logs. | `string` | `""` | no |
 | prefix | Prefix of the state/log buckets and triggers planning/applying config. If unset computes a prefix from tf\_repo\_uri and tf\_repo\_dir variables. | `string` | `""` | no |
 | project\_id | GCP project for Cloud Build triggers, state and log buckets. | `string` | n/a | yes |
 | state\_bucket\_self\_link | Custom GCS bucket for storing TF state. Defaults to being created if empty. | `string` | `""` | no |

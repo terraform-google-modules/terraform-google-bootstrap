@@ -22,6 +22,7 @@ locals {
   tf_full_version     = var.terraform_version
   tf_minor_version    = "${local.tf_version_parts[0]}.${local.tf_version_parts[1]}"
   tf_major_version    = local.tf_version_parts[0]
+  log_bucket_name     = var.bucket_name != "" ? var.bucket_name : "tf-cloudbuilder-build-logs-${var.project_id}"
 
   # substitutions available in the CB trigger
   tags_subst = {
@@ -105,7 +106,7 @@ module "bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
   version = "~> 3.2"
 
-  name          = "tf-cloudbuilder-build-logs-${var.project_id}"
+  name          = local.log_bucket_name
   project_id    = var.project_id
   location      = var.gar_repo_location
   force_destroy = var.cb_logs_bucket_force_destroy

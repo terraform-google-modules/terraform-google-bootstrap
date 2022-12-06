@@ -31,7 +31,7 @@ module "artifacts_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
   version = "~> 3.2"
 
-  name          = "${local.default_prefix}-build-artifacts-${var.project_id}"
+  name          = var.artifacts_bucket_name != "" ? var.artifacts_bucket_name : "${local.default_prefix}-build-artifacts-${var.project_id}"
   project_id    = var.project_id
   location      = var.location
   force_destroy = var.buckets_force_destroy
@@ -47,7 +47,7 @@ module "log_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
   version = "~> 3.2"
 
-  name          = "${local.default_prefix}-build-logs-${var.project_id}"
+  name          = var.log_bucket_name != "" ? var.log_bucket_name : "${local.default_prefix}-build-logs-${var.project_id}"
   project_id    = var.project_id
   location      = var.location
   force_destroy = var.buckets_force_destroy
