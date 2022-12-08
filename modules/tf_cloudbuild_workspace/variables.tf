@@ -43,6 +43,12 @@ variable "cloudbuild_sa" {
   default     = ""
 }
 
+variable "cloudbuild_sa_name" {
+  description = "Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty"
+  type        = string
+  default     = ""
+}
+
 variable "diff_sa_project" {
   description = "Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up."
   type        = bool
@@ -57,6 +63,12 @@ variable "create_state_bucket" {
 
 variable "state_bucket_self_link" {
   description = "Custom GCS bucket for storing TF state. Defaults to being created if empty."
+  type        = string
+  default     = ""
+}
+
+variable "state_bucket_name" {
+  description = "Custom bucket name for storing TF state. Used if `create_state_bucket` is true. Defaults to generated name if empty."
   type        = string
   default     = ""
 }
