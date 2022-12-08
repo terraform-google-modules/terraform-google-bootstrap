@@ -37,14 +37,14 @@ variable "create_cloudbuild_sa" {
   default     = true
 }
 
-variable "cloudbuild_sa" {
-  description = "Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by the CloudBuild trigger. Defaults to being created if empty."
+variable "create_cloudbuild_sa_name" {
+  description = "Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty"
   type        = string
   default     = ""
 }
 
-variable "cloudbuild_sa_name" {
-  description = "Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty"
+variable "cloudbuild_sa" {
+  description = "Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by the CloudBuild trigger. Defaults to being created if empty."
   type        = string
   default     = ""
 }
@@ -61,14 +61,14 @@ variable "create_state_bucket" {
   default     = true
 }
 
-variable "state_bucket_self_link" {
-  description = "Custom GCS bucket for storing TF state. Defaults to being created if empty."
+variable "create_state_bucket_name" {
+  description = "Custom bucket name for storing TF state. Used if `create_state_bucket` is true. Defaults to generated name if empty."
   type        = string
   default     = ""
 }
 
-variable "state_bucket_name" {
-  description = "Custom bucket name for storing TF state. Used if `create_state_bucket` is true. Defaults to generated name if empty."
+variable "state_bucket_self_link" {
+  description = "Custom GCS bucket for storing TF state. Defaults to being created if empty."
   type        = string
   default     = ""
 }

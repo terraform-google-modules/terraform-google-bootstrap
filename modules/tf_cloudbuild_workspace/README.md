@@ -45,17 +45,17 @@ This module creates:
 | cloudbuild\_included\_files | Optional list. Changes affecting at least one of these files will invoke a build. | `list(string)` | `[]` | no |
 | cloudbuild\_plan\_filename | Optional Cloud Build YAML definition used for terraform plan. Defaults to using inline definition. | `string` | `null` | no |
 | cloudbuild\_sa | Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
-| cloudbuild\_sa\_name | Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty | `string` | `""` | no |
 | cloudbuild\_sa\_roles | Optional to assign to custom CloudBuild SA. Map of project name or any static key to object with project\_id and list of roles. | <pre>map(object({<br>    project_id = string<br>    roles      = list(string)<br>  }))</pre> | `{}` | no |
 | create\_cloudbuild\_sa | Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified. | `bool` | `true` | no |
+| create\_cloudbuild\_sa\_name | Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty | `string` | `""` | no |
 | create\_state\_bucket | Create a GCS bucket for storing state. If false `state_bucket_self_link` has to be specified. | `bool` | `true` | no |
+| create\_state\_bucket\_name | Custom bucket name for storing TF state. Used if `create_state_bucket` is true. Defaults to generated name if empty. | `string` | `""` | no |
 | diff\_sa\_project | Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up. | `bool` | `false` | no |
 | enable\_worker\_pool | Set to true to use a private worker pool in the Cloud Build Trigger. | `bool` | `false` | no |
 | location | Location for build logs/state bucket | `string` | `"us-central1"` | no |
 | log\_bucket\_name | Custom bucket name for Cloud Build logs. | `string` | `""` | no |
 | prefix | Prefix of the state/log buckets and triggers planning/applying config. If unset computes a prefix from tf\_repo\_uri and tf\_repo\_dir variables. | `string` | `""` | no |
 | project\_id | GCP project for Cloud Build triggers, state and log buckets. | `string` | n/a | yes |
-| state\_bucket\_name | Custom bucket name for storing TF state. Used if `create_state_bucket` is true. Defaults to generated name if empty. | `string` | `""` | no |
 | state\_bucket\_self\_link | Custom GCS bucket for storing TF state. Defaults to being created if empty. | `string` | `""` | no |
 | substitutions | Map of substitutions to use in builds. | `map(string)` | `{}` | no |
 | tf\_apply\_branches | List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default. | `list(string)` | <pre>[<br>  "main"<br>]</pre> | no |
