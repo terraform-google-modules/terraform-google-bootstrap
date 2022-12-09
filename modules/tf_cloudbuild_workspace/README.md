@@ -40,6 +40,7 @@ This module creates:
 | artifacts\_bucket\_name | Custom bucket name for Cloud Build artifacts. | `string` | `""` | no |
 | buckets\_force\_destroy | When deleting the bucket for storing CloudBuild logs/TF state, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_apply\_filename | Optional Cloud Build YAML definition used for terraform apply. Defaults to using inline definition. | `string` | `null` | no |
+| cloudbuild\_apply\_manual\_approval | This is only for the 'xxx-apply' trigger. If this is set on a build, it will become pending when it is run, and will need to be explicitly approved to start. | `bool` | `false` | no |
 | cloudbuild\_env\_vars | Optional list of environment variables to be used in builds. List of strings of form KEY=VALUE expected. | `list(string)` | `[]` | no |
 | cloudbuild\_ignored\_files | Optional list. Changes only affecting ignored files will not invoke a build. | `list(string)` | `[]` | no |
 | cloudbuild\_included\_files | Optional list. Changes affecting at least one of these files will invoke a build. | `list(string)` | `[]` | no |

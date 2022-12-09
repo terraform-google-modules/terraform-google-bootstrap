@@ -124,6 +124,12 @@ variable "cloudbuild_ignored_files" {
   default     = []
 }
 
+variable "cloudbuild_apply_manual_approval" {
+  description = "This is only for the 'xxx-apply' trigger. If this is set on a build, it will become pending when it is run, and will need to be explicitly approved to start."
+  type        = bool
+  default     = false
+}
+
 variable "buckets_force_destroy" {
   description = "When deleting the bucket for storing CloudBuild logs/TF state, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects."
   type        = bool
