@@ -33,6 +33,7 @@ This module creates:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| bucket\_name | Custom bucket name for Cloud Build logs. | `string` | `""` | no |
 | cb\_logs\_bucket\_force\_destroy | When deleting the bucket for storing CloudBuild logs, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_sa | Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
 | dockerfile\_repo\_dir | The directory inside the repo where the Dockerfile is located. If empty defaults to repo root. | `string` | `""` | no |

@@ -36,7 +36,7 @@ locals {
 resource "google_service_account" "cb_sa" {
   count        = var.create_cloudbuild_sa ? 1 : 0
   project      = var.project_id
-  account_id   = "tf-cb-${local.default_prefix}"
+  account_id   = var.create_cloudbuild_sa_name != "" ? var.create_cloudbuild_sa_name : "tf-cb-${local.default_prefix}"
   display_name = "SA for Terraform build trigger ${local.default_prefix}. Managed by Terraform."
 }
 
