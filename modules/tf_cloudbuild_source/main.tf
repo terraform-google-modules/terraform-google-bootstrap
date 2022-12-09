@@ -36,6 +36,7 @@ module "cloudbuild_project" {
 
   name                        = local.cloudbuild_project_id
   random_project_id           = local.use_random_suffix
+  random_project_id_length    = 4
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = var.org_id

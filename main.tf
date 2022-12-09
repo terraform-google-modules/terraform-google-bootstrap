@@ -61,6 +61,7 @@ module "seed_project" {
   version                     = "~> 14.0"
   name                        = local.seed_project_id
   random_project_id           = var.random_suffix
+  random_project_id_length    = 4
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = local.seed_org_depends_on
