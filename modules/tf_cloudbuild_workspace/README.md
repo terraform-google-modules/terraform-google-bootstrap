@@ -47,7 +47,9 @@ This module creates:
 | cloudbuild\_sa | Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
 | cloudbuild\_sa\_roles | Optional to assign to custom CloudBuild SA. Map of project name or any static key to object with project\_id and list of roles. | <pre>map(object({<br>    project_id = string<br>    roles      = list(string)<br>  }))</pre> | `{}` | no |
 | create\_cloudbuild\_sa | Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified. | `bool` | `true` | no |
+| create\_cloudbuild\_sa\_name | Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty | `string` | `""` | no |
 | create\_state\_bucket | Create a GCS bucket for storing state. If false `state_bucket_self_link` has to be specified. | `bool` | `true` | no |
+| create\_state\_bucket\_name | Custom bucket name for storing TF state. Used if `create_state_bucket` is true. Defaults to generated name if empty. | `string` | `""` | no |
 | diff\_sa\_project | Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up. | `bool` | `false` | no |
 | enable\_worker\_pool | Set to true to use a private worker pool in the Cloud Build Trigger. | `bool` | `false` | no |
 | location | Location for build logs/state bucket | `string` | `"us-central1"` | no |

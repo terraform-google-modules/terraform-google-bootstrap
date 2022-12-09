@@ -65,7 +65,7 @@ module "state_bucket" {
   version = "~> 3.2"
   count   = var.create_state_bucket ? 1 : 0
 
-  name          = "${local.default_prefix}-build-state-${var.project_id}"
+  name          = var.create_state_bucket_name != "" ? var.create_state_bucket_name : "${local.default_prefix}-build-state-${var.project_id}"
   project_id    = var.project_id
   location      = var.location
   force_destroy = var.buckets_force_destroy
