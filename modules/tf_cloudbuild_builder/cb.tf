@@ -26,9 +26,9 @@ locals {
 
   # substitutions available in the CB trigger
   tags_subst = {
-    "_TERRAFORM_FULL_VERSION"  = "${local.tf_full_version}",
-    "_TERRAFORM_MINOR_VERSION" = "${local.tf_minor_version}",
-    "_TERRAFORM_MAJOR_VERSION" = "${local.tf_major_version}",
+    "_TERRAFORM_FULL_VERSION"  = local.tf_full_version,
+    "_TERRAFORM_MINOR_VERSION" = local.tf_minor_version,
+    "_TERRAFORM_MAJOR_VERSION" = local.tf_major_version,
   }
   img_tags_subst = [for tag in keys(local.tags_subst) : "${local.gar_uri}:v$${${tag}}"]
 

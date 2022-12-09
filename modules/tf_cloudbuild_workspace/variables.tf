@@ -163,11 +163,13 @@ variable "tf_apply_branches" {
 
 variable "tf_repo_dir" {
   description = "The directory inside the repo where the Terrafrom root config is located. If empty defaults to repo root."
+  type        = string
   default     = ""
 }
 
 variable "tf_repo_type" {
   description = "Type of repo"
+  type        = string
   default     = "CLOUD_SOURCE_REPOSITORIES"
   validation {
     condition     = contains(["CLOUD_SOURCE_REPOSITORIES", "GITHUB"], var.tf_repo_type)
