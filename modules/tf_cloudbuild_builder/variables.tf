@@ -104,11 +104,13 @@ variable "dockerfile_repo_ref" {
 
 variable "dockerfile_repo_dir" {
   description = "The directory inside the repo where the Dockerfile is located. If empty defaults to repo root."
+  type        = string
   default     = ""
 }
 
 variable "dockerfile_repo_type" {
   description = "Type of repo"
+  type        = string
   default     = "CLOUD_SOURCE_REPOSITORIES"
   validation {
     condition     = contains(["UNKNOWN", "CLOUD_SOURCE_REPOSITORIES", "GITHUB", "BITBUCKET_SERVER"], var.dockerfile_repo_type)
