@@ -1,0 +1,210 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  name: terraform-google-bootstrap
+  annotations:
+    config.kubernetes.io/local-config: "true"
+spec:
+  title: Basic Cloud Build
+  source:
+    repo: https://github.com/terraform-google-modules/terraform-google-bootstrap.git
+    sourceType: git
+  version: 6.4.0
+  actuationTool:
+    type: Terraform
+    version: '>=0.13.0'
+  examples:
+  - name: cloudbuild_enabled
+    location: examples/cloudbuild_enabled
+  - name: simple
+    location: examples/simple
+  - name: simple-folder
+    location: examples/simple-folder
+  - name: tf_cloudbuild_builder_simple
+    location: examples/tf_cloudbuild_builder_simple
+  - name: tf_cloudbuild_source_simple
+    location: examples/tf_cloudbuild_source_simple
+  - name: tf_cloudbuild_workspace_simple
+    location: examples/tf_cloudbuild_workspace_simple
+  variables:
+  - name: activate_apis
+    description: List of APIs to enable in the Cloudbuild project.
+    type: list(string)
+    default:
+    - serviceusage.googleapis.com
+    - servicenetworking.googleapis.com
+    - compute.googleapis.com
+    - logging.googleapis.com
+    - bigquery.googleapis.com
+    - cloudresourcemanager.googleapis.com
+    - cloudbilling.googleapis.com
+    - iam.googleapis.com
+    - admin.googleapis.com
+    - appengine.googleapis.com
+    - storage-api.googleapis.com
+    required: false
+  - name: billing_account
+    description: The ID of the billing account to associate projects with.
+    type: string
+    required: true
+  - name: cloud_source_repos
+    description: List of Cloud Source Repos to create with CloudBuild triggers.
+    type: list(string)
+    default:
+    - gcp-org
+    - gcp-networks
+    - gcp-projects
+    required: false
+  - name: cloudbuild_apply_filename
+    description: Path and name of Cloud Build YAML definition used for terraform apply.
+    type: string
+    default: cloudbuild-tf-apply.yaml
+    required: false
+  - name: cloudbuild_plan_filename
+    description: Path and name of Cloud Build YAML definition used for terraform plan.
+    type: string
+    default: cloudbuild-tf-plan.yaml
+    required: false
+  - name: create_cloud_source_repos
+    description: If shared Cloud Source Repos should be created.
+    type: bool
+    default: true
+    required: false
+  - name: default_region
+    description: Default region to create resources where applicable.
+    type: string
+    default: us-central1
+    required: false
+  - name: folder_id
+    description: The ID of a folder to host this project
+    type: string
+    default: ""
+    required: false
+  - name: gar_repo_name
+    description: Custom name to use for GAR repo.
+    type: string
+    default: ""
+    required: false
+  - name: gcloud_version
+    description: Default gcloud image version.
+    type: string
+    default: 388.0.0-slim
+    required: false
+  - name: group_org_admins
+    description: Google Group for GCP Organization Administrators
+    type: string
+    required: true
+  - name: impersonate_service_account
+    description: The service account to impersonate while running the gcloud builds submit command.
+    type: string
+    default: ""
+    required: false
+  - name: org_id
+    description: GCP Organization ID
+    type: string
+    required: true
+  - name: project_id
+    description: Custom project ID to use for project created.
+    type: string
+    default: ""
+    required: false
+  - name: project_labels
+    description: Labels to apply to the project.
+    type: map(string)
+    default: {}
+    required: false
+  - name: project_prefix
+    description: Name prefix to use for projects created.
+    type: string
+    default: cft
+    required: false
+  - name: random_suffix
+    description: Appends a 4 character random suffix to project ID and GCS bucket name.
+    type: bool
+    default: true
+    required: false
+  - name: sa_enable_impersonation
+    description: Allow org_admins group to impersonate service account & enable APIs required.
+    type: bool
+    default: false
+    required: false
+  - name: storage_bucket_labels
+    description: Labels to apply to the storage bucket.
+    type: map(string)
+    default: {}
+    required: false
+  - name: terraform_apply_branches
+    description: List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default.
+    type: list(string)
+    default:
+    - main
+    required: false
+  - name: terraform_sa_email
+    description: Email for terraform service account.
+    type: string
+    required: true
+  - name: terraform_sa_name
+    description: Fully-qualified name of the terraform service account.
+    type: string
+    required: true
+  - name: terraform_state_bucket
+    description: Default state bucket, used in Cloud Build substitutions.
+    type: string
+    required: true
+  - name: terraform_version
+    description: Default terraform version.
+    type: string
+    default: 1.0.2
+    required: false
+  - name: terraform_version_sha256sum
+    description: sha256sum for default terraform version.
+    type: string
+    default: 7329f887cc5a5bda4bedaec59c439a4af7ea0465f83e3c1b0f4d04951e1181f4
+    required: false
+  outputs:
+  - name: cloudbuild_project_id
+    description: Project where CloudBuild configuration and terraform container image will reside.
+  - name: csr_repos
+    description: List of Cloud Source Repos created by the module, linked to Cloud Build triggers.
+  - name: gcs_bucket_cloudbuild_artifacts
+    description: Bucket used to store Cloud/Build artifacts in CloudBuild project.
+  - name: gcs_bucket_cloudbuild_logs
+    description: Bucket used to store Cloud/Build logs in CloudBuild project.
+  - name: tf_runner_artifact_repo
+    description: GAR Repo created to store runner images
+  roles:
+  - level: Project
+    roles:
+    - roles/owner
+  - level: Project
+    roles:
+    - roles/billing.user
+    - roles/resourcemanager.organizationAdmin
+    - roles/orgpolicy.policyAdmin
+    - roles/resourcemanager.projectCreator
+  services:
+  - cloudresourcemanager.googleapis.com
+  - cloudbilling.googleapis.com
+  - iam.googleapis.com
+  - storage-api.googleapis.com
+  - serviceusage.googleapis.com
+  - cloudbuild.googleapis.com
+  - sourcerepo.googleapis.com
+  - cloudkms.googleapis.com
+  - artifactregistry.googleapis.com
+  - workflows.googleapis.com
+  - cloudscheduler.googleapis.com

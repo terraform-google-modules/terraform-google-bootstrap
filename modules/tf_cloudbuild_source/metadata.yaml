@@ -1,0 +1,135 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  name: terraform-google-bootstrap
+  annotations:
+    config.kubernetes.io/local-config: "true"
+spec:
+  title: TF Cloud Build Source
+  source:
+    repo: https://github.com/terraform-google-modules/terraform-google-bootstrap.git
+    sourceType: git
+  version: 6.4.0
+  actuationTool:
+    type: Terraform
+    version: '>=0.13.0'
+  examples:
+  - name: cloudbuild_enabled
+    location: examples/cloudbuild_enabled
+  - name: simple
+    location: examples/simple
+  - name: simple-folder
+    location: examples/simple-folder
+  - name: tf_cloudbuild_builder_simple
+    location: examples/tf_cloudbuild_builder_simple
+  - name: tf_cloudbuild_source_simple
+    location: examples/tf_cloudbuild_source_simple
+  - name: tf_cloudbuild_workspace_simple
+    location: examples/tf_cloudbuild_workspace_simple
+  variables:
+  - name: activate_apis
+    description: List of APIs to enable in the Cloudbuild project.
+    type: list(string)
+    default:
+    - serviceusage.googleapis.com
+    - servicenetworking.googleapis.com
+    - compute.googleapis.com
+    - logging.googleapis.com
+    - iam.googleapis.com
+    - admin.googleapis.com
+    required: false
+  - name: billing_account
+    description: The ID of the billing account to associate projects with.
+    type: string
+    required: true
+  - name: buckets_force_destroy
+    description: When deleting CloudBuild buckets, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects.
+    type: bool
+    default: false
+    required: false
+  - name: cloud_source_repos
+    description: List of Cloud Source Repos to create with CloudBuild triggers.
+    type: list(string)
+    default:
+    - gcp-policies
+    - gcp-org
+    - gcp-envs
+    - gcp-networks
+    - gcp-projects
+    required: false
+  - name: folder_id
+    description: The ID of a folder to host this project
+    type: string
+    default: ""
+    required: false
+  - name: group_org_admins
+    description: Google Group for GCP Organization Administrators
+    type: string
+    required: true
+  - name: location
+    description: Location for build artifacts bucket
+    type: string
+    default: us-central1
+    required: false
+  - name: org_id
+    description: GCP Organization ID
+    type: string
+    required: true
+  - name: project_id
+    description: Custom project ID to use for project created.
+    type: string
+    default: ""
+    required: false
+  - name: project_labels
+    description: Labels to apply to the project.
+    type: map(string)
+    default: {}
+    required: false
+  - name: storage_bucket_labels
+    description: Labels to apply to the storage bucket.
+    type: map(string)
+    default: {}
+    required: false
+  outputs:
+  - name: cloudbuild_project_id
+    description: Project for CloudBuild and Cloud Source Repositories.
+  - name: csr_repos
+    description: List of Cloud Source Repos created by the module.
+  - name: gcs_cloudbuild_default_bucket
+    description: Bucket used to store temporary files in CloudBuild project.
+  roles:
+  - level: Project
+    roles:
+    - roles/billing.user
+    - roles/resourcemanager.organizationAdmin
+    - roles/orgpolicy.policyAdmin
+    - roles/resourcemanager.projectCreator
+  - level: Project
+    roles:
+    - roles/owner
+  services:
+  - cloudresourcemanager.googleapis.com
+  - cloudbilling.googleapis.com
+  - iam.googleapis.com
+  - storage-api.googleapis.com
+  - serviceusage.googleapis.com
+  - cloudbuild.googleapis.com
+  - sourcerepo.googleapis.com
+  - cloudkms.googleapis.com
+  - artifactregistry.googleapis.com
+  - workflows.googleapis.com
+  - cloudscheduler.googleapis.com

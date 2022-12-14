@@ -1,0 +1,236 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  name: terraform-google-bootstrap
+  annotations:
+    config.kubernetes.io/local-config: "true"
+spec:
+  title: terraform-google-bootstrap
+  source:
+    repo: https://github.com/terraform-google-modules/terraform-google-bootstrap.git
+    sourceType: git
+  version: 6.4.0
+  actuationTool:
+    type: Terraform
+    version: '>=0.13.0'
+  subBlueprints:
+  - name: cloudbuild
+    location: modules/cloudbuild
+  - name: tf_cloudbuild_builder
+    location: modules/tf_cloudbuild_builder
+  - name: tf_cloudbuild_source
+    location: modules/tf_cloudbuild_source
+  - name: tf_cloudbuild_workspace
+    location: modules/tf_cloudbuild_workspace
+  examples:
+  - name: cloudbuild_enabled
+    location: examples/cloudbuild_enabled
+  - name: simple
+    location: examples/simple
+  - name: simple-folder
+    location: examples/simple-folder
+  - name: tf_cloudbuild_builder_simple
+    location: examples/tf_cloudbuild_builder_simple
+  - name: tf_cloudbuild_source_simple
+    location: examples/tf_cloudbuild_source_simple
+  - name: tf_cloudbuild_workspace_simple
+    location: examples/tf_cloudbuild_workspace_simple
+  variables:
+  - name: activate_apis
+    description: List of APIs to enable in the seed project.
+    type: list(string)
+    default:
+    - serviceusage.googleapis.com
+    - servicenetworking.googleapis.com
+    - compute.googleapis.com
+    - logging.googleapis.com
+    - bigquery.googleapis.com
+    - cloudresourcemanager.googleapis.com
+    - cloudbilling.googleapis.com
+    - iam.googleapis.com
+    - admin.googleapis.com
+    - appengine.googleapis.com
+    - storage-api.googleapis.com
+    - monitoring.googleapis.com
+    required: false
+  - name: billing_account
+    description: The ID of the billing account to associate projects with.
+    type: string
+    required: true
+  - name: create_terraform_sa
+    description: If the Terraform service account should be created.
+    type: bool
+    default: true
+    required: false
+  - name: default_region
+    description: Default region to create resources where applicable.
+    type: string
+    default: us-central1
+    required: false
+  - name: encrypt_gcs_bucket_tfstate
+    description: Encrypt bucket used for storing terraform state files in seed project.
+    type: bool
+    default: false
+    required: false
+  - name: folder_id
+    description: The ID of a folder to host this project
+    type: string
+    default: ""
+    required: false
+  - name: force_destroy
+    description: If supplied, the state bucket will be deleted even while containing objects.
+    type: bool
+    default: false
+    required: false
+  - name: grant_billing_user
+    description: Grant roles/billing.user role to CFT service account
+    type: bool
+    default: true
+    required: false
+  - name: group_billing_admins
+    description: Google Group for GCP Billing Administrators
+    type: string
+    required: true
+  - name: group_org_admins
+    description: Google Group for GCP Organization Administrators
+    type: string
+    required: true
+  - name: key_protection_level
+    description: 'The protection level to use when creating a version based on this template. Default value: "SOFTWARE" Possible values: ["SOFTWARE", "HSM"]'
+    type: string
+    default: SOFTWARE
+    required: false
+  - name: key_rotation_period
+    description: The rotation period of the key.
+    type: string
+    required: false
+  - name: kms_prevent_destroy
+    description: Set the prevent_destroy lifecycle attribute on keys.
+    type: bool
+    default: true
+    required: false
+  - name: org_admins_org_iam_permissions
+    description: List of permissions granted to the group supplied in group_org_admins variable across the GCP organization.
+    type: list(string)
+    default:
+    - roles/billing.user
+    - roles/resourcemanager.organizationAdmin
+    required: false
+  - name: org_id
+    description: GCP Organization ID
+    type: string
+    required: true
+  - name: org_project_creators
+    description: 'Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required.'
+    type: list(string)
+    default: []
+    required: false
+  - name: parent_folder
+    description: GCP parent folder ID in the form folders/{id}
+    type: string
+    default: ""
+    required: false
+  - name: project_id
+    description: Custom project ID to use for project created. If not supplied, the default id is {project_prefix}-seed-{random suffix}.
+    type: string
+    default: ""
+    required: false
+  - name: project_labels
+    description: Labels to apply to the project.
+    type: map(string)
+    default: {}
+    required: false
+  - name: project_prefix
+    description: Name prefix to use for projects created.
+    type: string
+    default: cft
+    required: false
+  - name: random_suffix
+    description: Appends a 4 character random suffix to project ID and GCS bucket name.
+    type: bool
+    default: true
+    required: false
+  - name: sa_enable_impersonation
+    description: Allow org_admins group to impersonate service account & enable APIs required.
+    type: bool
+    default: false
+    required: false
+  - name: sa_org_iam_permissions
+    description: List of permissions granted to Terraform service account across the GCP organization.
+    type: list(string)
+    default:
+    - roles/billing.user
+    - roles/compute.networkAdmin
+    - roles/compute.xpnAdmin
+    - roles/iam.securityAdmin
+    - roles/iam.serviceAccountAdmin
+    - roles/logging.configWriter
+    - roles/orgpolicy.policyAdmin
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.organizationViewer
+    required: false
+  - name: state_bucket_name
+    description: Custom state bucket name. If not supplied, the default name is {project_prefix}-tfstate-{random suffix}.
+    type: string
+    default: ""
+    required: false
+  - name: storage_bucket_labels
+    description: Labels to apply to the storage bucket.
+    type: map(string)
+    default: {}
+    required: false
+  - name: tf_service_account_id
+    description: ID of service account for terraform in seed project
+    type: string
+    default: org-terraform
+    required: false
+  - name: tf_service_account_name
+    description: Display name of service account for terraform in seed project
+    type: string
+    default: CFT Organization Terraform Account
+    required: false
+  outputs:
+  - name: gcs_bucket_tfstate
+    description: Bucket used for storing terraform state for foundations pipelines in seed project.
+  - name: seed_project_id
+    description: Project where service accounts and core APIs will be enabled.
+  - name: terraform_sa_email
+    description: Email for privileged service account for Terraform.
+  - name: terraform_sa_name
+    description: Fully qualified name for privileged service account for Terraform.
+  roles:
+  - level: Project
+    roles:
+    - roles/owner
+  - level: Project
+    roles:
+    - roles/billing.user
+    - roles/resourcemanager.organizationAdmin
+    - roles/orgpolicy.policyAdmin
+    - roles/resourcemanager.projectCreator
+  services:
+  - cloudresourcemanager.googleapis.com
+  - cloudbilling.googleapis.com
+  - iam.googleapis.com
+  - storage-api.googleapis.com
+  - serviceusage.googleapis.com
+  - cloudbuild.googleapis.com
+  - sourcerepo.googleapis.com
+  - cloudkms.googleapis.com
+  - artifactregistry.googleapis.com
+  - workflows.googleapis.com
+  - cloudscheduler.googleapis.com
