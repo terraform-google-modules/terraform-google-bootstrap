@@ -102,7 +102,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 
 ### Credentials
 
-For users interested in using service account impersonation which this module helps enable with `sa_enable_impersonation`, please see this [blog post](https://medium.com/google-cloud/terraform-assume-role-and-service-account-impersonation-on-google-cloud-ffc553863e72) which explains how it works.
+For users interested in using service account impersonation which this module helps enable with `sa_enable_impersonation`, please see this [blog post](https://cloud.google.com/blog/topics/developers-practitioners/using-google-cloud-service-account-impersonation-your-terraform-code) which explains how it works.
 
 ### APIs
 
