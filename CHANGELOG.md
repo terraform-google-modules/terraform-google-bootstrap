@@ -7,6 +7,19 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.4.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.3.0...v6.4.0) (2022-12-09)
+
+
+### Features
+
+* Add custom bucket names support for modules `tf_cloudbuild_workspace` and `tf_cloudbuild_builder` ([#212](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/212)) ([c537031](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/c537031865012bcf6eda6a2d9a6bbc3f3cca638a))
+* add custom name for cloud build service account and state bucket ([#214](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/214)) ([f1d0014](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f1d0014cfc7d2909475907f7b391b4378c7eb152))
+
+
+### Bug Fixes
+
+* updates to address tflint and CFT 1.10 ([#203](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/203)) ([7c7a874](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/7c7a8749e2667d05514bfef70023ab541747bdd5))
+
 ## [6.3.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.2.0...v6.3.0) (2022-11-08)
 
 

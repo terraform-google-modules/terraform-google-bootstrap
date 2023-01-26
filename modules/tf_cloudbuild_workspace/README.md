@@ -9,7 +9,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "tf-net-workspace" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_workspace"
-  version = "~> 6.3"
+  version = "~> 6.4"
 
   project_id          = var.project_id
   tf_repo_uri         = "https://github.com/org/tf-config-repo"
