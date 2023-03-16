@@ -43,3 +43,7 @@ variable "default_region" {
   type        = string
   default     = "us-central1"
 }
+
+variable "billing_iam_test_account" {
+  description = "The billing iam test account id is for the billing-iam-module, only for testing, e.g. XXXXXX-YYYYYY-ZZZZZZ"
+}

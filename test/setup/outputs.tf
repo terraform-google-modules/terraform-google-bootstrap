@@ -36,7 +36,7 @@ output "parent_folder" {
 }
 
 output "billing_account" {
-  value = var.billing_account
+  value = local.billing_iam_test_account
 }
 
 output "group_org_admins" {
