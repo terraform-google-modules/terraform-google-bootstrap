@@ -31,6 +31,12 @@ variable "trigger_location" {
   default     = "global"
 }
 
+variable "apply_approval_required" {
+  description = "Whether or not to require approval for the `apply` Cloud Build trigger."
+  type        = bool
+  default     = false
+}
+
 variable "create_cloudbuild_sa" {
   description = "Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified."
   type        = bool

@@ -131,6 +131,14 @@ resource "google_cloudbuild_trigger" "triggers" {
     }
   }
 
+  dynamic "approval_config" {
+    # only enable approval for apply and only if apply_approval_required is true
+    for_each = each.key == "apply" ? [1] : []
+    content {
+      approval_required = var.apply_approval_required
+    }
+  }
+
   substitutions   = merge(local.default_subst, var.substitutions)
   service_account = local.cloudbuild_sa
   filename        = local.default_triggers_explicit[each.key]

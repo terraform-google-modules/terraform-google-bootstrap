@@ -37,6 +37,7 @@ This module creates:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| apply\_approval\_required | Whether or not to require approval for the `apply` Cloud Build trigger. | `bool` | `false` | no |
 | artifacts\_bucket\_name | Custom bucket name for Cloud Build artifacts. | `string` | `""` | no |
 | buckets\_force\_destroy | When deleting the bucket for storing CloudBuild logs/TF state, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_apply\_filename | Optional Cloud Build YAML definition used for terraform apply. Defaults to using inline definition. | `string` | `null` | no |
