@@ -136,6 +136,26 @@ steps:
       - verify-tfworkspace
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
+- id: init-simple-encrypted-bucket
+  waitFor:
+      - prepare
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage init --verbose']
+- id: apply-simple-encrypted-bucket
+  waitFor:
+      - init-simple-encrypted-bucket
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage apply --verbose']
+- id: verify-simple-encrypted-bucket
+  waitFor:
+      - apply-simple-encrypted-bucket
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage verify --verbose']
+- id: teardown-simple-encrypted-bucket
+  waitFor:
+      - verify-simple-encrypted-bucket
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage teardown --verbose']
 
 tags:
 - 'ci'
