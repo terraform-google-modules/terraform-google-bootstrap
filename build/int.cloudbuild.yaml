@@ -24,19 +24,29 @@ steps:
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
 - id: create
+  waitFor:
+      - prepare
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create']
 - id: converge-simple
+  waitFor:
+      - create
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge simple-default']
 - id: verify-simple
+  waitFor:
+      - converge-simple
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify simple-default']
 - id: destroy-simple
+  waitFor:
+      - verify-simple
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy simple-default']
   # Required to rerun to reinstate ci-integration account as project creator as not member of group_org_admins.
 - id: prepare-rerun-cloudbuild-enabled
+  waitFor:
+      - destroy-simple
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && prepare_environment']
   env:
@@ -46,16 +56,24 @@ steps:
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
 - id: converge-cloudbuild-enabled
+  waitFor:
+      - prepare-rerun-cloudbuild-enabled
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge cloudbuild-enabled-default']
 - id: verify-cloudbuild-enabled
+  waitFor:
+      - converge-cloudbuild-enabled
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify cloudbuild-enabled-default']
 - id: destroy-cloudbuild-enabled
+  waitFor:
+      - verify-cloudbuild-enabled
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy cloudbuild-enabled-default']
   # Required to rerun to reinstate ci-integration account as project creator as not member of group_org_admins.
 - id: prepare-rerun-simple-folder
+  waitFor:
+      - destroy-cloudbuild-enabled
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && prepare_environment']
   env:
@@ -65,18 +83,24 @@ steps:
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
 - id: converge-simple-folder
+  waitFor:
+      - prepare-rerun-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge simple-folder-default']
 - id: verify-simple-folder
+  waitFor:
+      - converge-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify simple-folder-default']
 - id: destroy-simple-folder
+  waitFor:
+      - verify-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy simple-folder-default']
 
 - id: init-tfsource
   waitFor:
-      - prepare
+      - destroy-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage init --verbose']
 - id: apply-tfsource
@@ -97,7 +121,7 @@ steps:
 
 - id: init-tfbuilder
   waitFor:
-      - prepare
+      - teardown-tfsource
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilder --stage init --verbose']
 - id: apply-tfbuilder
@@ -118,7 +142,7 @@ steps:
 
 - id: init-tfworkspace
   waitFor:
-      - prepare
+      - teardown-tfbuilder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage init --verbose']
 - id: apply-tfworkspace
@@ -138,7 +162,7 @@ steps:
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
 - id: init-simple-encrypted-bucket
   waitFor:
-      - prepare
+      - teardown-tfworkspace
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage init --verbose']
 - id: apply-simple-encrypted-bucket
