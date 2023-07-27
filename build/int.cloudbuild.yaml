@@ -46,7 +46,7 @@ steps:
   # Required to rerun to reinstate ci-integration account as project creator as not member of group_org_admins.
 - id: prepare-rerun-cloudbuild-enabled
   waitFor:
-      - destroy-simple
+      - create
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && prepare_environment']
   env:
@@ -73,7 +73,7 @@ steps:
   # Required to rerun to reinstate ci-integration account as project creator as not member of group_org_admins.
 - id: prepare-rerun-simple-folder
   waitFor:
-      - destroy-cloudbuild-enabled
+      - prepare-rerun-cloudbuild-enabled
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && prepare_environment']
   env:
@@ -100,7 +100,7 @@ steps:
 
 - id: init-tfsource
   waitFor:
-      - destroy-simple-folder
+      - prepare-rerun-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage init --verbose']
 - id: apply-tfsource
@@ -121,7 +121,7 @@ steps:
 
 - id: init-tfbuilder
   waitFor:
-      - teardown-tfsource
+      - init-tfsource
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilder --stage init --verbose']
 - id: apply-tfbuilder
@@ -142,7 +142,7 @@ steps:
 
 - id: init-tfworkspace
   waitFor:
-      - teardown-tfbuilder
+      - init-tfbuilder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage init --verbose']
 - id: apply-tfworkspace
@@ -162,7 +162,7 @@ steps:
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
 - id: init-simple-encrypted-bucket
   waitFor:
-      - teardown-tfworkspace
+      - init-tfworkspace
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage init --verbose']
 - id: apply-simple-encrypted-bucket
