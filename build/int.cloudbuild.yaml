@@ -23,9 +23,14 @@ steps:
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
-- id: create
+- id: init-all
   waitFor:
       - prepare
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run all --stage init --verbose']
+- id: create
+  waitFor:
+      - init-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create']
 - id: converge-simple
@@ -100,7 +105,7 @@ steps:
 
 - id: init-tfsource
   waitFor:
-      - prepare-rerun-simple-folder
+      - create
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage init --verbose']
 - id: apply-tfsource
@@ -121,7 +126,7 @@ steps:
 
 - id: init-tfbuilder
   waitFor:
-      - init-tfsource
+      - create
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilder --stage init --verbose']
 - id: apply-tfbuilder
@@ -142,7 +147,7 @@ steps:
 
 - id: init-tfworkspace
   waitFor:
-      - init-tfbuilder
+      - create
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage init --verbose']
 - id: apply-tfworkspace
@@ -162,7 +167,7 @@ steps:
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
 - id: init-simple-encrypted-bucket
   waitFor:
-      - init-tfworkspace
+      - create
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestAll/examples/simple-encrypted-bucket --stage init --verbose']
 - id: apply-simple-encrypted-bucket
