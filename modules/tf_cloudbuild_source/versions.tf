@@ -21,12 +21,12 @@ terraform {
     google = {
       source = "hashicorp/google"
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
-      version = ">= 3.50, < 5.0, != 4.31.0"
+      version = ">= 3.50, != 4.31.0, < 6"
     }
     google-beta = {
       source = "hashicorp/google-beta"
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
-      version = ">= 3.50, < 5.0, != 4.31.0"
+      version = ">= 3.50, != 4.31.0, < 6"
     }
   }
 
