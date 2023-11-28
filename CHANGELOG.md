@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.4.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.4.0...v6.4.1) (2023-10-31)
+
+
+### Bug Fixes
+
+* upgraded versions.tf to include minor bumps from tpg v5 ([#245](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/245)) ([59c5e97](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/59c5e979543c6ff479340aadd0d27a8b1c7e0ccb))
+
 ## [6.4.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.3.0...v6.4.0) (2022-12-09)
 
 
