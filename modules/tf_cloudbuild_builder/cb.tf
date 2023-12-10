@@ -66,6 +66,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
       name = "${local.gar_uri}:v$${_TERRAFORM_FULL_VERSION}"
       args = ["version"]
     }
+    timeout     = var.cloudbuild_timeout
     images      = local.img_tags_subst
     logs_bucket = module.bucket.bucket.url
 
