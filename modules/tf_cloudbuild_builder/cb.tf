@@ -53,6 +53,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 
   # todo(bharathkkb): switch to yaml after https://github.com/hashicorp/terraform-provider-google/issues/9818
   build {
+    timeout = var.build_timeout
     step {
       name = "gcr.io/cloud-builders/docker"
       args = concat(
@@ -60,8 +61,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
         [for img_tag in local.img_tags_subst : "--tag=${img_tag}"],
         ["--build-arg=TERRAFORM_VERSION=$${_TERRAFORM_FULL_VERSION}", "."]
       )
-      dir     = var.dockerfile_repo_dir != "" ? var.dockerfile_repo_dir : null
-      timeout = var.build_timeout
+      dir = var.dockerfile_repo_dir != "" ? var.dockerfile_repo_dir : null
     }
     step {
       name = "${local.gar_uri}:v$${_TERRAFORM_FULL_VERSION}"

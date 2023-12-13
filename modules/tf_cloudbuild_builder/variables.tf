@@ -50,7 +50,7 @@ variable "cloudbuild_sa" {
 }
 
 variable "build_timeout" {
-  description = "Default value for image build timeout."
+  description = "Amount of time the build should be allowed to run, to second granularity. Format is the number of seconds followed by s."
   type        = string
   default     = "600s"
 }
