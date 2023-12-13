@@ -60,7 +60,8 @@ resource "google_cloudbuild_trigger" "build_trigger" {
         [for img_tag in local.img_tags_subst : "--tag=${img_tag}"],
         ["--build-arg=TERRAFORM_VERSION=$${_TERRAFORM_FULL_VERSION}", "."]
       )
-      dir = var.dockerfile_repo_dir != "" ? var.dockerfile_repo_dir : null
+      dir     = var.dockerfile_repo_dir != "" ? var.dockerfile_repo_dir : null
+      timeout = var.build_timeout
     }
     step {
       name = "${local.gar_uri}:v$${_TERRAFORM_FULL_VERSION}"

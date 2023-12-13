@@ -49,6 +49,12 @@ variable "cloudbuild_sa" {
   default     = ""
 }
 
+variable "build_timeout" {
+  description = "Default value for image build timeout."
+  type        = string
+  default     = "600s"
+}
+
 variable "cb_logs_bucket_force_destroy" {
   description = "When deleting the bucket for storing CloudBuild logs, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects."
   type        = bool
