@@ -15,7 +15,8 @@
  */
 
 module "tf_workspace" {
-  source = "../../modules/tf_cloudbuild_workspace"
+  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_workspace"
+  version = "~> 6.0"
 
   project_id  = module.enabled_google_apis.project_id
   tf_repo_uri = google_sourcerepo_repository.tf_config_repo.url
