@@ -63,7 +63,6 @@ This module creates:
 | cloudbuild\_sa | SA used by Cloud Build trigger |
 | cloudbuild\_trigger\_id | Trigger used for building new TF Builder |
 | scheduler\_id | Scheduler ID for periodically triggering TF Builder build Workflow |
-| timeout | Amount of time the build should be allowed to run, to second granularity. Format is the number of seconds followed by s. |
 | workflow\_id | Workflow ID for triggering new TF Builder build |
 | workflow\_sa | SA used by Workflow for triggering new TF Builder build |
 

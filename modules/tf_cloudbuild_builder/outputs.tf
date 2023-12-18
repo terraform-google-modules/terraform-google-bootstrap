@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "timeout" {
-  description = "Amount of time the build should be allowed to run, to second granularity. Format is the number of seconds followed by s."
-  value       = google_cloudbuild_trigger.build_trigger.timeout
-}
-
 output "artifact_repo" {
   description = "GAR Repo created to store TF Cloud Builder images"
   value       = google_artifact_registry_repository.tf-image-repo.name
