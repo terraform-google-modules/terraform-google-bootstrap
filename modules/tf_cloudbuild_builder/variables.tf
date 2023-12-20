@@ -49,6 +49,12 @@ variable "cloudbuild_sa" {
   default     = ""
 }
 
+variable "build_timeout" {
+  description = "Amount of time the build should be allowed to run, to second granularity. Format is the number of seconds followed by s."
+  type        = string
+  default     = "600s"
+}
+
 variable "cb_logs_bucket_force_destroy" {
   description = "When deleting the bucket for storing CloudBuild logs, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects."
   type        = bool

@@ -53,6 +53,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 
   # todo(bharathkkb): switch to yaml after https://github.com/hashicorp/terraform-provider-google/issues/9818
   build {
+    timeout = var.build_timeout
     step {
       name = "gcr.io/cloud-builders/docker"
       args = concat(
