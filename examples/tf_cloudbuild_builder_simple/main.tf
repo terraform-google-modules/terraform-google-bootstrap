@@ -33,7 +33,7 @@ resource "google_sourcerepo_repository" "builder_dockerfile_repo" {
 # Bootstrap CSR with Dockerfile
 module "bootstrap_csr_repo" {
   source  = "terraform-google-modules/gcloud/google"
-  version = "~> 3.1.0"
+  version = "~> 3.1"
   upgrade = false
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"

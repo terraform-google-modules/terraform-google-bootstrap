@@ -40,7 +40,7 @@ resource "google_sourcerepo_repository" "tf_config_repo" {
 # # Bootstrap CSR with TF configs
 module "bootstrap_csr_repo" {
   source  = "terraform-google-modules/gcloud/google"
-  version = "~> 3.1.0"
+  version = "~> 3.1"
   upgrade = false
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
