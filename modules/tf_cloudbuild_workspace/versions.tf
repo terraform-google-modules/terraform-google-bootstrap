@@ -31,6 +31,6 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "blueprints/terraform/terraform-google-bootstrap:tf_cloudbuild_workspace/v6.4.1"
+    module_name = "blueprints/terraform/terraform-google-bootstrap:tf_cloudbuild_workspace/v6.5.0"
   }
 }

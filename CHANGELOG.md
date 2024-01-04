@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.5.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.4.1...v6.5.0) (2024-01-03)
+
+
+### Features
+
+* add timeout variable for cloudbuild builder ([#256](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/256)) ([380d48f](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/380d48f35d26ea4e63693d8002226c94dff9c92c))
+
 ## [6.4.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.4.0...v6.4.1) (2023-10-31)
 
 
