@@ -99,7 +99,7 @@ resource "google_service_account_iam_member" "cloud_build_service_agent_sa_imper
 }
 
 resource "time_sleep" "impersonate_propagation" {
-  create_duration = "30s"
+  create_duration = "60s"
 
   depends_on = [
     google_service_account_iam_member.cloud_build_service_agent_sa_impersonate
