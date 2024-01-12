@@ -86,7 +86,7 @@ steps:
 
 - id: apply-tfsource
   waitFor:
-      - init-all
+      - create-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage apply --verbose']
 - id: verify-tfsource
@@ -102,7 +102,7 @@ steps:
 
 - id: apply-tfbuilder
   waitFor:
-      - init-all
+      - create-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilder --stage apply --verbose']
 - id: verify-tfbuilder
@@ -118,7 +118,7 @@ steps:
 
 - id: apply-tfworkspace
   waitFor:
-      - init-all
+      - create-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage apply --verbose']
 - id: verify-tfworkspace
