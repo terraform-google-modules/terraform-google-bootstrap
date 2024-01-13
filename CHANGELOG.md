@@ -7,6 +7,18 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.5.0...v7.0.0) (2024-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Update TF modules (major) ([#241](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/241))
+
+### Bug Fixes
+
+* bump impersonate_propagation to 60s ([#253](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/253)) ([3360ef2](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/3360ef2c58c4d23b9fe2b53f626d748466ce2719))
+* **deps:** Update TF modules (major) ([#241](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/241)) ([6f2e3a0](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/6f2e3a01663abe8fbc90d09b50e4740603c13ac8))
+
 ## [6.5.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.4.1...v6.5.0) (2024-01-03)
 
 
