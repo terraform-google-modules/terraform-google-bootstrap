@@ -139,7 +139,7 @@ variable "substitutions" {
 variable "tf_cloudbuilder" {
   description = "Name of the Cloud Builder image used for running build steps."
   type        = string
-  default     = "hashicorp/terraform:1.2.2"
+  default     = "hashicorp/terraform:1.3.10"
 }
 
 variable "prefix" {

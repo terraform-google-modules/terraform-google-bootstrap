@@ -51,7 +51,7 @@ module "cloudbuild_project" {
 // Creating the bucket beforehand make it is possible to define a custom location.
 module "cloudbuild_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 3.2"
+  version = "~> 5.0"
 
   name          = "${module.cloudbuild_project.project_id}_cloudbuild"
   project_id    = module.cloudbuild_project.project_id
