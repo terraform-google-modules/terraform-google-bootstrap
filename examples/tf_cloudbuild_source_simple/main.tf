@@ -16,7 +16,7 @@
 
 module "tf_source" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_source"
-  version = "~> 6.0"
+  version = "~> 7.0"
 
   org_id                = var.org_id
   folder_id             = var.parent_folder
