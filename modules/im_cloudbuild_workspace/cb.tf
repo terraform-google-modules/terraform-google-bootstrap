@@ -96,7 +96,7 @@ resource "google_cloudbuild_trigger" "triggers" {
   location    = var.trigger_location
   name        = "${local.default_prefix}-${each.key}"
   description = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}. Managed by Infrastructure Manager."
-  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+  include_build_logs = local.is_gh_repo ? "INCLUDE_BUILD_LOGS_WITH_STATUS" : null
 
   # TODO Test if this will work for GitLab
   repository_event_config {

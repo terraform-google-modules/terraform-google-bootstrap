@@ -154,6 +154,12 @@ variable "tf_repo_type" {
   default = "GITHUB"
 }
 
+variable "gitlab_host_uri" {
+  description = "The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise."
+  type = string
+  default = "" 
+}
+
 variable "gitlab_api_access_token" {
   description = "GitLab personal access token with api scope to be saved in Secrets Manager."
   type = string
