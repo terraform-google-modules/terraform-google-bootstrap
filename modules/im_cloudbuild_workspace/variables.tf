@@ -43,9 +43,8 @@ variable "secret_id" {
   default = ""
 }
 
-// TODO Revisit description?
-variable "repo_personal_access_token" {
-  description = "Personal access token for a repository."
+variable "github_personal_access_token" {
+  description = "Personal access token for a GitHib repository." 
   type = string
   sensitive = true
 }
@@ -184,16 +183,11 @@ variable "diff_sa_project" {
   default     = false
 }
 
+# TODO Maybe add this as a supported option for users to have a custom bucket.
 variable "artifacts_bucket_name" {
   description = "Custom bucket name for Cloud Build artifacts."
   type        = string
   default     = ""
-}
-
-variable "cloudbuild_env_vars" {
-  description = "Optional list of environment variables to be used in builds. List of strings of form KEY=VALUE expected."
-  type        = list(string)
-  default     = []
 }
 
 variable "cloudbuild_included_files" {
@@ -212,12 +206,6 @@ variable "substitutions" {
   description = "Map of substitutions to use in builds."
   type        = map(string)
   default     = {}
-}
-
-variable "prefix" {
-  description = "Prefix of the state/log buckets and triggers planning/applying config. If unset computes a prefix from tf_repo_uri and tf_repo_dir variables."
-  type        = string
-  default     = ""
 }
 
 variable "enable_worker_pool" {
