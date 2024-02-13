@@ -120,7 +120,7 @@ variable "im_deployment_repo_dir" {
 variable "im_deployment_branch" {
   description = "Git branch configured to run infra-manager apply. All other branches will run plan by default."
   type = string
-  default = "main"
+  default = ""
 }
 
 variable "im_tf_variables" {
