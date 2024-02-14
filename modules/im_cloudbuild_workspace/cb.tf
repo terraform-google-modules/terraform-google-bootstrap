@@ -25,23 +25,16 @@ locals {
     tf_vars = var.im_tf_variables
   })
 
-  # TODO This may be able to not be in a script field
-  # TODO May need a way to short circuit if any of these steps fail for some reason.
-  # Download preview binary plan
-  default_download_preview_script = <<-EOT
-  #!/usr/bin/env bash
-  curl $(gcloud infra-manager previews export projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --format="get(result.binarySignedUri)") -o /workspace/plan.tfplan
-  EOT
-
-  default_output_preview_script = <<-EOT
-  terraform init -no-color
-  terraform show /workspace/plan.tfplan -no-color
-  EOT
+  default_download_preview_script = templatefile("${path.module}/templates/download-preview.sh.tftpl", {
+    project_id = var.project_id
+    location = var.location
+  })
 
   default_preview_steps = [
     { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_create_preview_script}"},
     { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_download_preview_script}"},
-    { id = "preview_results", name = "${var.tf_cloudbuilder}", script = "${local.default_output_preview_script}"},
+    { id = "terraform_init", name = var.tf_cloudbuilder, args = ["init", "-no-color"]},
+    { id = "terraform_show", name = var.tf_cloudbuilder, args = ["show", "/workspace/plan.tfplan", "-no-color"]},
   ]
 
   default_apply_steps = [
