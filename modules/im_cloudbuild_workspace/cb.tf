@@ -67,10 +67,9 @@ resource "google_cloudbuild_trigger" "triggers" {
   project     = var.project_id
   location    = var.trigger_location
   name        = "${local.default_prefix}-${each.key}"
-  description = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}. Managed by Infrastructure Manager."
+  description = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}"
   include_build_logs = local.is_gh_repo ? "INCLUDE_BUILD_LOGS_WITH_STATUS" : null
 
-  # TODO Test if this will work for GitLab
   repository_event_config {
     repository = google_cloudbuildv2_repository.repository_connection.id
     dynamic pull_request {
