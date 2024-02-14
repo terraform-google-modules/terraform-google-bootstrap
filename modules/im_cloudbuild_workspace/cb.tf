@@ -26,28 +26,18 @@ locals {
   echo $? > /workspace/${local.deployment_exists_env_filename}
   EOT
 
-  default_create_preview_command = <<-EOT
-  gcloud infra-manager previews create projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA \
-    --service-account=${local.im_sa} \
-    --git-source-repo=${var.im_deployment_repo_uri} \
-    --git-source-ref=$SHORT_SHA \
-    ${var.im_deployment_repo_dir != "" ? "--git-source-directory=${var.im_deployment_repo_dir} \\" : ""}
-    ${var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables} \\" : ""}
-  EOT
-
   default_delete_existing_preview_command = "gcloud infra-manager previews delete projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --quiet || exit 0" 
 
-  default_create_preview_script = <<-EOT
-  #!/usr/bin/env bash
-  [ $(cat /workspace/${local.deployment_exists_env_filename}) -eq 0 ] && ${local.default_create_preview_command} --deployment projects/${var.project_id}/locations/${var.location}/deployments/${var.deployment_id} || ${local.default_create_preview_command}
-  if [ $(echo $?) -ne 0 ];
-  then
-    gcloud infra-manager previews describe projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA
-    exit 1
-  else
-    exit 0
-  fi 
-  EOT
+  default_create_preview_script = templatefile("${path.module}/templates/create-preview.sh.tftpl", {
+    project_id = var.project_id
+    location = var.location
+    deployment_id = var.deployment_id
+    service_account = local.im_sa
+    source_repo = var.im_deployment_repo_uri
+    source_repo_dir = var.im_deployment_repo_dir
+    tf_vars = var.im_tf_variables
+    deployment_exists_filename = local.deployment_exists_env_filename
+  })
 
   # TODO This may be able to not be in a script field
   # TODO May need a way to short circuit if any of these steps fail for some reason.

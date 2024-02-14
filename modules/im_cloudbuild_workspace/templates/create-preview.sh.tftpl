@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+CMD="gcloud infra-manager previews create projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA \
+  --service-account=${service_account} \
+  --git-source-repo=${source_repo} \
+  --git-source-ref=$SHORT_SHA"
+
+if [[ "${source_repo_dir}" != "" ]]; then
+  CMD+=" --git-source-directory=${source_repo_dir}"
+fi
+
+if [[ "${tf_vars}" != "" ]]; then
+  CMD+=" --input-values=${tf_vars}"
+fi
+
+if [[ $(cat /workspace/${deployment_exists_filename}) -eq 0 ]]; then
+  CMD+=" --deployment projects/${project_id}/locations/${location}/deployments/${deployment_id}"
+fi
+
+$CMD
+
+if [[ $(echo $?) -ne 0 ]]; then
+  gcloud infra-manager preview describe projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA
+  exit 1
+else
+  exit 0
+fi
