@@ -37,11 +37,16 @@ locals {
 
   default_delete_existing_preview_command = "gcloud infra-manager previews delete projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --quiet || exit 0" 
 
-  # Add deployment flag if the deployment already exists
-  # TODO 
   default_create_preview_script = <<-EOT
   #!/usr/bin/env bash
   [ $(cat /workspace/${local.deployment_exists_env_filename}) -eq 0 ] && ${local.default_create_preview_command} --deployment projects/${var.project_id}/locations/${var.location}/deployments/${var.deployment_id} || ${local.default_create_preview_command}
+  if [ $(echo $?) -ne 0 ];
+  then
+    gcloud infra-manager previews describe projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA
+    exit 1
+  else
+    exit 0
+  fi 
   EOT
 
   # TODO This may be able to not be in a script field
