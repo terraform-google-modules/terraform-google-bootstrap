@@ -15,19 +15,6 @@
  */
 
 locals {
-  deployment_exists_env_filename = "deployment_exists.env"
-  binary_signed_uri_filename = "binary_signed_uri.env"
-
-  # TODO Should scripts sit within a helpers/ directory?
-  # Checking if a deployment exists already and saving result of command in workspace
-  describe_deployment_script = <<-EOT
-  #!/usr/bin/env bash
-  gcloud infra-manager deployments describe projects/${var.project_id}/locations/${var.location}/deployments/${var.deployment_id}
-  echo $? > /workspace/${local.deployment_exists_env_filename}
-  EOT
-
-  default_delete_existing_preview_command = "gcloud infra-manager previews delete projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --quiet || exit 0" 
-
   default_create_preview_script = templatefile("${path.module}/templates/create-preview.sh.tftpl", {
     project_id = var.project_id
     location = var.location
@@ -36,7 +23,6 @@ locals {
     source_repo = var.im_deployment_repo_uri
     source_repo_dir = var.im_deployment_repo_dir
     tf_vars = var.im_tf_variables
-    deployment_exists_filename = local.deployment_exists_env_filename
   })
 
   # TODO This may be able to not be in a script field
@@ -53,8 +39,6 @@ locals {
   EOT
 
   default_preview_steps = [
-    { id = "check_for_existing_deployment", name = "gcr.io/cloud-builders/gcloud", script = "${local.describe_deployment_script}" },
-    { id = "delete_existing_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_delete_existing_preview_command },
     { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_create_preview_script}"},
     { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_download_preview_script}"},
     { id = "preview_results", name = "${var.tf_cloudbuilder}", script = "${local.default_output_preview_script}"},
