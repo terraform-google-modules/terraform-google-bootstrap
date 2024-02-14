@@ -25,6 +25,7 @@ locals {
   # default_prefix = var.prefix != "" ? var.prefix : substr(replace(var.im_deployment_repo_uri != "" ? "${local.repo}-${var.im_deployment_repo_dir}" : local.repo, "/", "-"), 0, 25)
   default_prefix = replace(local.repo, "_", "-")
 
+  host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${var.project_id}-${var.deployment_id}"
   repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${local.repo}"
 }
 
@@ -44,8 +45,7 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
   project  = var.project_id
   location = var.location
 
-  # TODO This should be generated with some other values, at least have a variable.
-  name = "im-vcs-connection"
+  name = local.host_connection_name
 
   dynamic "github_config" {
     for_each = local.is_gh_repo ? [1] : []
@@ -78,7 +78,6 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
 resource "google_cloudbuildv2_repository" "repository_connection" {
   project  = var.project_id
   location = var.location
-  # TODO Combination of prefix, repo name
   name              = local.repo_connection_name
   parent_connection = google_cloudbuildv2_connection.vcs_connection.name
   remote_uri        = var.im_deployment_repo_uri 

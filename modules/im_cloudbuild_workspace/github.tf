@@ -20,19 +20,16 @@ locals {
   gh_repo_url_split = local.is_gh_repo ? split("/", local.url) : []
   gh_owner          = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 2] : ""
   gh_name           = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 1] : ""
-
-  # TODO Finalize name of the secret ID
-  secret_id            = var.secret_id != "" ? var.secret_id : "im-${local.repo}"
 }
 
 // Create a secret containing the personal access token and grant permissions to the Service Agent.
 resource "google_secret_manager_secret" "github_token_secret" {
   count = local.is_gh_repo ? 1 : 0
   project = var.project_id
-  secret_id = local.secret_id
+  secret_id = "im-github-${local.gh_name}"
 
   labels = {
-    label = "infra-manager"
+    label = "im-${var.deployment_id}"
   }
 
   replication {

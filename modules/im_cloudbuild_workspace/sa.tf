@@ -37,7 +37,7 @@ resource "google_service_account" "cb_sa" {
   project = var.project_id
   account_id = substr(var.create_cloudbuild_sa_name != "" ? var.create_cloudbuild_sa_name : "cb-sa-${local.default_prefix}", 0, 30)
     # TODO Come up with better description?
-  description = "SA for creating Cloud Build triggers. Managed by Terraform."
+  description = "SA for creating Cloud Build triggers."
 }
 
 # https://cloud.google.com/infrastructure-manager/docs/configure-service-account
@@ -69,7 +69,7 @@ resource "google_service_account" "im_sa" {
   project = var.project_id
   account_id = substr(var.create_infra_manager_sa_name != "" ? var.create_infra_manager_sa_name : "im-sa-${local.default_prefix}", 0, 30)
   # TODO Come up with better description?
-  description = "SA for Infrastructure Manager. Managed by Terraform."
+  description = "SA for Infrastructure Manager."
 }
 
 # https://cloud.google.com/infrastructure-manager/docs/configure-service-account

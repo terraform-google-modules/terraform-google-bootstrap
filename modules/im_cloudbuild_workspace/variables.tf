@@ -49,7 +49,12 @@ variable "github_personal_access_token" {
   sensitive = true
 }
 
-// TODO Support generating this name?
+variable "host_connection_name" {
+  description = "Name for the VCS connection. Generated if not given."
+  type = string
+  default = ""
+}
+
 variable "repo_connection_name" {
   description = "Connection name for linked repository. Generated if not given."
   type = string

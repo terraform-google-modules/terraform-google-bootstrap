@@ -31,7 +31,7 @@ resource "google_secret_manager_secret" "gitlab_api_secret" {
   project = var.project_id
   secret_id = "im-gitlab-${local.gl_project}-${random_id.gitlab_resources_random_id[0].dec}-api-access-token"
   labels = {
-    label = "${var.deployment_id}"
+    label = "im-${var.deployment_id}"
   }
   replication {
     auto {}
@@ -56,7 +56,7 @@ resource "google_secret_manager_secret" "gitlab_read_api_secret" {
   project = var.project_id
   secret_id = "im-gitlab-${local.gl_project}-${random_id.gitlab_resources_random_id[0].dec}-read-api-access-token"
   labels = {
-    label = "${var.deployment_id}"
+    label = "im-${var.deployment_id}"
   }
   replication {
     auto {}
@@ -81,7 +81,7 @@ resource "google_secret_manager_secret" "gitlab_webhook_secret" {
   project = var.project_id
   secret_id = "im-gitlab-${local.gl_project}-${random_id.gitlab_resources_random_id[0].dec}-webhook-secret"
   labels = {
-    label = "${var.deployment_id}"
+    label = "im-${var.deployment_id}"
   }
   replication {
     auto {}
