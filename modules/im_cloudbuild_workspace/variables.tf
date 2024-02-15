@@ -149,7 +149,7 @@ variable "cloudbuild_apply_filename" {
 variable "tf_cloudbuilder" {
   description = "Name of the Cloud Builder image used for running build steps."
   type        = string
-  default     = "hashicorp/terraform"
+  default     = "hashicorp/terraform:1.2.3"
 }
 
 variable "tf_repo_type" {
