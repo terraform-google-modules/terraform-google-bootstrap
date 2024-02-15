@@ -44,7 +44,7 @@ resource "google_secret_manager_secret_version" "github_token_secret_version" {
   secret_data = var.github_personal_access_token
 }
 
-resource "google_secret_manager_secret_iam_policy" "policy" {
+resource "google_secret_manager_secret_iam_policy" "github_iam_policy" {
   count = local.is_gh_repo ? 1 : 0
   project     = google_secret_manager_secret.github_token_secret[0].project
   secret_id   = google_secret_manager_secret.github_token_secret[0].secret_id

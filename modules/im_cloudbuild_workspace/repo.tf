@@ -71,7 +71,12 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
     }
   }
 
-  depends_on = [google_secret_manager_secret_iam_policy.policy]
+  depends_on = [
+    google_secret_manager_secret_iam_policy.github_iam_policy,
+    google_secret_manager_secret_iam_policy.api_secret_policy,
+    google_secret_manager_secret_iam_policy.read_api_secret_policy,
+    google_secret_manager_secret_iam_policy.webhook_secret_policy,
+  ]
 }
 
 // Create the repository connection.

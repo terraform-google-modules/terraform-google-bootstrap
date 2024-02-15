@@ -115,7 +115,5 @@ resource "google_cloudbuild_trigger" "triggers" {
 
   depends_on = [
     google_project_iam_member.im_sa_roles,
-    google_cloudbuildv2_connection.vcs_connection,
-    google_cloudbuildv2_repository.repository_connection
   ]
 }
