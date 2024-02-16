@@ -19,11 +19,7 @@ locals {
   url = trimsuffix(var.im_deployment_repo_uri, ".git")
 
   repo = local.is_gh_repo ? local.gh_name : local.gl_project
-
-  # default prefix computed from repo name and dir if specified of form ${repo}-${dir?}-${plan/apply}
-  # TODO Come up with better default prefix to handle edge cases (underscores, slashes)
-  # default_prefix = var.prefix != "" ? var.prefix : substr(replace(var.im_deployment_repo_uri != "" ? "${local.repo}-${var.im_deployment_repo_dir}" : local.repo, "/", "-"), 0, 25)
-  default_prefix = replace(local.repo, "_", "-")
+  default_prefix = local.repo
 
   host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${var.project_id}-${var.deployment_id}"
   repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${local.repo}"
