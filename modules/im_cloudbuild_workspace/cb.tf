@@ -110,6 +110,9 @@ resource "google_cloudbuild_trigger" "triggers" {
   }
 
   service_account = local.cloudbuild_sa
+  substitutions = var.substitutions
+  included_files  = var.cloudbuild_included_files
+  ignored_files   = var.cloudbuild_ignored_files
 
   depends_on = [
     google_project_iam_member.im_sa_roles,

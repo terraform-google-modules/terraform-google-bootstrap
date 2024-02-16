@@ -19,7 +19,6 @@ variable "project_id" {
   type        = string
 }
 
-
 variable "location" {
   description = "Location for Infrastructure Manager deployment."
   type        = string
@@ -27,7 +26,7 @@ variable "location" {
 }
 
 variable "trigger_location" {
-  description = "Location of for Cloud Build triggers created in the workspace. If using private pools should be the same location as the pool."
+  description = "Location of for Cloud Build triggers created in the workspace. Matches `location` if not given."
   type        = string
   default     = "us-central1"
 }
@@ -35,12 +34,6 @@ variable "trigger_location" {
 variable "deployment_id" {
   description = "Custom ID to be used for the Infrastructure Manager deployment."
   type = string
-}
-
-variable "secret_id" {
-  description = "Custom name for the secret in Secrets Manager for creating a repository connection. Generated if not given."
-  type = string
-  default = ""
 }
 
 variable "github_personal_access_token" {
@@ -91,7 +84,7 @@ variable "custom_infra_manager_sa_name" {
 }
 
 variable "infra_manager_sa_roles" {
-  description = "Roles to grant to Infrastructure Manager SA for resources defined in Terraform configuration. Map of project name or any static key to object with project_id and list of roles."
+  description = "Roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration. Map of project name or any static key to object with project_id and list of roles."
   type = map(object({
     project_id = string
     roles      = list(string)
@@ -134,6 +127,24 @@ variable "cloudbuild_apply_filename" {
   default     = null
 }
 
+variable "substitutions" {
+  description = "Optional map of substitutions to use in builds if using a custom Cloud Build YAML definition."
+  type        = map(string)
+  default     = {}
+}
+
+variable "cloudbuild_included_files" {
+  description = "Optional list. Changes affecting at least one of these files will invoke a build."
+  type        = list(string)
+  default     = []
+}
+
+variable "cloudbuild_ignored_files" {
+  description = "Optional list. Changes only affecting ignored files will not invoke a build."
+  type        = list(string)
+  default     = []
+}
+
 variable "tf_cloudbuilder" {
   description = "Name of the Cloud Builder image used for running build steps."
   type        = string
@@ -144,6 +155,10 @@ variable "tf_repo_type" {
   description = "Type of repo"
   type        = string
   default = "GITHUB"
+  validation {
+    condition = contains(["GITHUB", "GITLAB"], var.tf_repo_type)
+    error_message = "Must be one of GITHUB or GITLAB"
+  }
 }
 
 variable "gitlab_host_uri" {
@@ -167,58 +182,11 @@ variable "gitlab_read_api_access_token" {
 }
 
 variable "pull_request_comment_control" {
-  description = "Configure builds to run whether a repository owner or collaborator need to comment /gcbrun."
+  description = "Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun."
   type = string
   default = "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
   validation {
     condition = contains(["COMMENTS_DISABLED", "COMMENTS_ENABLED", "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"], var.pull_request_comment_control)
     error_message = "Must be one of COMMENTS_DISABLED, COMMENTS_ENABLED, or COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
   }
-}
-
-#####
-# TODO Evaluate all variables below this line
-#####
-
-variable "diff_sa_project" {
-  description = "Set to true if `cloudbuild_sa` is in a different project for setting up https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#cross-project_set_up."
-  type        = bool
-  default     = false
-}
-
-# TODO Maybe add this as a supported option for users to have a custom bucket.
-variable "artifacts_bucket_name" {
-  description = "Custom bucket name for Cloud Build artifacts."
-  type        = string
-  default     = ""
-}
-
-variable "cloudbuild_included_files" {
-  description = "Optional list. Changes affecting at least one of these files will invoke a build."
-  type        = list(string)
-  default     = []
-}
-
-variable "cloudbuild_ignored_files" {
-  description = "Optional list. Changes only affecting ignored files will not invoke a build."
-  type        = list(string)
-  default     = []
-}
-
-variable "substitutions" {
-  description = "Map of substitutions to use in builds."
-  type        = map(string)
-  default     = {}
-}
-
-variable "enable_worker_pool" {
-  description = "Set to true to use a private worker pool in the Cloud Build Trigger."
-  type        = bool
-  default     = false
-}
-
-variable "worker_pool_id" {
-  description = "Custom private worker pool ID. Format: 'projects/PROJECT_ID/locations/REGION/workerPools/PRIVATE_POOL_ID'."
-  type        = string
-  default     = ""
 }
