@@ -17,7 +17,7 @@ echo "Checking if deployment ${deployment_id} already exists"
 gcloud infra-manager deployments describe projects/${project_id}/locations/${location}/deployments/${deployment_id}
 DEPLOYMENT_EXISTS=$(echo $?)
 
-gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet || exit 0
+gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet
 
 CREATE_PREVIEW_CMD="gcloud infra-manager previews create projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA \
   --service-account=${service_account} \
