@@ -66,40 +66,28 @@ variable "github_app_installation_id" {
   type = string
 }
 
-variable "create_cloudbuild_sa" {
-  description = "Create a Service Account for creating Cloud Build triggers. If false `cloudbuild_sa` has to be specified."
-  type        = bool
-  default     = true
-}
-
-variable "create_cloudbuild_sa_name" {
-  description = "Custom name to be used in the creation of the Cloud Build trigger service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty."
-  type        = string
-  default     = ""
-}
-
 variable "cloudbuild_sa" {
-  description = "Custom SA ID of form projects/{{project}}/serviceAccounts/{{email}} to be used for creating Cloud Build triggers. Defaults to being created if empty."
+  description = "Custom SA ID of form projects/{{project}}/serviceAccounts/{{email}} to be used for creating Cloud Build triggers. Creates one if not given."
   type        = string
   default     = ""
 }
 
-variable "create_infra_manager_sa" {
-  description = "Create a Service Account for use of Infrastructure Manager. If false `infra_manager_sa` has to be specified."
-  type = bool
-  default = true 
-}
-
-variable "create_infra_manager_sa_name" {
-  description = "Custom name to be used in the creation of the Infrastructure Manager service account if `create_infra_manager_sa` is true. Defaults to generated name if empty."
-  type        = string
-  default     = ""
+variable "custom_cloudbuild_sa_name" {
+  description = "Custom name to be used if creating a Cloud Build service account. Defaults to generated name if empty."
+  type = string
+  default = ""
 }
 
 variable "infra_manager_sa" {
   description = "Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by Infra Manager. Defaults to generated name if empty."
   type = string
   default = ""
+}
+
+variable "custom_infra_manager_sa_name" {
+  description = "Custom name to be used if creating an Infrastructure Manager service account. Defaults to generated name if empty."
+  type        = string
+  default     = ""
 }
 
 variable "infra_manager_sa_roles" {

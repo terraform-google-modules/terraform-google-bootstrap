@@ -15,9 +15,11 @@
  */
 
 locals {
-  cloudbuild_sa = var.create_cloudbuild_sa ? google_service_account.cb_sa[0].id : var.cloudbuild_sa
+  create_cloudbuild_sa = var.cloudbuild_sa == ""
+  cloudbuild_sa = local.create_cloudbuild_sa ? google_service_account.cb_sa[0].id : var.cloudbuild_sa
   cloudbuild_sa_email = element(split("/", local.cloudbuild_sa), length(split("/", local.cloudbuild_sa)) - 1)
-  im_sa = var.create_infra_manager_sa ? google_service_account.im_sa[0].id : var.infra_manager_sa
+  create_infra_manager_sa = var.infra_manager_sa == ""
+  im_sa = local.create_infra_manager_sa ? google_service_account.im_sa[0].id : var.infra_manager_sa
   im_sa_email = element(split("/", local.im_sa), length(split("/", local.im_sa)) - 1)
 
   # Optional roles for IM SA
@@ -33,16 +35,15 @@ locals {
 }
 
 resource "google_service_account" "cb_sa" {
-  count = var.create_cloudbuild_sa ? 1 : 0
+  count = local.create_cloudbuild_sa ? 1 : 0
   project = var.project_id
-  account_id = substr(var.create_cloudbuild_sa_name != "" ? var.create_cloudbuild_sa_name : "cb-sa-${local.default_prefix}", 0, 30)
-    # TODO Come up with better description?
-  description = "SA for creating Cloud Build triggers."
+  account_id = substr(var.custom_cloudbuild_sa_name != "" ? var.custom_cloudbuild_sa_name : "cb-sa-${local.default_prefix}", 0, 30)
+  description = "SA used for Cloud Build triggers invoking Infrastructure Manager."
 }
 
 # https://cloud.google.com/infrastructure-manager/docs/configure-service-account
 resource "google_project_iam_member" "cb_config_admin_role" {
-  count = var.create_cloudbuild_sa ? 1 : 0
+  count = local.create_cloudbuild_sa ? 1 : 0
   project = var.project_id
   role = "roles/config.admin"
   member = "serviceAccount:${local.cloudbuild_sa_email}"
@@ -50,7 +51,7 @@ resource "google_project_iam_member" "cb_config_admin_role" {
 
 # Allow trigger logs to be written
 resource "google_project_iam_member" "cb_logWriter_role" {
-  count = var.create_cloudbuild_sa ? 1 : 0
+  count = local.create_cloudbuild_sa ? 1 : 0
   project = var.project_id
   role = "roles/logging.logWriter"
   member = "serviceAccount:${local.cloudbuild_sa_email}"
@@ -58,23 +59,22 @@ resource "google_project_iam_member" "cb_logWriter_role" {
 
 # Allows the Cloud Build service account to act as the Infra Manger service account
 resource "google_project_iam_member" "cb_serviceAccountUser_role" {
-  count = var.create_cloudbuild_sa ? 1 : 0
+  count = local.create_cloudbuild_sa ? 1 : 0
   project = var.project_id
   role = "roles/iam.serviceAccountUser"
   member = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 
 resource "google_service_account" "im_sa" {
-  count = var.create_infra_manager_sa ? 1 : 0
+  count = local.create_infra_manager_sa ? 1 : 0
   project = var.project_id
-  account_id = substr(var.create_infra_manager_sa_name != "" ? var.create_infra_manager_sa_name : "im-sa-${local.default_prefix}", 0, 30)
-  # TODO Come up with better description?
-  description = "SA for Infrastructure Manager."
+  account_id = substr(var.custom_infra_manager_sa_name != "" ? var.custom_infra_manager_sa_name : "im-sa-${local.default_prefix}", 0, 30)
+  description = "SA used by Infrastructure Manager for actuating resources."
 }
 
 # https://cloud.google.com/infrastructure-manager/docs/configure-service-account
 resource "google_project_iam_member" "im_config_agent_role" {
-  count = var.create_infra_manager_sa ? 1 : 0
+  count = local.create_infra_manager_sa ? 1 : 0
   project = var.project_id
   role = "roles/config.agent"
   member = "serviceAccount:${local.im_sa_email}"
