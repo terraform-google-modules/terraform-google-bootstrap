@@ -166,6 +166,16 @@ variable "gitlab_read_api_access_token" {
   default = null
 }
 
+variable "pull_request_comment_control" {
+  description = "Configure builds to run whether a repository owner or collaborator need to comment /gcbrun."
+  type = string
+  default = "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
+  validation {
+    condition = contains(["COMMENTS_DISABLED", "COMMENTS_ENABLED", "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"], var.pull_request_comment_control)
+    error_message = "Must be one of COMMENTS_DISABLED, COMMENTS_ENABLED, or COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
+  }
+}
+
 #####
 # TODO Evaluate all variables below this line
 #####

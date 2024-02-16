@@ -74,6 +74,7 @@ resource "google_cloudbuild_trigger" "triggers" {
       content {
         branch = var.im_deployment_branch
         invert_regex = false
+        comment_control = var.pull_request_comment_control
       }
     }
     dynamic push {
