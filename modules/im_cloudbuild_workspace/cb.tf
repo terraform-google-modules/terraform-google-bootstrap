@@ -46,7 +46,7 @@ locals {
         "--service-account=${local.im_sa}",
         "--git-source-repo=${var.im_deployment_repo_uri}",
         "${var.im_deployment_repo_dir != "" ? "--git-source-directory=${var.im_deployment_repo_dir}" : ""}",
-        "${var.im_deployment_branch != "" ? "--git-source-ref=${var.im_deployment_branch}" : ""}",
+        "${var.im_deployment_ref != "" ? "--git-source-ref=${var.im_deployment_ref}" : ""}",
         "${var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables}" : ""}"
       ])
     }
@@ -72,7 +72,7 @@ resource "google_cloudbuild_trigger" "triggers" {
     dynamic pull_request {
       for_each = each.key == "preview" ? [1] : []
       content {
-        branch = var.im_deployment_branch
+        branch = var.im_deployment_ref
         invert_regex = false
         comment_control = var.pull_request_comment_control
       }
@@ -80,7 +80,7 @@ resource "google_cloudbuild_trigger" "triggers" {
     dynamic push {
       for_each = each.key == "apply" ? [1] : []
       content {
-        branch = var.im_deployment_branch
+        branch = var.im_deployment_ref
         invert_regex = false
       }
     }
