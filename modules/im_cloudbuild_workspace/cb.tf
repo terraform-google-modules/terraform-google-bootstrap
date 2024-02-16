@@ -25,10 +25,7 @@ locals {
     tf_vars = var.im_tf_variables
   })
 
-  default_download_preview_script = templatefile("${path.module}/templates/download-preview.sh.tftpl", {
-    project_id = var.project_id
-    location = var.location
-  })
+  default_download_preview_script = "curl $(gcloud infra-manager previews export projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --format=\"get(result.binarySignedUri)\") -o /workspace/plan.tfplan"
 
   default_preview_steps = [
     { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_create_preview_script}"},
