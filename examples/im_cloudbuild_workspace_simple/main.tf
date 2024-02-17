@@ -19,24 +19,20 @@ module "im_workspace" {
   # source = "terraform-google-modules/bootstrap/google//modules/im_cloudbuild_workspace"
   source = "../../modules/im_cloudbuild_workspace"
 
-  project_id = "${var.project_id}"
-  deployment_id = "${var.deployment_id}"
+  project_id    = var.project_id
+  deployment_id = var.deployment_id
 
-  # TODO Add these as variables for the example.
+  tf_repo_type    = var.tf_repo_type
   im_deployment_repo_uri = var.im_repo_uri
-  im_deployment_repo_uri = "https://github.com/josephdt12/terraform-google-cloud-storage.git"
-  im_deployment_repo_dir = "examples/simple_bucket"
-  im_deployment_branch = "master"
-  im_tf_variables = "project_id=${var.project_id}"
-  
-  # Having to explicitly set this boolean to false is a little annoying
-  # Perhaps check if either the SA has been set, or this is set to false?
-  create_infra_manager_sa = false
-  infra_manager_sa = "projects/${var.project_id}/serviceAccounts/${var.service_account}"
+  im_deployment_repo_dir = var.im_repo_directory
+  im_deployment_ref   = var.im_repo_ref
 
-  tf_repo_type = "GITHUB"
-  github_app_installation_id = "${var.github_app_installation_id}"
-  repo_personal_access_token = "${var.repo_pat}"
+  im_tf_variables = "project_id=${var.project_id},network_name=test-network"
 
-  tf_cloudbuilder = var.cb_tf_builder_version
+
+  github_app_installation_id   = var.github_app_installation_id
+  github_personal_access_token = var.repo_pat
+
+  gitlab_api_access_token      = var.gitlab_api_token
+  gitlab_read_api_access_token = var.gitlab_read_api_token
 }
