@@ -40,6 +40,7 @@ variable "github_personal_access_token" {
   description = "Personal access token for a GitHib repository." 
   type = string
   sensitive = true
+  default = ""
 }
 
 variable "host_connection_name" {
@@ -57,6 +58,7 @@ variable "repo_connection_name" {
 variable "github_app_installation_id" {
   description = "Installation ID of the Cloud Build GitHub app."
   type = string
+  default = ""
 }
 
 variable "cloudbuild_sa" {
