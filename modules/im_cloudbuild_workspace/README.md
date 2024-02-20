@@ -51,8 +51,8 @@ for actuating resources.
 | custom\_cloudbuild\_sa\_name | Custom name to be used if creating a Cloud Build service account. Defaults to generated name if empty. | `string` | `""` | no |
 | custom\_infra\_manager\_sa\_name | Custom name to be used if creating an Infrastructure Manager service account. Defaults to generated name if empty. | `string` | `""` | no |
 | deployment\_id | Custom ID to be used for the Infrastructure Manager deployment. | `string` | n/a | yes |
-| github\_app\_installation\_id | Installation ID of the Cloud Build GitHub app. | `string` | n/a | yes |
-| github\_personal\_access\_token | Personal access token for a GitHib repository. | `string` | n/a | yes |
+| github\_app\_installation\_id | Installation ID of the Cloud Build GitHub app. | `string` | `""` | no |
+| github\_personal\_access\_token | Personal access token for a GitHib repository. | `string` | `""` | no |
 | gitlab\_api\_access\_token | GitLab personal access token with api scope to be saved in Secrets Manager. | `string` | `null` | no |
 | gitlab\_host\_uri | The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise. | `string` | `""` | no |
 | gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope to be saved in Secrets Manager. | `string` | `null` | no |
