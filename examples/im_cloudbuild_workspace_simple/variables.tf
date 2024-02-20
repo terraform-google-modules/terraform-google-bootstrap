@@ -21,65 +21,67 @@ variable "project_id" {
 
 variable "deployment_id" {
   description = "Custom ID to be used for the Infrastructure Manager deployment."
-  type = string
-}
-
-variable "service_account" {
-  description = "If provided, the service account used to call Infrastructure Manager. One will be created otherwise."
-  type = string
-  default = null
+  type        = string
 }
 
 variable "input_variables" {
   description = "Input variables to pass to Infrastructure Manager."
-  type = string
-  default = null
+  type        = string
+  default     = ""
 }
 
 variable "im_repo_uri" {
   description = "URI of the repository where the triggers will be connected to."
-  type = string
+  type        = string
 }
 
 variable "im_repo_directory" {
   description = "Optional subdirectory within the repository."
-  type = string
-  default = "" 
+  type        = string
+  default     = ""
 }
 
 variable "im_repo_ref" {
   description = "Git reference of the configuration. Will use the repository's default branch if not specified."
-  type = string
-  default = "" 
+  type        = string
+  default     = ""
 }
 
 variable "tf_repo_type" {
   description = "Type of repo"
   type        = string
-  default = "GITHUB"
+  default     = "GITHUB"
+  validation {
+    condition = contains(["GITHUB", "GITLAB"], var.tf_repo_type)
+    error_message = "Must be one of GITHUB or GITLAB"
+  }
 }
 
 # GitHub specific variables
-variable "repo_pat" {
-  description = "Personal access token for a repository."
-  type = string
-  sensitive = true
+variable "github_repo_pat" {
+  description = "Personal access token for GitHub."
+  type        = string
+  sensitive   = true
+  default = ""
 }
 
 variable "github_app_installation_id" {
   description = "Installation ID of the GitHub Cloud Build application."
-  type = string
+  type        = string
+  default = ""
 }
 
 # GitLab specific variables
 variable "gitlab_api_token" {
-  type = string
+  description = "GitLab PAT with api access."
+  type      = string
   sensitive = true
-  default = null
+  default   = ""
 }
 
 variable "gitlab_read_api_token" {
-  type = string
+  description = "GitLab PAT with read_api access."
+  type      = string
   sensitive = true
-  default = null
+  default   = ""
 }

@@ -17,18 +17,17 @@
 module "im_workspace" {
   # TODO Need to hardcode source location until published
   # source = "terraform-google-modules/bootstrap/google//modules/im_cloudbuild_workspace"
-  source = "../../modules/im_cloudbuild_workspace"
+  source = "josephdt12/bootstrap/google//modules/im_cloudbuild_workspace"
 
   project_id    = var.project_id
   deployment_id = var.deployment_id
 
-  tf_repo_type    = var.tf_repo_type
+  tf_repo_type           = var.tf_repo_type
   im_deployment_repo_uri = var.im_repo_uri
   im_deployment_repo_dir = var.im_repo_directory
-  im_deployment_ref   = var.im_repo_ref
+  im_deployment_ref      = var.im_repo_ref
 
-  im_tf_variables = "project_id=${var.project_id},network_name=test-network"
-
+  im_tf_variables = var.input_variables
 
   github_app_installation_id   = var.github_app_installation_id
   github_personal_access_token = var.repo_pat
