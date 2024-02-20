@@ -16,27 +16,27 @@
 
 locals {
   default_create_preview_script = templatefile("${path.module}/templates/create-preview.sh.tftpl", {
-    project_id = var.project_id
-    location = var.location
-    deployment_id = var.deployment_id
+    project_id      = var.project_id
+    location        = var.location
+    deployment_id   = var.deployment_id
     service_account = local.im_sa
-    source_repo = var.im_deployment_repo_uri
+    source_repo     = var.im_deployment_repo_uri
     source_repo_dir = var.im_deployment_repo_dir
-    tf_vars = var.im_tf_variables
+    tf_vars         = var.im_tf_variables
   })
 
   default_download_preview_script = "curl $(gcloud infra-manager previews export projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --format=\"get(result.binarySignedUri)\") -o /workspace/plan.tfplan"
 
   default_preview_steps = [
-    { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_create_preview_script}"},
-    { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", script = "${local.default_download_preview_script}"},
-    { id = "terraform_init", name = var.tf_cloudbuilder, args = ["init", "-no-color"]},
-    { id = "terraform_show", name = var.tf_cloudbuilder, args = ["show", "/workspace/plan.tfplan", "-no-color"]},
+    { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_create_preview_script },
+    { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_download_preview_script },
+    { id = "terraform_init", name = var.tf_cloudbuilder, args = ["init", "-no-color"] },
+    { id = "terraform_show", name = var.tf_cloudbuilder, args = ["show", "/workspace/plan.tfplan", "-no-color"] },
   ]
 
   default_apply_steps = [
     {
-      id = "apply"
+      id   = "apply"
       name = "gcr.io/cloud-builders/gcloud",
       args = compact([
         "infra-manager",
@@ -45,42 +45,42 @@ locals {
         "projects/${var.project_id}/locations/${var.location}/deployments/${var.deployment_id}",
         "--service-account=${local.im_sa}",
         "--git-source-repo=${var.im_deployment_repo_uri}",
-        "${var.im_deployment_repo_dir != "" ? "--git-source-directory=${var.im_deployment_repo_dir}" : ""}",
-        "${var.im_deployment_ref != "" ? "--git-source-ref=${var.im_deployment_ref}" : ""}",
-        "${var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables}" : ""}"
+        var.im_deployment_repo_dir != "" ? "--git-source-directory=${var.im_deployment_repo_dir}" : "",
+        var.im_deployment_ref != "" ? "--git-source-ref=${var.im_deployment_ref}" : "",
+        var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables}" : ""
       ])
     }
   ]
 
   default_triggers_steps = {
     "preview" = local.default_preview_steps,
-    "apply" = local.default_apply_steps
+    "apply"   = local.default_apply_steps
   }
 }
 
 resource "google_cloudbuild_trigger" "triggers" {
   for_each = local.default_triggers_steps
 
-  project     = var.project_id
-  location    = var.trigger_location
-  name        = "im-${local.default_prefix}-${each.key}"
-  description = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}"
+  project            = var.project_id
+  location           = var.trigger_location
+  name               = "im-${local.default_prefix}-${each.key}"
+  description        = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}"
   include_build_logs = local.is_gh_repo ? "INCLUDE_BUILD_LOGS_WITH_STATUS" : null
 
   repository_event_config {
     repository = google_cloudbuildv2_repository.repository_connection.id
-    dynamic pull_request {
+    dynamic "pull_request" {
       for_each = each.key == "preview" ? [1] : []
       content {
-        branch = var.im_deployment_ref
-        invert_regex = false
+        branch          = var.im_deployment_ref
+        invert_regex    = false
         comment_control = var.pull_request_comment_control
       }
     }
-    dynamic push {
+    dynamic "push" {
       for_each = each.key == "apply" ? [1] : []
       content {
-        branch = var.im_deployment_ref
+        branch       = var.im_deployment_ref
         invert_regex = false
       }
     }
@@ -93,11 +93,11 @@ resource "google_cloudbuild_trigger" "triggers" {
       dynamic "step" {
         for_each = each.value
         content {
-          id = step.value.id 
-          name = step.value.name
+          id         = step.value.id
+          name       = step.value.name
           entrypoint = try(step.value.entrypoint, null)
-          args = try(step.value.args, null)
-          script = try(step.value.script, null)
+          args       = try(step.value.args, null)
+          script     = try(step.value.script, null)
           env = [
             "SHORT_SHA=$SHORT_SHA"
           ]
@@ -110,7 +110,7 @@ resource "google_cloudbuild_trigger" "triggers" {
   }
 
   service_account = local.cloudbuild_sa
-  substitutions = var.substitutions
+  substitutions   = var.substitutions
   included_files  = var.cloudbuild_included_files
   ignored_files   = var.cloudbuild_ignored_files
 

@@ -33,32 +33,32 @@ variable "trigger_location" {
 
 variable "deployment_id" {
   description = "Custom ID to be used for the Infrastructure Manager deployment."
-  type = string
+  type        = string
 }
 
 variable "github_personal_access_token" {
-  description = "Personal access token for a GitHib repository." 
-  type = string
-  sensitive = true
-  default = ""
+  description = "Personal access token for a GitHib repository."
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "host_connection_name" {
   description = "Name for the VCS connection. Generated if not given."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "repo_connection_name" {
   description = "Connection name for linked repository. Generated if not given."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "github_app_installation_id" {
   description = "Installation ID of the Cloud Build GitHub app."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "cloudbuild_sa" {
@@ -69,14 +69,14 @@ variable "cloudbuild_sa" {
 
 variable "custom_cloudbuild_sa_name" {
   description = "Custom name to be used if creating a Cloud Build service account. Defaults to generated name if empty."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "infra_manager_sa" {
   description = "Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by Infra Manager. Defaults to generated name if empty."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "custom_infra_manager_sa_name" {
@@ -96,25 +96,25 @@ variable "infra_manager_sa_roles" {
 
 variable "im_deployment_repo_uri" {
   description = "The URI of the repo where the Terraform configs are stored."
-  type = string
+  type        = string
 }
 
 variable "im_deployment_repo_dir" {
   description = "The directory inside the repo where the Terraform root config is located. If empty defaults to repo root."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "im_deployment_ref" {
   description = "Git branch or ref configured to run infra-manager apply. All other refs will run plan by default."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "im_tf_variables" {
   description = "Optional list of Terraform variables to pass to Infrastructure Manager, if the configuration exists in a different repo. List of strings of form KEY=VALUE expected."
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "cloudbuild_preview_filename" {
@@ -156,39 +156,39 @@ variable "tf_cloudbuilder" {
 variable "tf_repo_type" {
   description = "Type of repo"
   type        = string
-  default = "GITHUB"
+  default     = "GITHUB"
   validation {
-    condition = contains(["GITHUB", "GITLAB"], var.tf_repo_type)
+    condition     = contains(["GITHUB", "GITLAB"], var.tf_repo_type)
     error_message = "Must be one of GITHUB or GITLAB"
   }
 }
 
 variable "gitlab_host_uri" {
   description = "The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise."
-  type = string
-  default = "" 
+  type        = string
+  default     = ""
 }
 
 variable "gitlab_api_access_token" {
   description = "GitLab personal access token with api scope to be saved in Secrets Manager."
-  type = string
-  sensitive = true
-  default = null
+  type        = string
+  sensitive   = true
+  default     = null
 }
 
 variable "gitlab_read_api_access_token" {
   description = "GitLab personal access token with read_api scope to be saved in Secrets Manager."
-  type = string
-  sensitive = true
-  default = null
+  type        = string
+  sensitive   = true
+  default     = null
 }
 
 variable "pull_request_comment_control" {
   description = "Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun."
-  type = string
-  default = "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
+  type        = string
+  default     = "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
   validation {
-    condition = contains(["COMMENTS_DISABLED", "COMMENTS_ENABLED", "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"], var.pull_request_comment_control)
+    condition     = contains(["COMMENTS_DISABLED", "COMMENTS_ENABLED", "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"], var.pull_request_comment_control)
     error_message = "Must be one of COMMENTS_DISABLED, COMMENTS_ENABLED, or COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
   }
 }

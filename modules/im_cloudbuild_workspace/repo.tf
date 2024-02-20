@@ -18,7 +18,7 @@ locals {
   # Remove ".git" suffix if it's included
   url = trimsuffix(var.im_deployment_repo_uri, ".git")
 
-  repo = local.is_gh_repo ? local.gh_name : local.gl_project
+  repo           = local.is_gh_repo ? local.gh_name : local.gl_project
   default_prefix = local.repo
 
   host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${var.project_id}-${var.deployment_id}"
@@ -77,9 +77,9 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
 
 // Create the repository connection.
 resource "google_cloudbuildv2_repository" "repository_connection" {
-  project  = var.project_id
-  location = var.location
+  project           = var.project_id
+  location          = var.location
   name              = local.repo_connection_name
   parent_connection = google_cloudbuildv2_connection.vcs_connection.name
-  remote_uri        = var.im_deployment_repo_uri 
+  remote_uri        = var.im_deployment_repo_uri
 }

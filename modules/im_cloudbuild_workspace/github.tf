@@ -18,14 +18,13 @@ locals {
   # GitHub repo url of form "github.com/owner/name"
   is_gh_repo        = var.tf_repo_type == "GITHUB"
   gh_repo_url_split = local.is_gh_repo ? split("/", local.url) : []
-  gh_owner          = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 2] : ""
   gh_name           = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 1] : ""
 }
 
 // Create a secret containing the personal access token and grant permissions to the Service Agent.
 resource "google_secret_manager_secret" "github_token_secret" {
-  count = local.is_gh_repo ? 1 : 0
-  project = var.project_id
+  count     = local.is_gh_repo ? 1 : 0
+  project   = var.project_id
   secret_id = "im-github-${local.gh_name}"
 
   labels = {
@@ -39,13 +38,13 @@ resource "google_secret_manager_secret" "github_token_secret" {
 
 // Personal access token from VCS.
 resource "google_secret_manager_secret_version" "github_token_secret_version" {
-  count = local.is_gh_repo ? 1 : 0
+  count       = local.is_gh_repo ? 1 : 0
   secret      = google_secret_manager_secret.github_token_secret[0].id
   secret_data = var.github_personal_access_token
 }
 
 resource "google_secret_manager_secret_iam_policy" "github_iam_policy" {
-  count = local.is_gh_repo ? 1 : 0
+  count       = local.is_gh_repo ? 1 : 0
   project     = google_secret_manager_secret.github_token_secret[0].project
   secret_id   = google_secret_manager_secret.github_token_secret[0].secret_id
   policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
