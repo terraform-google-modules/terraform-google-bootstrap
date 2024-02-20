@@ -15,9 +15,7 @@
  */
 
 module "im_workspace" {
-  # TODO Need to hardcode source location until published
-  # source = "terraform-google-modules/bootstrap/google//modules/im_cloudbuild_workspace"
-  source = "josephdt12/bootstrap/google//modules/im_cloudbuild_workspace"
+  source = "../../modules/im_cloudbuild_workspace"
 
   project_id    = var.project_id
   deployment_id = var.deployment_id
@@ -30,7 +28,7 @@ module "im_workspace" {
   im_tf_variables = var.input_variables
 
   github_app_installation_id   = var.github_app_installation_id
-  github_personal_access_token = var.repo_pat
+  github_personal_access_token = var.github_repo_pat
 
   gitlab_api_access_token      = var.gitlab_api_token
   gitlab_read_api_access_token = var.gitlab_read_api_token
