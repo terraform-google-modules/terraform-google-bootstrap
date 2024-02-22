@@ -48,7 +48,7 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
     content {
       app_installation_id = var.github_app_installation_id
       authorizer_credential {
-        oauth_token_secret_version = google_secret_manager_secret_version.github_token_secret_version[0].id
+        oauth_token_secret_version = local.github_secret_version_id
       }
     }
   }

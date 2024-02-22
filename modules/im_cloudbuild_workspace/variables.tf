@@ -36,13 +36,6 @@ variable "deployment_id" {
   type        = string
 }
 
-variable "github_personal_access_token" {
-  description = "Personal access token for a GitHib repository."
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "host_connection_name" {
   description = "Name for the VCS connection. Generated if not given."
   type        = string
@@ -51,12 +44,6 @@ variable "host_connection_name" {
 
 variable "repo_connection_name" {
   description = "Connection name for linked repository. Generated if not given."
-  type        = string
-  default     = ""
-}
-
-variable "github_app_installation_id" {
-  description = "Installation ID of the Cloud Build GitHub app."
   type        = string
   default     = ""
 }
@@ -163,26 +150,6 @@ variable "tf_repo_type" {
   }
 }
 
-variable "gitlab_host_uri" {
-  description = "The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise."
-  type        = string
-  default     = ""
-}
-
-variable "gitlab_api_access_token" {
-  description = "GitLab personal access token with api scope to be saved in Secrets Manager."
-  type        = string
-  sensitive   = true
-  default     = null
-}
-
-variable "gitlab_read_api_access_token" {
-  description = "GitLab personal access token with read_api scope to be saved in Secrets Manager."
-  type        = string
-  sensitive   = true
-  default     = null
-}
-
 variable "pull_request_comment_control" {
   description = "Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun."
   type        = string
@@ -191,4 +158,65 @@ variable "pull_request_comment_control" {
     condition     = contains(["COMMENTS_DISABLED", "COMMENTS_ENABLED", "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"], var.pull_request_comment_control)
     error_message = "Must be one of COMMENTS_DISABLED, COMMENTS_ENABLED, or COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
   }
+}
+
+# GitHub specific variables
+
+variable "github_app_installation_id" {
+  description = "Installation ID of the Cloud Build GitHub app used for pull and push request triggers."
+  type        = string
+  default     = ""
+}
+
+variable "github_personal_access_token" {
+  description = "Personal access token for a GitHub repository. If provided, creates a secret within Secret Manager."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "github_pat_secret" {
+  description = "The secret ID within Secret Manager for an existing personal access token for GitHub."
+  type = string
+  default = ""
+}
+
+variable "github_pat_secret_version" {
+  description = "The secret version ID or alias for the GitHub PAT secret. Uses the latest if not provided."
+  type = string
+  default = ""
+}
+
+# GitLab specific variables
+
+variable "gitlab_host_uri" {
+  description = "The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise."
+  type        = string
+  default     = ""
+}
+
+variable "gitlab_api_access_token" {
+  description = "GitLab personal access token with api scope to be saved in Secret Manager."
+  type        = string
+  sensitive   = true
+  default     = "" 
+}
+
+variable "gitlab_api_access_token_secret" {
+  description = "Secret within Secret Manager for an existing api access token for GitLab."
+  type = string
+  default = ""
+}
+
+variable "gitlab_read_api_access_token" {
+  description = "GitLab personal access token with read_api scope to be saved in Secret Manager."
+  type        = string
+  sensitive   = true
+  default     = "" 
+}
+
+variable "gitlab_read_api_access_token_secret" {
+  description = "Secret within Secret Manager for an existing read api access token for GitLab."
+  type = string
+  default = ""
 }
