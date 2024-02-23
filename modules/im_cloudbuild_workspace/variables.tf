@@ -196,27 +196,39 @@ variable "gitlab_host_uri" {
 }
 
 variable "gitlab_api_access_token" {
-  description = "GitLab personal access token with api scope to be saved in Secret Manager."
+  description = "GitLab personal access token with api scope. If provided, creates a secret within Secret Manager."
   type        = string
   sensitive   = true
   default     = "" 
 }
 
 variable "gitlab_api_access_token_secret" {
-  description = "Secret within Secret Manager for an existing api access token for GitLab."
+  description = "The secret ID within Secret Manager for an existing api access token for GitLab."
+  type = string
+  default = ""
+}
+
+variable "gitlab_api_access_token_secret_version" {
+  description = "The secret version ID or alias for the GitLab api token secret. Uses the latest if not provided."
   type = string
   default = ""
 }
 
 variable "gitlab_read_api_access_token" {
-  description = "GitLab personal access token with read_api scope to be saved in Secret Manager."
+  description = "GitLab personal access token with read_api scope. If provided, creates a secret within Secret Manager."
   type        = string
   sensitive   = true
   default     = "" 
 }
 
 variable "gitlab_read_api_access_token_secret" {
-  description = "Secret within Secret Manager for an existing read api access token for GitLab."
+  description = "The secret ID within Secret Manager for an existing read_api access token for GitLab."
+  type = string
+  default = ""
+}
+
+variable "gitlab_read_api_access_token_secret_version" {
+  description = "The secret version ID or alias for the GitLab read_api token secret. Uses the latest if not provided."
   type = string
   default = ""
 }

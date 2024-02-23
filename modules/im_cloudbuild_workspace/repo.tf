@@ -58,10 +58,10 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
     content {
       host_uri = var.gitlab_host_uri != "" ? var.gitlab_host_uri : null
       authorizer_credential {
-        user_token_secret_version = google_secret_manager_secret_version.gitlab_api_secret_version[0].name
+        user_token_secret_version = local.gitlab_api_secret_version
       }
       read_authorizer_credential {
-        user_token_secret_version = google_secret_manager_secret_version.gitlab_read_api_secret_version[0].name
+        user_token_secret_version = local.gitlab_read_api_secret_version
       }
       webhook_secret_secret_version = google_secret_manager_secret_version.gitlab_webhook_secret_version[0].name
     }
