@@ -177,14 +177,14 @@ variable "github_personal_access_token" {
 
 variable "github_pat_secret" {
   description = "The secret ID within Secret Manager for an existing personal access token for GitHub."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "github_pat_secret_version" {
   description = "The secret version ID or alias for the GitHub PAT secret. Uses the latest if not provided."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 # GitLab specific variables
@@ -199,36 +199,36 @@ variable "gitlab_api_access_token" {
   description = "GitLab personal access token with api scope. If provided, creates a secret within Secret Manager."
   type        = string
   sensitive   = true
-  default     = "" 
+  default     = ""
 }
 
 variable "gitlab_api_access_token_secret" {
   description = "The secret ID within Secret Manager for an existing api access token for GitLab."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "gitlab_api_access_token_secret_version" {
   description = "The secret version ID or alias for the GitLab api token secret. Uses the latest if not provided."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "gitlab_read_api_access_token" {
   description = "GitLab personal access token with read_api scope. If provided, creates a secret within Secret Manager."
   type        = string
   sensitive   = true
-  default     = "" 
+  default     = ""
 }
 
 variable "gitlab_read_api_access_token_secret" {
   description = "The secret ID within Secret Manager for an existing read_api access token for GitLab."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "gitlab_read_api_access_token_secret_version" {
   description = "The secret version ID or alias for the GitLab read_api token secret. Uses the latest if not provided."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
