@@ -26,6 +26,8 @@ steps:
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
+  - 'TF_VAR_github_pat_secret=$_GITHUB_SECRET'
+  - 'TF_VAR_gitlab_token_secret=$_GITLAB_SECRET'
 - id: init-all
   waitFor:
     - prepare
@@ -131,6 +133,22 @@ steps:
       - verify-tfworkspace
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
+
+- id: apply-imworkspace-github
+  waitFor:
+      - create-all
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage apply --verbose']
+- id: verify-imworkspace-github
+  waitFor:
+      - apply-imworkspace-github 
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage verify --verbose']
+- id: teardown-imworkspace-github
+  waitFor:
+      - verify-imworkspace-github 
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage teardown --verbose']
 
 tags:
 - 'ci'
