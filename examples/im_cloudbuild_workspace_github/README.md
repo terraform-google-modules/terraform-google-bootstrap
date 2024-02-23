@@ -8,6 +8,10 @@
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| cloudbuild\_apply\_trigger\_id | TRigger used for running IM apply |
+| cloudbuild\_preview\_trigger\_id | Trigger used for creating IM previews |
+| project\_id | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

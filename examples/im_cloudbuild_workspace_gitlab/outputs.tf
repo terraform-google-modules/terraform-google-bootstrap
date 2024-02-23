@@ -20,10 +20,10 @@ output "project_id" {
 
 output "cloudbuild_preview_trigger_id" {
   description = "Trigger used for creating IM previews"
-  value = module.im_workspace.cloudbuild_preview_trigger_id
+  value       = module.im_workspace.cloudbuild_preview_trigger_id
 }
 
 output "cloudbuild_apply_trigger_id" {
   description = "TRigger used for running IM apply"
-  value = module.im_workspace.cloudbuild_apply_trigger_id
+  value       = module.im_workspace.cloudbuild_apply_trigger_id
 }
