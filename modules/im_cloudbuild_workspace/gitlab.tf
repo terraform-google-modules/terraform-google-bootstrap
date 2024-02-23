@@ -20,11 +20,13 @@ locals {
   gl_repo_url_split = local.is_gl_repo ? split("/", local.url) : []
   gl_project        = local.is_gl_repo ? local.gl_repo_url_split[length(local.gl_repo_url_split) - 1] : ""
 
-  create_api_secret      = var.gitlab_api_access_token != ""
-  create_read_api_secret = var.gitlab_read_api_access_token != ""
+  create_api_secret      = local.is_gl_repo && var.gitlab_api_access_token != ""
+  existing_api_secret_version = local.is_gl_repo && var.gitlab_api_access_token_secret != "" ? data.google_secret_manager_secret_version.existing_gitlab_api_secret_version[0].name : ""
+  gitlab_api_secret_version = local.create_api_secret ? google_secret_manager_secret_version.gitlab_api_secret_version[0].name : local.existing_api_secret_version  
 
-  gitlab_api_secret_version      = local.create_api_secret ? google_secret_manager_secret_version.gitlab_api_secret_version[0].name : google_secret_manager_secret_version.existing_gitlab_api_secret_version[0].name
-  gitlab_read_api_secret_version = local.create_read_api_secret ? google_secret_manager_secret.gitlab_read_api_access_token_secret_version[0].name : google_secret_manager_secret_version.existing_gitlab_read_api_secret_version[0].name
+  create_read_api_secret      = local.is_gl_repo && var.gitlab_read_api_access_token != ""
+  existing_read_api_secret_version = local.is_gl_repo && var.gitlab_read_api_access_token_secret != "" ? data.google_secret_manager_secret_version.existing_gitlab_read_api_secret_version[0].name : ""
+  gitlab_read_api_secret_version = local.create_read_api_secret ? google_secret_manager_secret_version.gitlab_read_api_secret_version[0].name : local.existing_read_api_secret_version 
 }
 
 resource "random_id" "gitlab_resources_random_id" {
@@ -33,7 +35,7 @@ resource "random_id" "gitlab_resources_random_id" {
 }
 
 resource "google_secret_manager_secret" "gitlab_api_secret" {
-  count     = local.is_gl_repo ? 1 : 0
+  count = local.create_api_secret ? 1 : 0
   project   = var.project_id
   secret_id = "im-gitlab-${local.gl_project}-${random_id.gitlab_resources_random_id[0].dec}-api-access-token"
   labels = {
@@ -45,20 +47,20 @@ resource "google_secret_manager_secret" "gitlab_api_secret" {
 }
 
 resource "google_secret_manager_secret_iam_policy" "api_secret_policy" {
-  count       = local.is_gl_repo ? 1 : 0
+  count = local.create_api_secret ? 1 : 0
   project     = google_secret_manager_secret.gitlab_api_secret[0].project
   secret_id   = google_secret_manager_secret.gitlab_api_secret[0].secret_id
   policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
 }
 
 resource "google_secret_manager_secret_version" "gitlab_api_secret_version" {
-  count       = local.is_gl_repo ? 1 : 0
+  count = local.create_api_secret ? 1 : 0
   secret      = google_secret_manager_secret.gitlab_api_secret[0].id
   secret_data = var.gitlab_api_access_token
 }
 
 resource "google_secret_manager_secret" "gitlab_read_api_secret" {
-  count     = local.is_gl_repo ? 1 : 0
+  count = local.create_read_api_secret ? 1 : 0
   project   = var.project_id
   secret_id = "im-gitlab-${local.gl_project}-${random_id.gitlab_resources_random_id[0].dec}-read-api-access-token"
   labels = {
@@ -70,14 +72,14 @@ resource "google_secret_manager_secret" "gitlab_read_api_secret" {
 }
 
 resource "google_secret_manager_secret_iam_policy" "read_api_secret_policy" {
-  count       = local.is_gl_repo ? 1 : 0
+  count = local.create_read_api_secret ? 1 : 0
   project     = google_secret_manager_secret.gitlab_read_api_secret[0].project
   secret_id   = google_secret_manager_secret.gitlab_read_api_secret[0].secret_id
   policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
 }
 
 resource "google_secret_manager_secret_version" "gitlab_read_api_secret_version" {
-  count       = local.is_gl_repo ? 1 : 0
+  count = local.create_read_api_secret ? 1 : 0
   secret      = google_secret_manager_secret.gitlab_read_api_secret[0].id
   secret_data = var.gitlab_read_api_access_token
 }
@@ -120,7 +122,7 @@ data "google_secret_manager_secret" "existing_gitlab_api_secret" {
 data "google_secret_manager_secret_version" "existing_gitlab_api_secret_version" {
   count   = var.gitlab_api_access_token_secret != "" ? 1 : 0
   project = var.project_id
-  secret  = google_secret_manager_secret.existing_gitlab_api_secret[0].id
+  secret  = data.google_secret_manager_secret.existing_gitlab_api_secret[0].id
   version = var.gitlab_api_access_token_secret_version != "" ? var.gitlab_api_access_token_secret_version : null
 }
 
@@ -133,6 +135,6 @@ data "google_secret_manager_secret" "existing_gitlab_read_api_secret" {
 data "google_secret_manager_secret_version" "existing_gitlab_read_api_secret_version" {
   count   = var.gitlab_read_api_access_token_secret != "" ? 1 : 0
   project = var.project_id
-  secret  = google_secret_manager_secret.existing_gitlab_read_api_secret[0].id
+  secret  = data.google_secret_manager_secret.existing_gitlab_read_api_secret[0].id
   version = var.gitlab_read_api_access_token_secret_version != "" ? var.gitlab_read_api_access_token_secret_version : null
 }
