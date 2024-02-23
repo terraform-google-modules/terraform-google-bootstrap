@@ -20,9 +20,9 @@ module "im_workspace" {
   project_id    = var.project_id
   deployment_id = "im-example-github-deployment"
 
-  tf_repo_type = "GITHUB"
+  tf_repo_type           = "GITHUB"
   im_deployment_repo_uri = "https://github.com/im-goose/im-git-ci-cd.git"
-  
+
   github_app_installation_id = "47590865"
-  github_pat_secret = var.github_pat_secret
+  github_pat_secret          = var.github_pat_secret
 }

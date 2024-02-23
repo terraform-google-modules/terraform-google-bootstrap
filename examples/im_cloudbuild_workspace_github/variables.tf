@@ -21,5 +21,5 @@ variable "project_id" {
 
 variable "github_pat_secret" {
   description = "Secret that contains a GitHub personal access token."
-  type = string
+  type        = string
 }

@@ -21,5 +21,5 @@ variable "project_id" {
 
 variable "gitlab_token_secret" {
   description = "Secret that contains a GitLab token with api and read_api scope."
-  type = string
+  type        = string
 }
