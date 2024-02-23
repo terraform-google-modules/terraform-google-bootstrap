@@ -3,7 +3,7 @@
 This IM Cloud Build Workspace blueprint creates an opinionated workflow for actuating Terraform
 resources on Cloud Build using Infrastructure Manager. A set of Cloud Build triggers manage
 preview and apply operations on a configuration stored in a GitHub or GitLab repository.
-The Cloud Build triggers use a per-workspace Service Account which can be configured with a 
+The Cloud Build triggers use a per-workspace Service Account which can be configured with a
 minimal set of permissions for calling Infrastructure Manager. Infrastructure Manager uses a separate
 service account with a set of permissions required by the given Terraform configuration.
 
