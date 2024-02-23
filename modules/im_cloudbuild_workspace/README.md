@@ -51,11 +51,17 @@ for actuating resources.
 | custom\_cloudbuild\_sa\_name | Custom name to be used if creating a Cloud Build service account. Defaults to generated name if empty. | `string` | `""` | no |
 | custom\_infra\_manager\_sa\_name | Custom name to be used if creating an Infrastructure Manager service account. Defaults to generated name if empty. | `string` | `""` | no |
 | deployment\_id | Custom ID to be used for the Infrastructure Manager deployment. | `string` | n/a | yes |
-| github\_app\_installation\_id | Installation ID of the Cloud Build GitHub app. | `string` | `""` | no |
-| github\_personal\_access\_token | Personal access token for a GitHib repository. | `string` | `""` | no |
-| gitlab\_api\_access\_token | GitLab personal access token with api scope to be saved in Secrets Manager. | `string` | `null` | no |
+| github\_app\_installation\_id | Installation ID of the Cloud Build GitHub app used for pull and push request triggers. | `string` | `""` | no |
+| github\_pat\_secret | The secret ID within Secret Manager for an existing personal access token for GitHub. | `string` | `""` | no |
+| github\_pat\_secret\_version | The secret version ID or alias for the GitHub PAT secret. Uses the latest if not provided. | `string` | `""` | no |
+| github\_personal\_access\_token | Personal access token for a GitHub repository. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
+| gitlab\_api\_access\_token | GitLab personal access token with api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
+| gitlab\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing api access token for GitLab. | `string` | `""` | no |
+| gitlab\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab api token secret. Uses the latest if not provided. | `string` | `""` | no |
 | gitlab\_host\_uri | The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope to be saved in Secrets Manager. | `string` | `null` | no |
+| gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
+| gitlab\_read\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing read\_api access token for GitLab. | `string` | `""` | no |
+| gitlab\_read\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab read\_api token secret. Uses the latest if not provided. | `string` | `""` | no |
 | host\_connection\_name | Name for the VCS connection. Generated if not given. | `string` | `""` | no |
 | im\_deployment\_ref | Git branch or ref configured to run infra-manager apply. All other refs will run plan by default. | `string` | `""` | no |
 | im\_deployment\_repo\_dir | The directory inside the repo where the Terraform root config is located. If empty defaults to repo root. | `string` | `""` | no |
