@@ -28,7 +28,7 @@ import (
 )
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
-	githubSecretID := utils.ValFromEnv(t, "TF_VAR_im_github_pat_secret")
+	githubSecretID := utils.ValFromEnv(t, "IM_GITHUB_PAT")
 	vars := map[string]interface{}{
 		"im_github_pat_secret": githubSecretID,
 	}

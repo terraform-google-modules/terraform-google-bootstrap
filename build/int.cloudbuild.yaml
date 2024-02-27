@@ -34,6 +34,8 @@ steps:
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run all --stage init --verbose']
   secretEnv: ['IM_GITHUB_PAT']
+  env:
+  - 'TF_VAR_im_github_pat_secret=$_IM_GITHUB_PAT_SECRET_ID'
 - id: create-all
   waitFor:
     - init-all
@@ -143,6 +145,7 @@ steps:
   args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage apply --verbose']
   env:
   - 'TF_VAR_im_github_pat_secret=$_IM_GITHUB_PAT_SECRET_ID'
+  secretEnv: ['IM_GITHUB_PAT']
 - id: verify-imworkspace-github
   waitFor:
       - apply-imworkspace-github
