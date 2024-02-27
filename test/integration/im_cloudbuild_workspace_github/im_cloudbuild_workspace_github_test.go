@@ -28,7 +28,11 @@ import (
 )
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
-	bpt := tft.NewTFBlueprintTest(t)
+	githubSecretID := utils.ValFromEnv(t, "TF_VAR_im_github_pat_secret")
+	vars := map[string]interface{}{
+		"im_github_pat_secret": githubSecretID,
+	}
+	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
