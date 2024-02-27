@@ -10,8 +10,10 @@
 
 | Name | Description |
 |------|-------------|
-| cloudbuild\_apply\_trigger\_id | TRigger used for running IM apply |
+| cloudbuild\_apply\_trigger\_id | Trigger used for running IM apply |
 | cloudbuild\_preview\_trigger\_id | Trigger used for creating IM previews |
+| cloudbuild\_sa | Service account used by the Cloud Build triggers |
+| infra\_manager\_sa | Service account used by Infrastructure Manager |
 | project\_id | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
