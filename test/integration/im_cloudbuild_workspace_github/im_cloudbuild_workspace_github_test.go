@@ -59,6 +59,14 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		applyTrigger := lastElem(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
 
 		// TODO setup repo connection to GitHub
+		tmpDir := t.TempDir()
+		git := git.NewCmdConfig(t, git.WithDir(tmpDir))
+		gitRun := func(args ...string) {
+			_, err := git.RunCmdE(args...)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
 
 		// push commits on preview and main branches
 		// preview branch should trigger preview trigger
