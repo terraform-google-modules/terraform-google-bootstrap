@@ -101,19 +101,19 @@ variable "im_deployment_ref" {
 variable "im_tf_variables" {
   description = "Optional list of Terraform variables to pass to Infrastructure Manager, if the configuration exists in a different repo. List of strings of form KEY=VALUE expected."
   type        = string
-  default     = null
+  default     = "" 
 }
 
 variable "cloudbuild_preview_filename" {
   description = "Optional Cloud Build YAML definition used for Cloud Build triggers of Infra Manager preview. Defaults to using inline definition."
   type        = string
-  default     = null
+  default     = "" 
 }
 
 variable "cloudbuild_apply_filename" {
   description = "Optional Cloud Build YAML definition used for Cloud Build triggers of Infra Manager apply. Defaults to using inline definition."
   type        = string
-  default     = null
+  default     = "" 
 }
 
 variable "substitutions" {
