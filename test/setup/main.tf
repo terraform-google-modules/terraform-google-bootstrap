@@ -49,3 +49,9 @@ resource "google_folder" "bootstrap" {
   display_name = "ci-bootstrap-folder-${random_id.suffix.hex}"
   parent       = "folders/${var.folder_id}"
 }
+
+resource "google_project_iam_member" "project" {
+  project = module.project.project_id
+  role    = "roles/viewer"
+  member  = "serviceAccount:service-${module.project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
