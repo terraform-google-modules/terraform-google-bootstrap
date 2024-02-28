@@ -88,7 +88,7 @@ resource "google_cloudbuild_trigger" "triggers" {
 
   dynamic "build" {
     # only enable inline build config if no explicit config specified
-    for_each = var.cloudbuild_preview_filename == null && var.cloudbuild_apply_filename == null ? [1] : []
+    for_each = var.cloudbuild_preview_filename == "" && var.cloudbuild_apply_filename == "" ? [1] : []
     content {
       dynamic "step" {
         for_each = each.value
