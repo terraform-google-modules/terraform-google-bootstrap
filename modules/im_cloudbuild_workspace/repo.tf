@@ -32,7 +32,7 @@ data "google_project" "project" {
 data "google_iam_policy" "serviceagent_secretAccessor" {
   binding {
     role    = "roles/secretmanager.secretAccessor"
-    members = ["serviceAccount:${local.cloudbuild_sa_email}"]
+    members = ["serviceAccount:service-${var.project_id}@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
   }
 }
 
