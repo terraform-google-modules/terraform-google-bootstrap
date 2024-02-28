@@ -30,7 +30,6 @@ module "project" {
     "iam.googleapis.com",
     "storage-api.googleapis.com",
     "serviceusage.googleapis.com",
-    "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
     "cloudkms.googleapis.com",
     "artifactregistry.googleapis.com",
@@ -39,6 +38,12 @@ module "project" {
     # "secretmanager.googleapis.com",
     # "config.googleapis.com",
   ]
+  activate_api_identities = [
+    {
+      api = "cloudbuild.googleapis.com",
+      roles = [ "roles/cloudbuild.builds.builder" ]
+    }
+    ]
 }
 
 resource "random_id" "suffix" {
