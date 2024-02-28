@@ -23,6 +23,7 @@ module "enabled_google_apis" {
 
   activate_apis = [
     "iam.googleapis.com",
+    "secretmanager.googleapis.com",
     "compute.googleapis.com",
     "cloudbuild.googleapis.com",
     "config.googleapis.com",

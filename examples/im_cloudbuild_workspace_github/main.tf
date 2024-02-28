@@ -24,5 +24,5 @@ module "im_workspace" {
   im_deployment_repo_uri = "https://github.com/im-goose/infra-manager-git-example.git"
 
   github_app_installation_id = "47590865"
-  github_pat_secret          = var.im_github_pat_secret
+  github_personal_access_token = var.im_github_pat_secret
 }
