@@ -37,6 +37,7 @@ module "project" {
     "workflows.googleapis.com",
     "cloudscheduler.googleapis.com",
     "secretmanager.googleapis.com",
+    "config.googleapis.com",
   ]
 }
 
