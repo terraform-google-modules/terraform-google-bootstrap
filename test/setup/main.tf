@@ -30,20 +30,13 @@ module "project" {
     "iam.googleapis.com",
     "storage-api.googleapis.com",
     "serviceusage.googleapis.com",
+    "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
     "cloudkms.googleapis.com",
     "artifactregistry.googleapis.com",
     "workflows.googleapis.com",
-    # "cloudscheduler.googleapis.com",
-    # "secretmanager.googleapis.com",
-    # "config.googleapis.com",
+    "cloudscheduler.googleapis.com"
   ]
-  activate_api_identities = [
-    {
-      api = "cloudbuild.googleapis.com",
-      roles = [ "roles/cloudbuild.builds.builder" ]
-    }
-    ]
 }
 
 resource "random_id" "suffix" {
@@ -55,8 +48,17 @@ resource "google_folder" "bootstrap" {
   parent       = "folders/${var.folder_id}"
 }
 
+resource "time_sleep" "test" {
+  create_duration = "60s"
+
+  depends_on = [
+    module.project
+  ]
+}
+
 resource "google_project_iam_member" "project" {
   project = module.project.project_id
   role    = "roles/viewer"
   member  = "serviceAccount:service-${module.project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+  depends_on = [ time_sleep.test ]
 }
