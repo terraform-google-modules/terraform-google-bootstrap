@@ -32,3 +32,4 @@ terraform {
     module_name = "blueprints/terraform/terraform-google-bootstrap/v7.0.0"
   }
 }
+
