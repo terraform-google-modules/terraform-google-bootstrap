@@ -73,12 +73,9 @@ variable "custom_infra_manager_sa_name" {
 }
 
 variable "infra_manager_sa_roles" {
-  description = "Roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration. Map of project name or any static key to object with project_id and list of roles."
-  type = map(object({
-    project_id = string
-    roles      = list(string)
-  }))
-  default = {}
+  description = "List of roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration."
+  type = list(string)
+  default = []
 }
 
 variable "im_deployment_repo_uri" {

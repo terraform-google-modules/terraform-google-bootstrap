@@ -21,17 +21,6 @@ locals {
   create_infra_manager_sa = var.infra_manager_sa == ""
   im_sa                   = local.create_infra_manager_sa ? google_service_account.im_sa[0].id : var.infra_manager_sa
   im_sa_email             = element(split("/", local.im_sa), length(split("/", local.im_sa)) - 1)
-
-  # Optional roles for IM SA
-  im_sa_roles_expand = merge(
-    [for project_name, pr in var.infra_manager_sa_roles :
-      { for role in pr.roles : "${project_name}/${role}" =>
-        {
-          project_id = pr.project_id, role = role
-        }
-      }
-    ]...
-  )
 }
 
 resource "google_service_account" "cb_sa" {
@@ -88,8 +77,9 @@ resource "google_project_iam_member" "im_sa_logging" {
 }
 
 resource "google_project_iam_member" "im_sa_roles" {
-  for_each = local.im_sa_roles_expand
-  project  = each.value.project_id
+  # for_each = local.im_sa_roles_expand
+  for_each = var.infra_manager_sa_roles
+  project  = var.project_id
   role     = each.value.role
   member   = "serviceAccount:${local.im_sa_email}"
 }
