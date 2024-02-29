@@ -71,6 +71,7 @@ resource "google_project_iam_member" "im_config_agent_role" {
 
 # https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#permissions
 resource "google_project_iam_member" "im_sa_logging" {
+  count   = local.create_infra_manager_sa ? 1 : 0
   project = var.project_id
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${local.im_sa_email}"
