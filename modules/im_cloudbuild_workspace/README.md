@@ -43,10 +43,10 @@ for actuating resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| cloudbuild\_apply\_filename | Optional Cloud Build YAML definition used for Cloud Build triggers of Infra Manager apply. Defaults to using inline definition. | `string` | `null` | no |
+| cloudbuild\_apply\_filename | Optional Cloud Build YAML definition used for Cloud Build triggers of Infra Manager apply. Defaults to using inline definition. | `string` | `""` | no |
 | cloudbuild\_ignored\_files | Optional list. Changes only affecting ignored files will not invoke a build. | `list(string)` | `[]` | no |
 | cloudbuild\_included\_files | Optional list. Changes affecting at least one of these files will invoke a build. | `list(string)` | `[]` | no |
-| cloudbuild\_preview\_filename | Optional Cloud Build YAML definition used for Cloud Build triggers of Infra Manager preview. Defaults to using inline definition. | `string` | `null` | no |
+| cloudbuild\_preview\_filename | Optional Cloud Build YAML definition used for Cloud Build triggers of Infra Manager preview. Defaults to using inline definition. | `string` | `""` | no |
 | cloudbuild\_sa | Custom SA ID of form projects/{{project}}/serviceAccounts/{{email}} to be used for creating Cloud Build triggers. Creates one if not given. | `string` | `""` | no |
 | custom\_cloudbuild\_sa\_name | Custom name to be used if creating a Cloud Build service account. Defaults to generated name if empty. | `string` | `""` | no |
 | custom\_infra\_manager\_sa\_name | Custom name to be used if creating an Infrastructure Manager service account. Defaults to generated name if empty. | `string` | `""` | no |
@@ -63,10 +63,10 @@ for actuating resources.
 | gitlab\_read\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing read\_api access token for GitLab. | `string` | `""` | no |
 | gitlab\_read\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab read\_api token secret. Uses the latest if not provided. | `string` | `""` | no |
 | host\_connection\_name | Name for the VCS connection. Generated if not given. | `string` | `""` | no |
-| im\_deployment\_ref | Git branch or ref configured to run infra-manager apply. All other refs will run plan by default. | `string` | `""` | no |
+| im\_deployment\_ref | Git branch or ref configured to run infra-manager apply. All other refs will run plan by default. | `string` | n/a | yes |
 | im\_deployment\_repo\_dir | The directory inside the repo where the Terraform root config is located. If empty defaults to repo root. | `string` | `""` | no |
 | im\_deployment\_repo\_uri | The URI of the repo where the Terraform configs are stored. | `string` | n/a | yes |
-| im\_tf\_variables | Optional list of Terraform variables to pass to Infrastructure Manager, if the configuration exists in a different repo. List of strings of form KEY=VALUE expected. | `string` | `null` | no |
+| im\_tf\_variables | Optional list of Terraform variables to pass to Infrastructure Manager, if the configuration exists in a different repo. List of strings of form KEY=VALUE expected. | `string` | `""` | no |
 | infra\_manager\_sa | Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by Infra Manager. Defaults to generated name if empty. | `string` | `""` | no |
 | infra\_manager\_sa\_roles | Roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration. Map of project name or any static key to object with project\_id and list of roles. | <pre>map(object({<br>    project_id = string<br>    roles      = list(string)<br>  }))</pre> | `{}` | no |
 | location | Location for Infrastructure Manager deployment. | `string` | `"us-central1"` | no |
