@@ -35,7 +35,8 @@ module "project" {
     "cloudkms.googleapis.com",
     "artifactregistry.googleapis.com",
     "workflows.googleapis.com",
-    "cloudscheduler.googleapis.com"
+    "cloudscheduler.googleapis.com",
+    "secretmanager.googleapis.com",
   ]
 }
 
