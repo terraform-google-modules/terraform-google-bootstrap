@@ -66,3 +66,10 @@ data "google_secret_manager_secret_version" "existing_github_pat_secret_version"
   secret  = data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
   version = var.github_pat_secret_version != "" ? var.github_pat_secret_version : null
 }
+
+resource "google_secret_manager_secret_iam_policy" "existing_github_secret_iam_policy" {
+  count       = local.create_github_secret ? 0 : 1
+  project     = google_secret_manager_secret.existing_github_token_secret[0].project
+  secret_id   = google_secret_manager_secret.existing_github_token_secret[0].secret_id
+  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
+}
