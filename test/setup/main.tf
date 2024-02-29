@@ -30,12 +30,18 @@ module "project" {
     "iam.googleapis.com",
     "storage-api.googleapis.com",
     "serviceusage.googleapis.com",
-    "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
     "cloudkms.googleapis.com",
     "artifactregistry.googleapis.com",
     "workflows.googleapis.com",
     "cloudscheduler.googleapis.com"
+  ]
+
+ activate_api_identities = [
+    {
+      api = "cloudbuild.googleapis.com",
+      roles = [ "roles/cloudbuild.builds.builder" ]
+    }
   ]
 }
 
