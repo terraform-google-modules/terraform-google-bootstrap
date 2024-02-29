@@ -26,6 +26,12 @@ locals {
   is_organization            = var.parent_folder == "" ? true : false
   parent_id                  = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
   seed_org_depends_on        = try(google_folder_iam_member.tmp_project_creator[0].etag, "") != "" ? var.org_id : google_organization_iam_member.tmp_project_creator[0].org_id
+
+  gcs_location_to_kms_region = {
+    "EU"   = "europe"
+    "US"   = "us"
+    "ASIA" = "asia"
+  }
 }
 
 resource "random_id" "suffix" {
@@ -112,7 +118,7 @@ module "kms" {
   version = "~> 2.1"
 
   project_id           = module.seed_project.project_id
-  location             = var.default_region
+  location             = lookup(local.gcs_location_to_kms_region, var.default_region, var.default_region)
   keyring              = "${var.project_prefix}-keyring"
   keys                 = ["${var.project_prefix}-key"]
   key_rotation_period  = var.key_rotation_period
