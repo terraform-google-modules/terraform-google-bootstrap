@@ -1,3 +1,7 @@
+## Overview
+
+This example demonstrates the simplest usage of the [im_cloudbuild_workspace](../../modules/im_cloudbuild_workspace/) module.
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
@@ -10,7 +14,7 @@
 
 | Name | Description |
 |------|-------------|
-| cloudbuild\_apply\_trigger\_id | TRigger used for running IM apply |
+| cloudbuild\_apply\_trigger\_id | Trigger used for running IM apply |
 | cloudbuild\_preview\_trigger\_id | Trigger used for creating IM previews |
 | project\_id | n/a |
 

@@ -22,6 +22,7 @@ module "im_workspace" {
 
   tf_repo_type           = "GITLAB"
   im_deployment_repo_uri = "https://gitlab.com/josephdthomas/im-git-ci-cd.git"
+  im_deployment_ref      = "main"
 
   gitlab_api_access_token_secret      = var.gitlab_token_secret
   gitlab_read_api_access_token_secret = var.gitlab_token_secret
