@@ -74,8 +74,8 @@ variable "custom_infra_manager_sa_name" {
 
 variable "infra_manager_sa_roles" {
   description = "List of roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration."
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "im_deployment_repo_uri" {
