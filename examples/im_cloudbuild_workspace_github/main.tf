@@ -22,14 +22,10 @@ module "im_workspace" {
 
   tf_repo_type           = "GITHUB"
   im_deployment_repo_uri = "https://github.com/im-goose/infra-manager-git-example.git"
-  im_deployment_ref = "main"
-  im_tf_variables = "project_id=${var.project_id}" 
-  infra_manager_sa_roles = { (var.project_id) = {
-      project_id = var.project_id,
-      roles      = ["roles/compute.networkAdmin"]
-    }
-  }
+  im_deployment_ref      = "main"
+  im_tf_variables        = "project_id=${var.project_id}"
+  infra_manager_sa_roles = ["roles/compute.networkAdmin"]
 
-  github_app_installation_id = "47590865"
+  github_app_installation_id   = "47590865"
   github_personal_access_token = var.im_github_pat_secret
 }
