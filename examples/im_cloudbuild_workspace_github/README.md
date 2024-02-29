@@ -1,6 +1,6 @@
 ## Overview
 
-This example demonstrates the simplest usage of the [im_cloudbuild_workspace][../../modules/im_cloudbuild_workspace/] module.
+This example demonstrates the simplest usage of the [im_cloudbuild_workspace](../../modules/im_cloudbuild_workspace/) module.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
