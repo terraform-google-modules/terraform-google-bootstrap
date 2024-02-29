@@ -47,3 +47,18 @@ resource "google_folder" "bootstrap" {
   display_name = "ci-bootstrap-folder-${random_id.suffix.hex}"
   parent       = "folders/${var.folder_id}"
 }
+
+resource "time_sleep" "test" {
+  create_duration = "60s"
+
+  depends_on = [
+    module.project
+  ]
+}
+
+resource "google_project_iam_member" "project" {
+  project = module.project.project_id
+  role    = "roles/viewer"
+  member  = "serviceAccount:service-${module.project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+  depends_on = [ time_sleep.test ]
+}
