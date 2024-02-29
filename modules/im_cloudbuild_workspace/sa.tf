@@ -77,9 +77,8 @@ resource "google_project_iam_member" "im_sa_logging" {
 }
 
 resource "google_project_iam_member" "im_sa_roles" {
-  # for_each = local.im_sa_roles_expand
-  for_each = var.infra_manager_sa_roles
+  for_each = toset(var.infra_manager_sa_roles)
   project  = var.project_id
-  role     = each.value.role
+  role     = each.value
   member   = "serviceAccount:${local.im_sa_email}"
 }
