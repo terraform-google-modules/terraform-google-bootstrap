@@ -27,5 +27,5 @@ module "im_workspace" {
   infra_manager_sa_roles = ["roles/compute.networkAdmin"]
 
   github_app_installation_id   = "47590865"
-  github_personal_access_token = var.im_github_pat_secret
+  github_personal_access_token = var.im_github_pat
 }

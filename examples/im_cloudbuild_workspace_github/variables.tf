@@ -19,8 +19,8 @@ variable "project_id" {
   type        = string
 }
 
-variable "im_github_pat_secret" {
-  description = "Secret that contains a GitHub personal access token."
+variable "im_github_pat" {
+  description = "GitHub personal access token."
   type        = string
   sensitive   = true
 }
