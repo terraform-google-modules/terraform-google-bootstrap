@@ -30,12 +30,18 @@ module "project" {
     "iam.googleapis.com",
     "storage-api.googleapis.com",
     "serviceusage.googleapis.com",
-    "cloudbuild.googleapis.com",
     "sourcerepo.googleapis.com",
     "cloudkms.googleapis.com",
     "artifactregistry.googleapis.com",
     "workflows.googleapis.com",
     "cloudscheduler.googleapis.com"
+  ]
+
+  activate_api_identities = [
+    {
+      api = "cloudbuild.googleapis.com",
+      roles = [ "roles/cloudbuild.builds.builder" ]
+    }
   ]
 }
 
@@ -46,6 +52,22 @@ resource "random_id" "suffix" {
 resource "google_folder" "bootstrap" {
   display_name = "ci-bootstrap-folder-${random_id.suffix.hex}"
   parent       = "folders/${var.folder_id}"
+}
+
+data "google_client_config" "default" {}
+
+resource "terracurl_request" "poke" {
+  name   = "poke-cb"
+  url    = "https://cloudbuild.googleapis.com/v1/projects/${module.project.project_id}/locations/us-central1/builds"
+  method = "POST"
+  headers = {
+    Authorization = "Bearer ${data.google_client_config.default.access_token}"
+    Content-Type  = "application/json",
+  }
+  response_codes = [400]
+  depends_on = [
+    module.project
+  ]
 }
 
 resource "time_sleep" "test" {
