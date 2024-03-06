@@ -25,11 +25,10 @@ locals {
     tf_vars         = var.im_tf_variables
   })
 
-  default_download_preview_script = "curl $(gcloud infra-manager previews export projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA --format=\"get(result.binarySignedUri)\") -o /workspace/plan.tfplan"
-
   default_preview_steps = [
+    { id = "git_setup", name = "gcr.io/cloud-builders/git", args = ["config", "--global", "init.defaultBranch", "main"] },
     { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_create_preview_script },
-    { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_download_preview_script },
+    { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", args = ["infra-manager", "previews", "export", "projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA", "--file", "plan"] },
     { id = "terraform_init", name = var.tf_cloudbuilder, args = ["init", "-no-color"] },
     { id = "terraform_show", name = var.tf_cloudbuilder, args = ["show", "/workspace/plan.tfplan", "-no-color"] },
   ]
