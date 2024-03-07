@@ -28,6 +28,7 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/cli/go-gh/v2/pkg/api"
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -223,7 +224,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			// poll build until complete
 			pollCloudBuild := func(cmd string) func() (bool, error) {
 				return func() (bool, error) {
-					build := gcloud.Runf(t, cmd).Array()
+					build := gcloud.Run(t, cmd, gcloud.WithLogger(logger.Discard)).Array()
 					if len(build) < 1 {
 						return true, nil
 					}
@@ -235,7 +236,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 				}
 			}
 			utils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
-			build := gcloud.Runf(t, buildListCmd).Array()[0]
+			build := gcloud.Run(t, buildListCmd, gcloud.WithLogger(logger.Discard)).Array()[0]
 
 			switch branch {
 			case "preview":
