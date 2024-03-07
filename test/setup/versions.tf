@@ -28,5 +28,9 @@ terraform {
     random = {
       source = "hashicorp/random"
     }
+    terracurl = {
+      source  = "devops-rob/terracurl"
+      version = "~> 1.0"
+    }
   }
 }
