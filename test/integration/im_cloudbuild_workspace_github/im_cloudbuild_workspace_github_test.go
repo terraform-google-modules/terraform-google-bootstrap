@@ -69,6 +69,21 @@ func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
 	}
 }
 
+// GetOpenPullRequest gets an open pull request for a given branch if it exists.
+func (gh *GitHubClient) GetOpenPullRequest(branch string) *PullRequest {
+	resp := []PullRequest{}
+	path := fmt.Sprintf("repos/%s/%s/pulls?state=open&head=%s", gh.owner, gh.repo, branch)
+	err := gh.client.Get(path, &resp)
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+	if len(resp) == 0 {
+		return nil
+	}
+	// There should only be single pull request for a specified HEAD branch
+	return &resp[len(resp)-1]
+}
+
 func (gh *GitHubClient) CreatePullRequest(title, branch, base string) PullRequest {
 	body := map[string]interface{}{
 		"title": title,
@@ -87,7 +102,21 @@ func (gh *GitHubClient) CreatePullRequest(title, branch, base string) PullReques
 	return resp
 }
 
-func (gh *GitHubClient) MergePullRequest(pr PullRequest, commitTitle, commitMessage string) MergedPullRequestResponse {
+func (gh *GitHubClient) ClosePullRequest(pr *PullRequest) {
+	body := map[string]interface{}{
+		"state": "closed",
+	}
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+	_, err = gh.client.Request(http.MethodPatch, fmt.Sprintf("repos/%s/%s/pulls/%d", gh.owner, gh.repo, pr.Number), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+}
+
+func (gh *GitHubClient) MergePullRequest(pr *PullRequest, commitTitle, commitMessage string) MergedPullRequestResponse {
 	body := map[string]interface{}{
 		"commit_title":   commitTitle,
 		"commit_message": commitMessage,
@@ -102,18 +131,6 @@ func (gh *GitHubClient) MergePullRequest(pr PullRequest, commitTitle, commitMess
 		gh.t.Fatalf(err.Error(), err)
 	}
 	return resp
-}
-
-func (gh *GitHubClient) CheckIfMerged(pr PullRequest) bool {
-	resp, err := gh.client.Request(http.MethodGet, fmt.Sprintf("repos/%s/%s/pulls/%d/merge", gh.owner, gh.repo, pr.Number), nil)
-	if err != nil {
-		gh.t.Fatal(err)
-	}
-	return resp.StatusCode == 204
-}
-
-func (gh *GitHubClient) DeletePullRequest(pr PullRequest) {
-	// TODO Implement
 }
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
@@ -188,10 +205,16 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			case "preview":
 				git.CommitWithMsg(fmt.Sprintf("%s commit", branch), []string{"--allow-empty"})
 				gitRun("push", "--set-upstream", "origin", branch, "-f")
+
+				// Close existing pull requests (if they exist)
+				pr := client.GetOpenPullRequest(branch)
+				if pr != nil {
+					client.ClosePullRequest(pr)
+				}
 				pullRequest = client.CreatePullRequest("preview PR", branch, "main")
 				lastCommit = git.GetLatestCommit()
 			case "main":
-				mergedPr := client.MergePullRequest(pullRequest, "main commit", "main message")
+				mergedPr := client.MergePullRequest(&pullRequest, "main commit", "main message")
 				lastCommit = mergedPr.SHA
 			}
 
