@@ -15,7 +15,10 @@
 package im_cloudbuild_workspace_github
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -24,8 +27,94 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/stretchr/testify/assert"
 )
+
+type PullRequest struct {
+	Url    string `json:"url"`
+	ID     int    `json:"id"`
+	State  string `json:"state"`
+	Number int    `json:"number"`
+}
+
+type MergedPullRequestResponse struct {
+	SHA     string `json:"sha"`
+	Merged  bool   `json:"merged"`
+	Message string `json:"messsage"`
+}
+
+type GitHubClient struct {
+	t      *testing.T
+	client *api.RESTClient
+	owner  string
+	repo   string
+}
+
+func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
+	t.Helper()
+	opts := api.ClientOptions{
+		Host:      "github.com",
+		AuthToken: token,
+	}
+	client, err := api.NewRESTClient(opts)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	return &GitHubClient{
+		t:      t,
+		client: client,
+		owner:  owner,
+		repo:   repo,
+	}
+}
+
+func (gh *GitHubClient) CreatePullRequest(title, branch, base string) PullRequest {
+	body := map[string]interface{}{
+		"title": title,
+		"head":  branch,
+		"base":  "main",
+	}
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+	resp := PullRequest{}
+	err = gh.client.Post(fmt.Sprintf("repos/%s/%s/pulls", gh.owner, gh.repo), bytes.NewBuffer(jsonBody), &resp)
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+	return resp
+}
+
+func (gh *GitHubClient) MergePullRequest(pr PullRequest, commitTitle, commitMessage string) MergedPullRequestResponse {
+	body := map[string]interface{}{
+		"commit_title":   commitTitle,
+		"commit_message": commitMessage,
+	}
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+	resp := MergedPullRequestResponse{}
+	err = gh.client.Put(fmt.Sprintf("repos/%s/%s/pulls/%d/merge", gh.owner, gh.repo, pr.Number), bytes.NewBuffer(jsonBody), &resp)
+	if err != nil {
+		gh.t.Fatalf(err.Error(), err)
+	}
+	return resp
+}
+
+func (gh *GitHubClient) CheckIfMerged(pr PullRequest) bool {
+	resp, err := gh.client.Request(http.MethodGet, fmt.Sprintf("repos/%s/%s/pulls/%d/merge", gh.owner, gh.repo, pr.Number), nil)
+	if err != nil {
+		gh.t.Fatal(err)
+	}
+	return resp.StatusCode == 204
+}
+
+func (gh *GitHubClient) DeletePullRequest(pr PullRequest) {
+	// TODO Implement
+}
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
@@ -38,12 +127,15 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		bpt.DefaultVerify(assert)
 
 		projectID := bpt.GetStringOutput("project_id")
+		triggerLocation := bpt.GetStringOutput("trigger_location")
+		repoURL := bpt.GetStringOutput("repo_url")
+		repoURLSplit := strings.Split(repoURL, "/")
 
 		// cloud build triggers
 		triggers := []string{"preview", "apply"}
 		for _, trigger := range triggers {
 			triggerOP := lastElem(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
-			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s", triggerOP, projectID)
+			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerOP, projectID, triggerLocation)
 			assert.Equal(fmt.Sprintf("im-infra-manager-git-example-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
 			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/cb-sa-im-git-ci-cd@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
@@ -62,7 +154,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		previewTrigger := lastElem(bpt.GetStringOutput("cloudbuild_preview_trigger_id"), "/")
 		applyTrigger := lastElem(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
 
-		// TODO setup repo connection to GitHub
+		// set up repo
 		tmpDir := t.TempDir()
 		git := git.NewCmdConfig(t, git.WithDir(tmpDir))
 		gitRun := func(args ...string) {
@@ -72,20 +164,39 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			}
 		}
 
+		repo := strings.TrimSuffix(repoURLSplit[len(repoURLSplit)-1], ".git")
+		user := repoURLSplit[len(repoURLSplit)-2]
+		gitRun("clone", fmt.Sprintf("https://%s@github.com/%s/%s", githubPAT, user, repo), tmpDir)
+		gitRun("config", "user.email", "tf-robot@example.com")
+		gitRun("config", "user.name", "TF Robot")
+
+		client := NewGitHubClient(t, githubPAT, user, repo)
+
 		// push commits on preview and main branches
 		// preview branch should trigger preview trigger
 		// main branch should trigger apply trigger
+		var pullRequest PullRequest
 		branches := []string{"preview", "main"}
 		for _, branch := range branches {
 			_, err := git.RunCmdE("checkout", branch)
 			if err != nil {
 				git.RunCmdE("checkout", "-b", branch)
 			}
-			git.CommitWithMsg(fmt.Sprintf("%s commit", branch), []string{"--allow-empty"})
-			gitRun("push", "--set-upstream", "origin", branch, "-f")
-			lastCommit := git.GetLatestCommit()
+
+			var lastCommit string
+			switch branch {
+			case "preview":
+				git.CommitWithMsg(fmt.Sprintf("%s commit", branch), []string{"--allow-empty"})
+				gitRun("push", "--set-upstream", "origin", branch, "-f")
+				pullRequest = client.CreatePullRequest("preview PR", branch, "main")
+				lastCommit = git.GetLatestCommit()
+			case "main":
+				mergedPr := client.MergePullRequest(pullRequest, "main commit", "main message")
+				lastCommit = mergedPr.SHA
+			}
+
 			// filter builds triggered based on pushed commit sha
-			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --limit 1", lastCommit, projectID)
+			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --region %s --limit 1", lastCommit, projectID, triggerLocation)
 			// poll build until complete
 			pollCloudBuild := func(cmd string) func() (bool, error) {
 				return func() (bool, error) {
