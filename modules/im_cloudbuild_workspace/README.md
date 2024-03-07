@@ -69,7 +69,7 @@ for actuating resources.
 | im\_deployment\_repo\_uri | The URI of the repo where the Terraform configs are stored. | `string` | n/a | yes |
 | im\_tf\_variables | Optional list of Terraform variables to pass to Infrastructure Manager, if the configuration exists in a different repo. List of strings of form KEY=VALUE expected. | `string` | `""` | no |
 | infra\_manager\_sa | Custom SA id of form projects/{{project}}/serviceAccounts/{{email}} to be used by Infra Manager. Defaults to generated name if empty. | `string` | `""` | no |
-| infra\_manager\_sa\_roles | Roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration. Map of project name or any static key to object with project\_id and list of roles. | <pre>map(object({<br>    project_id = string<br>    roles      = list(string)<br>  }))</pre> | `{}` | no |
+| infra\_manager\_sa\_roles | List of roles to grant to Infrastructure Manager SA for actuating resources defined in the Terraform configuration. | `list(string)` | `[]` | no |
 | location | Location for Infrastructure Manager deployment. | `string` | `"us-central1"` | no |
 | project\_id | GCP project for Infrastructure Manager deployments and Cloud Build triggers. | `string` | n/a | yes |
 | pull\_request\_comment\_control | Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun. | `string` | `"COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"` | no |
@@ -86,8 +86,11 @@ for actuating resources.
 | cloudbuild\_apply\_trigger\_id | Trigger used for running infra-manager apply |
 | cloudbuild\_preview\_trigger\_id | Trigger used for running infra-manager preview |
 | cloudbuild\_sa | Service account used by the Cloud Build triggers |
+| im\_deployment\_repo\_uri | The URI of the repo where the Terraform configs are stored and triggers are created for |
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
+| location | Location for Infrastructure Manager deployment. |
 | repo\_connection\_id | The Cloud Build repository connection ID |
+| trigger\_location | Location of for Cloud Build triggers created in the workspace. Matches `location` if not given. |
 | vcs\_connection\_id | The Cloud Build VCS host connection ID |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
