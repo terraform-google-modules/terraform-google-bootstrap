@@ -19,7 +19,8 @@ variable "project_id" {
   type        = string
 }
 
-variable "gitlab_token_secret" {
-  description = "Secret that contains a GitLab token with api and read_api scope."
+variable "im_gitlab_pat" {
+  description = "GitLab personal access token."
   type        = string
+  sensitive   = true
 }
