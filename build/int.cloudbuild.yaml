@@ -151,15 +151,13 @@ steps:
       - apply-imworkspace-github
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage verify --verbose']
-  env:
-  - 'TF_VAR_im_github_pat_secret=$_IM_GITHUB_PAT_SECRET_ID'
+  secretEnv: ['IM_GITHUB_PAT']
 - id: teardown-imworkspace-github
   waitFor:
       - verify-imworkspace-github
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage teardown --verbose']
-  env:
-  - 'TF_VAR_im_github_pat_secret=$_IM_GITHUB_PAT_SECRET_ID'
+  secretEnv: ['IM_GITHUB_PAT']
 availableSecrets:
   secretManager:
   - versionName: $_IM_GITHUB_PAT_SECRET_ID/versions/latest
