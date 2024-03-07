@@ -155,7 +155,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			triggerOP := lastElem(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
 			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerOP, projectID, triggerLocation)
 			assert.Equal(fmt.Sprintf("im-infra-manager-git-example-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/cb-sa-im-git-ci-cd@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/cb-sa-infra-manager-git-exampl@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
 		// CB SA IAM
