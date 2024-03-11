@@ -79,11 +79,8 @@ for actuating resources.
 | cloudbuild\_apply\_trigger\_id | Trigger used for running infra-manager apply |
 | cloudbuild\_preview\_trigger\_id | Trigger used for running infra-manager preview |
 | cloudbuild\_sa | Service account used by the Cloud Build triggers |
-| im\_deployment\_repo\_uri | The URI of the repo where the Terraform configs are stored and triggers are created for |
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
-| location | Location for Infrastructure Manager deployment. |
 | repo\_connection\_id | The Cloud Build repository connection ID |
-| trigger\_location | Location of for Cloud Build triggers created in the workspace. Matches `location` if not given. |
 | vcs\_connection\_id | The Cloud Build VCS host connection ID |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
