@@ -14,8 +14,7 @@
 # limitations under the License.
 
 echo "Checking if deployment ${deployment_id} already exists"
-gcloud infra-manager deployments describe projects/${project_id}/locations/${location}/deployments/${deployment_id} --no-user-output-enabled
-DEPLOYMENT_EXISTS=$(echo $?)
+DEPLOYMENT_EXISTS=$(gcloud infra-manager deployments describe projects/${project_id}/locations/${location}/deployments/${deployment_id} | tail -n +2 | wc -l)
 
 echo "Deleting previous preview if it already exists"
 gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet
@@ -33,7 +32,7 @@ if [[ "${tf_vars}" != "" ]]; then
   CREATE_PREVIEW_CMD+=" --input-values=${tf_vars}"
 fi
 
-if [[ $DEPLOYMENT_EXISTS -eq 0 ]]; then
+if [[ $DEPLOYMENT_EXISTS -eq 1 ]]; then
   CREATE_PREVIEW_CMD+=" --deployment projects/${project_id}/locations/${location}/deployments/${deployment_id}"
 fi
 
