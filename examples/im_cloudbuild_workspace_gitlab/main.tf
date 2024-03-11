@@ -26,6 +26,6 @@ module "im_workspace" {
   im_tf_variables        = "project_id=${var.project_id}"
   infra_manager_sa_roles = ["roles/compute.networkAdmin"]
 
-  gitlab_api_access_token_secret      = var.im_gitlab_pat
-  gitlab_read_api_access_token_secret = var.im_gitlab_pat
+  gitlab_api_access_token      = var.im_gitlab_pat
+  gitlab_read_api_access_token = var.im_gitlab_pat
 }

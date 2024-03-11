@@ -232,6 +232,10 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 					if latestWorkflowRunStatus == "SUCCESS" {
 						return false, nil
 					}
+					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
+						t.Errorf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
+						return false, nil
+					}
 					return true, nil
 				}
 			}

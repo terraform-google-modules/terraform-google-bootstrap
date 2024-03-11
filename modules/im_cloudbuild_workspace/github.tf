@@ -55,20 +55,20 @@ resource "google_secret_manager_secret_iam_policy" "github_iam_policy" {
 }
 
 data "google_secret_manager_secret" "existing_github_pat_secret" {
-  count     = local.create_github_secret ? 0 : 1
+  count     = var.github_pat_secret != "" ? 1 : 0
   project   = var.project_id
   secret_id = var.github_pat_secret
 }
 
 data "google_secret_manager_secret_version" "existing_github_pat_secret_version" {
-  count   = local.create_github_secret ? 0 : 1
+  count   = var.github_pat_secret != "" ? 1 : 0
   project = var.project_id
   secret  = data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
   version = var.github_pat_secret_version != "" ? var.github_pat_secret_version : null
 }
 
 resource "google_secret_manager_secret_iam_policy" "existing_github_secret_iam_policy" {
-  count       = local.create_github_secret ? 0 : 1
+  count       = var.github_pat_secret != "" ? 1 : 0
   project     = data.google_secret_manager_secret.existing_github_pat_secret[0].project
   secret_id   = data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
   policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
