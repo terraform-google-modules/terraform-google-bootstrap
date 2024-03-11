@@ -15,7 +15,7 @@
  */
 
 terraform {
-  required_version = ">= 1.5.7"
+  required_version = ">= 1.2.3"
 
   required_providers {
     google = {
@@ -35,6 +35,6 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "blueprints/terraform/terraform-google-bootstrap:tf_cloudbuild_workspace/v7.0.0"
+    module_name = "blueprints/terraform/terraform-google-bootstrap:im_cloudbuild_workspace/v7.0.0"
   }
 }
