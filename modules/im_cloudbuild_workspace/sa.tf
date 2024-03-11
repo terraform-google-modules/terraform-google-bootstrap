@@ -15,8 +15,9 @@
  */
 
 locals {
-  create_cloudbuild_sa    = var.cloudbuild_sa == ""
-  cloudbuild_sa           = local.create_cloudbuild_sa ? google_service_account.cb_sa[0].id : var.cloudbuild_sa
+  create_cloudbuild_sa = var.cloudbuild_sa == ""
+  cloudbuild_sa        = local.create_cloudbuild_sa ? google_service_account.cb_sa[0].id : var.cloudbuild_sa
+  // Service account format is projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL
   cloudbuild_sa_email     = element(split("/", local.cloudbuild_sa), length(split("/", local.cloudbuild_sa)) - 1)
   create_infra_manager_sa = var.infra_manager_sa == ""
   im_sa                   = local.create_infra_manager_sa ? google_service_account.im_sa[0].id : var.infra_manager_sa

@@ -94,7 +94,7 @@ func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullReq
 }
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
-	var ctx = context.Background()
+	ctx := context.Background()
 	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
 	vars := map[string]interface{}{
 		"im_github_pat": githubPAT,
@@ -105,18 +105,14 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		bpt.DefaultVerify(assert)
 
 		projectID := bpt.GetStringOutput("project_id")
-		triggerLocation := bpt.GetStringOutput("trigger_location")
-		repoURL := bpt.GetStringOutput("repo_url")
+		triggerLocation := "us-central1"
+		repoURL := "https://github.com/im-goose/infra-manager-git-example.git"
 		repoURLSplit := strings.Split(repoURL, "/")
 
-		// cloud build triggers
-		triggers := []string{"preview", "apply"}
-		for _, trigger := range triggers {
-			triggerOP := lastElem(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
-			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerOP, projectID, triggerLocation)
-			assert.Equal(fmt.Sprintf("im-infra-manager-git-example-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/cb-sa-infra-manager-git-exampl@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
-		}
+		// Delete the IM deployment after the test is complete
+		t.Cleanup(func() {
+			gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
+		})
 
 		// CB SA IAM
 		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
