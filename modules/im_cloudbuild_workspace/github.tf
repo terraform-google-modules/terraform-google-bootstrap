@@ -29,7 +29,7 @@ locals {
 resource "google_secret_manager_secret" "github_token_secret" {
   count     = local.create_github_secret ? 1 : 0
   project   = var.project_id
-  secret_id = "im-github-${local.gh_name}"
+  secret_id = "im-github-${random_id.resources_random_id.dec}-${local.gh_name}"
 
   labels = {
     label = "im-${var.deployment_id}"

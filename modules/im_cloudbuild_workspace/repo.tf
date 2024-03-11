@@ -21,12 +21,17 @@ locals {
   repo           = local.gh_name
   default_prefix = local.repo
 
-  host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${var.project_id}-${var.deployment_id}"
-  repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${local.repo}"
+  host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${random_id.resources_random_id.dec}-${var.project_id}-${var.deployment_id}"
+  repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${random_id.resources_random_id.dec}-${local.repo}"
 }
 
 data "google_project" "project" {
   project_id = var.project_id
+}
+
+// Added to various IDs to prevent potential conflicts for deployments targeting the same repository.
+resource "random_id" "resources_random_id" {
+  byte_length = 4
 }
 
 data "google_iam_policy" "serviceagent_secretAccessor" {
