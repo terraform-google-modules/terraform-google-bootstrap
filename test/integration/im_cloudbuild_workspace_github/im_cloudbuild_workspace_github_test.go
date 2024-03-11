@@ -66,9 +66,9 @@ func (gh *GitHubClient) GetOpenPullRequest(ctx context.Context, branch string) *
 
 func (gh *GitHubClient) CreatePullRequest(ctx context.Context, title, branch, base string) *github.PullRequest {
 	newPR := &github.NewPullRequest{
-		Title: &title,
-		Head:  &branch,
-		Base:  &base,
+		Title: github.String(title),
+		Head:  github.String(branch),
+		Base:  github.String(base),
 	}
 	pr, _, err := gh.client.PullRequests.Create(ctx, gh.owner, gh.repo, newPR)
 	if err != nil {
@@ -86,8 +86,7 @@ func (gh *GitHubClient) MergePullRequest(ctx context.Context, pr *github.PullReq
 }
 
 func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullRequest) {
-	updatedState := "closed"
-	pr.State = &updatedState
+	pr.State = github.String("closed")
 	_, _, err := gh.client.PullRequests.Edit(ctx, gh.owner, gh.repo, *pr.Number, pr)
 	if err != nil {
 		gh.t.Fatal(err.Error())

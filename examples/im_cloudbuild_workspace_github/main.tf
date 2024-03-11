@@ -25,6 +25,7 @@ module "im_workspace" {
   im_deployment_ref      = "main"
   im_tf_variables        = "project_id=${var.project_id}"
   infra_manager_sa_roles = ["roles/compute.networkAdmin"]
+  tf_cloudbuilder        = "hashicorp/terraform:1.2.7"
 
   github_app_installation_id   = "47590865"
   github_personal_access_token = var.im_github_pat
