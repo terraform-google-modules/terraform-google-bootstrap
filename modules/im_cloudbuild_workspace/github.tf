@@ -47,11 +47,11 @@ resource "google_secret_manager_secret_version" "github_token_secret_version" {
   secret_data = var.github_personal_access_token
 }
 
-resource "google_secret_manager_secret_iam_policy" "github_iam_policy" {
-  count       = local.create_github_secret ? 1 : 0
-  project     = google_secret_manager_secret.github_token_secret[0].project
-  secret_id   = google_secret_manager_secret.github_token_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
+resource "google_secret_manager_secret_iam_member" "github_token_iam_member" {
+  count     = local.create_github_secret ? 1 : 0
+  secret_id = google_secret_manager_secret.github_token_secret[0].id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }
 
 data "google_secret_manager_secret" "existing_github_pat_secret" {
@@ -67,9 +67,9 @@ data "google_secret_manager_secret_version" "existing_github_pat_secret_version"
   version = var.github_pat_secret_version != "" ? var.github_pat_secret_version : null
 }
 
-resource "google_secret_manager_secret_iam_policy" "existing_github_secret_iam_policy" {
-  count       = var.github_pat_secret != "" ? 1 : 0
-  project     = data.google_secret_manager_secret.existing_github_pat_secret[0].project
-  secret_id   = data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
+resource "google_secret_manager_secret_iam_member" "existing_github_token_iam_member" {
+  count     = var.github_pat_secret != "" ? 1 : 0
+  secret_id = data.google_secret_manager_secret.existing_github_pat_secret[0].id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }

@@ -34,13 +34,6 @@ resource "random_id" "resources_random_id" {
   byte_length = 4
 }
 
-data "google_iam_policy" "serviceagent_secretAccessor" {
-  binding {
-    role    = "roles/secretmanager.secretAccessor"
-    members = ["serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
-  }
-}
-
 // Create the VCS connection.
 resource "google_cloudbuildv2_connection" "vcs_connection" {
   project  = var.project_id
@@ -57,10 +50,6 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
       }
     }
   }
-
-  depends_on = [
-    google_secret_manager_secret_iam_policy.github_iam_policy,
-  ]
 }
 
 // Create the repository connection.
