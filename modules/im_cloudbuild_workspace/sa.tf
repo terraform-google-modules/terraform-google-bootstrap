@@ -22,12 +22,14 @@ locals {
   create_infra_manager_sa = var.infra_manager_sa == ""
   im_sa                   = local.create_infra_manager_sa ? google_service_account.im_sa[0].id : var.infra_manager_sa
   im_sa_email             = element(split("/", local.im_sa), length(split("/", local.im_sa)) - 1)
+
+  cb_sa_account_id = substr(var.custom_cloudbuild_sa_name != "" ? var.custom_cloudbuild_sa_name : "cb-sa-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 30)
 }
 
 resource "google_service_account" "cb_sa" {
   count       = local.create_cloudbuild_sa ? 1 : 0
   project     = var.project_id
-  account_id  = substr(var.custom_cloudbuild_sa_name != "" ? var.custom_cloudbuild_sa_name : "cb-sa-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 30)
+  account_id  = trimsuffix(substr(var.custom_cloudbuild_sa_name != "" ? var.custom_cloudbuild_sa_name : "cb-sa-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 30), "-")
   description = "SA used for Cloud Build triggers invoking Infrastructure Manager."
 }
 
@@ -65,7 +67,7 @@ resource "google_project_iam_member" "cb_storage_objects_viewer" {
 resource "google_service_account" "im_sa" {
   count       = local.create_infra_manager_sa ? 1 : 0
   project     = var.project_id
-  account_id  = substr(var.custom_infra_manager_sa_name != "" ? var.custom_infra_manager_sa_name : "im-sa-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 30)
+  account_id  = trimsuffix(substr(var.custom_infra_manager_sa_name != "" ? var.custom_infra_manager_sa_name : "im-sa-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 30), "-")
   description = "SA used by Infrastructure Manager for actuating resources."
 }
 
