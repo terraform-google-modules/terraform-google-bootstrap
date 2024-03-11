@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.13.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 3.50, < 6"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 3.50, < 6"
-    }
-    random = {
-      source = "hashicorp/random"
-    }
-    terracurl = {
-      source  = "devops-rob/terracurl"
-      version = "~> 1.0"
-    }
-  }
+module "enabled_google_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 14.0"
+
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
+    "iam.googleapis.com",
+    "secretmanager.googleapis.com",
+    "compute.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "config.googleapis.com",
+  ]
 }

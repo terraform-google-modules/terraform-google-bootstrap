@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.13.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 3.50, < 6"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 3.50, < 6"
-    }
-    random = {
-      source = "hashicorp/random"
-    }
-    terracurl = {
-      source  = "devops-rob/terracurl"
-      version = "~> 1.0"
-    }
-  }
+module "im_workspace" {
+  source = "../../modules/im_cloudbuild_workspace"
+
+  project_id    = var.project_id
+  deployment_id = "im-example-gitlab-deployment"
+
+  tf_repo_type           = "GITLAB"
+  im_deployment_repo_uri = "https://gitlab.com/josephdthomas/im-git-ci-cd.git"
+  im_deployment_ref      = "main"
+  im_tf_variables        = "project_id=${var.project_id}"
+  infra_manager_sa_roles = ["roles/compute.networkAdmin"]
+
+  gitlab_api_access_token      = var.im_gitlab_pat
+  gitlab_read_api_access_token = var.im_gitlab_pat
 }
