@@ -56,13 +56,6 @@ for actuating resources.
 | github\_pat\_secret | The secret ID within Secret Manager for an existing personal access token for GitHub. | `string` | `""` | no |
 | github\_pat\_secret\_version | The secret version ID or alias for the GitHub PAT secret. Uses the latest if not provided. | `string` | `""` | no |
 | github\_personal\_access\_token | Personal access token for a GitHub repository. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
-| gitlab\_api\_access\_token | GitLab personal access token with api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
-| gitlab\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing api access token for GitLab. | `string` | `""` | no |
-| gitlab\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab api token secret. Uses the latest if not provided. | `string` | `""` | no |
-| gitlab\_host\_uri | The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing read\_api access token for GitLab. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab read\_api token secret. Uses the latest if not provided. | `string` | `""` | no |
 | host\_connection\_name | Name for the VCS connection. Generated if not given. | `string` | `""` | no |
 | im\_deployment\_ref | Git branch or ref configured to run infra-manager apply. All other refs will run plan by default. | `string` | n/a | yes |
 | im\_deployment\_repo\_dir | The directory inside the repo where the Terraform root config is located. If empty defaults to repo root. | `string` | `""` | no |
@@ -75,7 +68,7 @@ for actuating resources.
 | pull\_request\_comment\_control | Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun. | `string` | `"COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"` | no |
 | repo\_connection\_name | Connection name for linked repository. Generated if not given. | `string` | `""` | no |
 | substitutions | Optional map of substitutions to use in builds if using a custom Cloud Build YAML definition. | `map(string)` | `{}` | no |
-| tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform:1.2.3"` | no |
+| tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform:1.5.7"` | no |
 | tf\_repo\_type | Type of repo | `string` | `"GITHUB"` | no |
 | trigger\_location | Location of for Cloud Build triggers created in the workspace. Matches `location` if not given. | `string` | `"us-central1"` | no |
 
