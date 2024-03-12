@@ -9,6 +9,7 @@ This example demonstrates the simplest usage of the [im_cloudbuild_workspace](..
 |------|-------------|------|---------|:--------:|
 | im\_github\_pat | GitHub personal access token. | `string` | n/a | yes |
 | project\_id | The ID of the project in which to provision resources. | `string` | n/a | yes |
+| repository\_url | The URI of the repo where the Terraform configs are stored. | `string` | n/a | yes |
 
 ## Outputs
 
