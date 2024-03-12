@@ -79,6 +79,7 @@ for actuating resources.
 | cloudbuild\_apply\_trigger\_id | Trigger used for running infra-manager apply |
 | cloudbuild\_preview\_trigger\_id | Trigger used for running infra-manager preview |
 | cloudbuild\_sa | Service account used by the Cloud Build triggers |
+| github\_secret\_id | The secret ID for the GitHub secret containing the personal access token. |
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
 | repo\_connection\_id | The Cloud Build repository connection ID |
 | vcs\_connection\_id | The Cloud Build VCS host connection ID |
