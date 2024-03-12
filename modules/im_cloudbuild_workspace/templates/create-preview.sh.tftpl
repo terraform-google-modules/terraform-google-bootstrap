@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+echo "Checking if deployment ${deployment_id} already exists"
+DEPLOYMENT_EXISTS=$(gcloud infra-manager deployments describe projects/${project_id}/locations/${location}/deployments/${deployment_id} | tail -n +2 | wc -l)
+
+echo "Deleting previous preview if it already exists"
+gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet
+
+CREATE_PREVIEW_CMD="gcloud infra-manager previews create projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA \
+  --service-account=${service_account} \
+  --git-source-repo=${source_repo} \
+  --git-source-ref=$SHORT_SHA"
+
+if [[ "${source_repo_dir}" != "" ]]; then
+  CREATE_PREVIEW_CMD+=" --git-source-directory=${source_repo_dir}"
+fi
+
+if [[ "${tf_vars}" != "" ]]; then
+  CREATE_PREVIEW_CMD+=" --input-values=${tf_vars}"
+fi
+
+if [[ $DEPLOYMENT_EXISTS -eq 1 ]]; then
+  CREATE_PREVIEW_CMD+=" --deployment projects/${project_id}/locations/${location}/deployments/${deployment_id}"
+fi
+
+$CREATE_PREVIEW_CMD
+
+if [[ $(echo $?) -ne 0 ]]; then
+  gcloud infra-manager previews describe projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA
+  exit 1
+else
+  exit 0
+fi

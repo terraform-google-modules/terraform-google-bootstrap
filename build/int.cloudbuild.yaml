@@ -26,16 +26,19 @@ steps:
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
+  secretEnv: ['IM_GITHUB_PAT']
 - id: init-all
   waitFor:
     - prepare
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run all --stage init --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
 - id: create-all
   waitFor:
     - init-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create']
+  secretEnv: ['IM_GITHUB_PAT']
 - id: converge-simple
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge simple-default']
@@ -132,6 +135,29 @@ steps:
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildWorkspaceSimple --stage teardown --verbose']
 
+- id: apply-imworkspace-github
+  waitFor:
+      - create-all
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage apply --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
+- id: verify-imworkspace-github
+  waitFor:
+      - apply-imworkspace-github
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage verify --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
+- id: teardown-imworkspace-github
+  waitFor:
+      - verify-imworkspace-github
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage teardown --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
+
+availableSecrets:
+  secretManager:
+  - versionName: $_IM_GITHUB_PAT_SECRET_ID/versions/latest
+    env: 'IM_GITHUB_PAT'
 tags:
 - 'ci'
 - 'integration'

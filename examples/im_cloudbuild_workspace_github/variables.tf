@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.13.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 3.50, < 6"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 3.50, < 6"
-    }
-    random = {
-      source = "hashicorp/random"
-    }
-    terracurl = {
-      source  = "devops-rob/terracurl"
-      version = "~> 1.0"
-    }
-  }
+variable "project_id" {
+  description = "The ID of the project in which to provision resources."
+  type        = string
+}
+
+variable "repository_url" {
+  description = "The URI of the repo where the Terraform configs are stored."
+  type        = string
+}
+
+variable "im_github_pat" {
+  description = "GitHub personal access token."
+  type        = string
+  sensitive   = true
 }
