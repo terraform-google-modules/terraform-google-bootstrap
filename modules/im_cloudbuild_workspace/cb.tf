@@ -62,7 +62,7 @@ resource "google_cloudbuild_trigger" "triggers" {
 
   project            = var.project_id
   location           = var.trigger_location
-  name               = "im-${random_id.resources_random_id.dec}-${local.default_prefix}-${each.key}"
+  name               = substr("im-${each.key}-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 64)
   description        = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}"
   include_build_logs = local.is_gh_repo ? "INCLUDE_BUILD_LOGS_WITH_STATUS" : null
 
