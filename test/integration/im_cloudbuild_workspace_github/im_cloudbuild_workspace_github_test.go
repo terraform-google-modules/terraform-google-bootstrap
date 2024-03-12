@@ -54,10 +54,10 @@ func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
 func (gh *GitHubClient) GetOpenPullRequest(ctx context.Context, branch string) *github.PullRequest {
 	opts := &github.PullRequestListOptions{
 		State: "open",
-		Base:  branch,
+		Head:  branch,
 	}
-	prs, _, err := gh.client.PullRequests.List(ctx, gh.owner, gh.repoName, opts)
-	if err != nil {
+	prs, resp, err := gh.client.PullRequests.List(ctx, gh.owner, gh.repoName, opts)
+	if resp.StatusCode != 422 && err != nil {
 		gh.t.Fatal(err.Error())
 	}
 	if len(prs) == 0 {
@@ -139,7 +139,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
 	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT, "im-goose", "infra-manager-blueprint-test")
+	client := NewGitHubClient(t, githubPAT, "im-goose", "im-blueprint-test")
 
 	repo := client.GetRepository(ctx)
 	if repo == nil {
@@ -233,7 +233,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 						return false, nil
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
-						t.Fatalf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
+						t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
 					}
 					return true, nil
 				}
@@ -252,9 +252,9 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		projectID := bpt.GetStringOutput("project_id")
-		bpt.DefaultTeardown(assert)
 		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
 		client.DeleteRepository(ctx)
+		bpt.DefaultTeardown(assert)
 	})
 
 	bpt.Test()
