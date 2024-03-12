@@ -21,7 +21,7 @@ module "im_workspace" {
   deployment_id = "im-example-github-deployment"
 
   tf_repo_type           = "GITHUB"
-  im_deployment_repo_uri = "https://github.com/im-goose/infra-manager-git-example.git"
+  im_deployment_repo_uri = var.repository_url
   im_deployment_ref      = "main"
   im_tf_variables        = "project_id=${var.project_id}"
   infra_manager_sa_roles = ["roles/compute.networkAdmin"]

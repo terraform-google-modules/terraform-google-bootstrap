@@ -17,6 +17,7 @@ package im_cloudbuild_workspace_github
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -31,20 +32,21 @@ import (
 )
 
 type GitHubClient struct {
-	t      *testing.T
-	client *github.Client
-	owner  string
-	repo   string
+	t          *testing.T
+	client     *github.Client
+	owner      string
+	repoName   string
+	repository *github.Repository
 }
 
 func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
 	t.Helper()
 	client := github.NewClient(nil).WithAuthToken(token)
 	return &GitHubClient{
-		t:      t,
-		client: client,
-		owner:  owner,
-		repo:   repo,
+		t:        t,
+		client:   client,
+		owner:    owner,
+		repoName: repo,
 	}
 }
 
@@ -54,7 +56,7 @@ func (gh *GitHubClient) GetOpenPullRequest(ctx context.Context, branch string) *
 		State: "open",
 		Base:  branch,
 	}
-	prs, _, err := gh.client.PullRequests.List(ctx, gh.owner, gh.repo, opts)
+	prs, _, err := gh.client.PullRequests.List(ctx, gh.owner, gh.repoName, opts)
 	if err != nil {
 		gh.t.Fatal(err.Error())
 	}
@@ -70,7 +72,7 @@ func (gh *GitHubClient) CreatePullRequest(ctx context.Context, title, branch, ba
 		Head:  github.String(branch),
 		Base:  github.String(base),
 	}
-	pr, _, err := gh.client.PullRequests.Create(ctx, gh.owner, gh.repo, newPR)
+	pr, _, err := gh.client.PullRequests.Create(ctx, gh.owner, gh.repoName, newPR)
 	if err != nil {
 		gh.t.Fatal(err.Error())
 	}
@@ -78,7 +80,7 @@ func (gh *GitHubClient) CreatePullRequest(ctx context.Context, title, branch, ba
 }
 
 func (gh *GitHubClient) MergePullRequest(ctx context.Context, pr *github.PullRequest, commitTitle, commitMessage string) *github.PullRequestMergeResult {
-	result, _, err := gh.client.PullRequests.Merge(ctx, gh.owner, gh.repo, *pr.Number, commitMessage, nil)
+	result, _, err := gh.client.PullRequests.Merge(ctx, gh.owner, gh.repoName, *pr.Number, commitMessage, nil)
 	if err != nil {
 		gh.t.Fatal(err.Error())
 	}
@@ -87,7 +89,47 @@ func (gh *GitHubClient) MergePullRequest(ctx context.Context, pr *github.PullReq
 
 func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullRequest) {
 	pr.State = github.String("closed")
-	_, _, err := gh.client.PullRequests.Edit(ctx, gh.owner, gh.repo, *pr.Number, pr)
+	_, _, err := gh.client.PullRequests.Edit(ctx, gh.owner, gh.repoName, *pr.Number, pr)
+	if err != nil {
+		gh.t.Fatal(err.Error())
+	}
+}
+
+func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
+	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
+	if resp.StatusCode != 404 && err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
+	newRepo := &github.Repository{
+		Name:     github.String(repoName),
+		AutoInit: github.Bool(true),
+	}
+	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
+	if err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) AddFileToRepository(ctx context.Context, file []byte) {
+	opts := &github.RepositoryContentFileOptions{
+		Content: file,
+		Message: github.String("Setup commit"),
+	}
+	_, _, err := gh.client.Repositories.CreateFile(ctx, gh.owner, gh.repoName, "main.tf", opts)
+	if err != nil {
+		gh.t.Fatal(err.Error())
+	}
+}
+
+func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
+	_, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
 	if err != nil {
 		gh.t.Fatal(err.Error())
 	}
@@ -95,9 +137,19 @@ func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullReq
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
+
 	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
+	client := NewGitHubClient(t, githubPAT, "im-goose", "infra-manager-blueprint-test")
+
+	repo := client.GetRepository(ctx)
+	if repo == nil {
+		client.CreateRepository(ctx, client.owner, client.repoName)
+		client.AddFileToRepository(ctx, getTerraformExample(t))
+	}
+
 	vars := map[string]interface{}{
-		"im_github_pat": githubPAT,
+		"im_github_pat":  githubPAT,
+		"repository_url": client.repository.GetCloneURL(),
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
@@ -106,13 +158,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 
 		projectID := bpt.GetStringOutput("project_id")
 		triggerLocation := "us-central1"
-		repoURL := "https://github.com/im-goose/infra-manager-git-example.git"
-		repoURLSplit := strings.Split(repoURL, "/")
-
-		// Delete the IM deployment after the test is complete
-		t.Cleanup(func() {
-			gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
-		})
+		repoURLSplit := strings.Split(client.repository.GetCloneURL(), "/")
 
 		// CB SA IAM
 		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
@@ -143,8 +189,6 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		gitRun("clone", fmt.Sprintf("https://%s@github.com/%s/%s", githubPAT, user, repo), tmpDir)
 		gitRun("config", "user.email", "tf-robot@example.com")
 		gitRun("config", "user.name", "TF Robot")
-
-		client := NewGitHubClient(t, githubPAT, user, repo)
 
 		// push commits on preview and main branches
 		// preview branch should trigger preview trigger
@@ -189,8 +233,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 						return false, nil
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
-						t.Errorf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
-						return false, nil
+						t.Fatalf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
 					}
 					return true, nil
 				}
@@ -207,6 +250,13 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		}
 	})
 
+	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		projectID := bpt.GetStringOutput("project_id")
+		bpt.DefaultTeardown(assert)
+		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
+		client.DeleteRepository(ctx)
+	})
+
 	bpt.Test()
 }
 
@@ -214,4 +264,14 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 // Typically used to grab a resource ID from a full resource name.
 func lastElem(name, sep string) string {
 	return strings.Split(name, sep)[len(strings.Split(name, sep))-1]
+}
+
+// getTerraformExample returns the contents of the example main.tf file.
+func getTerraformExample(t *testing.T) []byte {
+	t.Helper()
+	contents, err := os.ReadFile("files/main.tf")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	return contents
 }
