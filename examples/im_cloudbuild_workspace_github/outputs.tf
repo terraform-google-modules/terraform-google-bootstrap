@@ -41,4 +41,5 @@ output "infra_manager_sa" {
 output "github_secret_id" {
   description = "The secret ID for the GitHub secret containing the personal access token."
   value       = module.im_workspace.github_secret_id
+  sensitive   = true
 }

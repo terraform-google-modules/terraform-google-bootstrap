@@ -47,4 +47,5 @@ output "repo_connection_id" {
 output "github_secret_id" {
   description = "The secret ID for the GitHub secret containing the personal access token."
   value       = local.secret_id
+  sensitive   = true
 }
