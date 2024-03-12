@@ -160,9 +160,14 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		triggerLocation := "us-central1"
 		repoURLSplit := strings.Split(client.repository.GetCloneURL(), "/")
 
+		// CB P4SA IAM
+		projectNum := gcloud.Runf(t, "projects describe %s --format value(projectNumber)", projectID).String()
+		iamOP := gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:service-%s@@gcp-sa-cloudbuild.iam.gserviceaccount.com", projectID, projectNum).Array()
+		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
+
 		// CB SA IAM
 		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
-		iamOP := gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
+		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
 		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
 
 		// IM SA IAM
