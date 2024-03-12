@@ -128,13 +128,6 @@ func (gh *GitHubClient) AddFileToRepository(ctx context.Context, file []byte) {
 	}
 }
 
-func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
-	_, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-}
-
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
@@ -254,7 +247,6 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		projectID := bpt.GetStringOutput("project_id")
 		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
-		client.DeleteRepository(ctx)
 		bpt.DefaultTeardown(assert)
 	})
 
