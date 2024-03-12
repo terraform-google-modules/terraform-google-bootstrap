@@ -157,12 +157,13 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		bpt.DefaultVerify(assert)
 
 		projectID := bpt.GetStringOutput("project_id")
+		secretID := bpt.GetStringOutput("github_secret_id")
 		triggerLocation := "us-central1"
 		repoURLSplit := strings.Split(client.repository.GetCloneURL(), "/")
 
 		// CB P4SA IAM
-		projectNum := gcloud.Runf(t, "projects describe %s --format value(projectNumber)", projectID).String()
-		iamOP := gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:service-%s@@gcp-sa-cloudbuild.iam.gserviceaccount.com", projectID, projectNum).Array()
+		projectNum := gcloud.Runf(t, "projects describe %s --format='value(projectNumber)'", projectID).Get("projectNumber")
+		iamOP := gcloud.Runf(t, "secrets get-iam-policy %s --project %s --flatten bindings --filter bindings.members:'serviceAccount:service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com'", secretID, projectID, projectNum).Array()
 		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
 
 		// CB SA IAM

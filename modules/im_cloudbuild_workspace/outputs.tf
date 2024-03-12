@@ -43,3 +43,8 @@ output "repo_connection_id" {
   description = "The Cloud Build repository connection ID"
   value       = google_cloudbuildv2_repository.repository_connection.id
 }
+
+output "github_secret_id" {
+  description = "The secret ID for the GitHub secret containing the personal access token."
+  value       = local.secret_id
+}

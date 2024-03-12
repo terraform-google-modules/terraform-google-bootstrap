@@ -37,3 +37,8 @@ output "infra_manager_sa" {
   description = "Service account used by Infrastructure Manager"
   value       = module.im_workspace.infra_manager_sa
 }
+
+output "github_secret_id" {
+  description = "The secret ID for the GitHub secret containing the personal access token."
+  value       = module.im_workspace.github_secret_id
+}

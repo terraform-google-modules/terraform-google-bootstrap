@@ -50,10 +50,6 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
       }
     }
   }
-
-  depends_on = [
-    google_secret_manager_secret_iam_member.github_token_iam_member
-  ]
 }
 
 // Create the repository connection.
