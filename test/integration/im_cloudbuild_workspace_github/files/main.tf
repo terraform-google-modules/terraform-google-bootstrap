@@ -20,7 +20,7 @@ variable "project_id" {
 
 module "test-vpc-module" {
   source       = "terraform-google-modules/network/google"
-  version      = "2.6.0"
+  version      = "9.0.0"
   project_id   = var.project_id
   network_name = "my-example-custom-network"
 
