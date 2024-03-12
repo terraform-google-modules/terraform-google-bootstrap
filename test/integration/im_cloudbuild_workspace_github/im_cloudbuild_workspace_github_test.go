@@ -139,7 +139,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
 	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT, "im-goose", "im-blueprint-test")
+	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", getSetupRandomString(t)))
 
 	repo := client.GetRepository(ctx)
 	if repo == nil {
@@ -281,4 +281,10 @@ func getTerraformExample(t *testing.T) []byte {
 		t.Fatal(err.Error())
 	}
 	return contents
+}
+
+func getSetupRandomString(t *testing.T) string {
+	t.Helper()
+	setup := tft.NewTFBlueprintTest(t)
+	return setup.GetTFSetupStringOutput("random_testing_string")
 }
