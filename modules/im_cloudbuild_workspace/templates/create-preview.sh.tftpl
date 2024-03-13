@@ -14,7 +14,7 @@
 # limitations under the License.
 
 echo "Checking if deployment ${deployment_id} already exists"
-DEPLOYMENT_EXISTS=$(gcloud infra-manager deployments describe projects/${project_id}/locations/${location}/deployments/${deployment_id} | tail -n +2 | wc -l)
+DEPLOYMENT_EXISTS=$(gcloud infra-manager deployments list --location ${location} --filter ${deployment_id} | tail -n +2 | wc -l)
 
 echo "Deleting previous preview if it already exists"
 gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet
