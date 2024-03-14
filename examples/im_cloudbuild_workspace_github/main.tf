@@ -25,7 +25,6 @@ module "im_workspace" {
   im_deployment_ref      = "main"
   im_tf_variables        = "project_id=${var.project_id}"
   infra_manager_sa_roles = ["roles/compute.networkAdmin"]
-  tf_cloudbuilder        = "hashicorp/terraform:1.2.3"
 
   // Found in the URL of your Cloud Build GitHub app configuration settings
   // https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen#connecting_a_github_host_programmatically
