@@ -15,6 +15,8 @@
  */
 
 locals {
+  tf_cloudbuilder_image = "${var.tf_cloudbuilder}:${var.tf_version}"
+
   default_create_preview_script = templatefile("${path.module}/templates/create-preview.sh.tftpl", {
     project_id      = var.project_id
     location        = var.location
@@ -29,8 +31,8 @@ locals {
     { id = "git_setup", name = "gcr.io/cloud-builders/git", args = ["config", "--global", "init.defaultBranch", "main"] },
     { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_create_preview_script },
     { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", args = ["infra-manager", "previews", "export", "projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA", "--file", "plan"] },
-    { id = "terraform_init", name = var.tf_cloudbuilder, args = ["init", "-no-color"] },
-    { id = "terraform_show", name = var.tf_cloudbuilder, args = ["show", "/workspace/plan.tfplan", "-no-color"] },
+    { id = "terraform_init", name = local.tf_cloudbuilder_image, args = ["init", "-no-color"] },
+    { id = "terraform_show", name = local.tf_cloudbuilder_image, args = ["show", "/workspace/plan.tfplan", "-no-color"] },
   ]
 
   default_apply_steps = [
@@ -46,7 +48,8 @@ locals {
         "--git-source-repo=${var.im_deployment_repo_uri}",
         var.im_deployment_repo_dir != "" ? "--git-source-directory=${var.im_deployment_repo_dir}" : "",
         var.im_deployment_ref != "" ? "--git-source-ref=${var.im_deployment_ref}" : "",
-        var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables}" : ""
+        var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables}" : "",
+        "--tf-version-constraint=${var.tf_version}",
       ])
     }
   ]
