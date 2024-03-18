@@ -68,8 +68,9 @@ for actuating resources.
 | pull\_request\_comment\_control | Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun. | `string` | `"COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"` | no |
 | repo\_connection\_name | Connection name for linked repository. Generated if not given. | `string` | `""` | no |
 | substitutions | Optional map of substitutions to use in builds if using a custom Cloud Build YAML definition. | `map(string)` | `{}` | no |
-| tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform:1.5.7"` | no |
+| tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform"` | no |
 | tf\_repo\_type | Type of repo | `string` | `"GITHUB"` | no |
+| tf\_version | Terraform version to use for Infrastructure Manager and the Cloud Builder image. | `string` | `"1.2.3"` | no |
 | trigger\_location | Location of for Cloud Build triggers created in the workspace. Matches `location` if not given. | `string` | `"us-central1"` | no |
 
 ## Outputs
