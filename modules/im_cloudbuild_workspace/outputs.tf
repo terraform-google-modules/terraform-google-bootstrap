@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-output "location" {
-  description = "Location for Infrastructure Manager deployment."
-  value       = var.location
-}
-
-output "trigger_location" {
-  description = "Location of for Cloud Build triggers created in the workspace. Matches `location` if not given."
-  value       = var.trigger_location
-}
-
-output "im_deployment_repo_uri" {
-  description = "The URI of the repo where the Terraform configs are stored and triggers are created for"
-  value       = var.im_deployment_repo_uri
-}
-
 output "cloudbuild_preview_trigger_id" {
   description = "Trigger used for running infra-manager preview"
   value       = google_cloudbuild_trigger.triggers["preview"].id
@@ -57,4 +42,10 @@ output "vcs_connection_id" {
 output "repo_connection_id" {
   description = "The Cloud Build repository connection ID"
   value       = google_cloudbuildv2_repository.repository_connection.id
+}
+
+output "github_secret_id" {
+  description = "The secret ID for the GitHub secret containing the personal access token."
+  value       = local.secret_id
+  sensitive   = true
 }

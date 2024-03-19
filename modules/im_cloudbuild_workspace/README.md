@@ -2,7 +2,7 @@
 
 This IM Cloud Build Workspace blueprint creates an opinionated workflow for actuating Terraform
 resources on Cloud Build using Infrastructure Manager. A set of Cloud Build triggers manage
-preview and apply operations on a configuration stored in a GitHub or GitLab repository.
+preview and apply operations on a configuration stored in a GitHub repository.
 The Cloud Build triggers use a per-workspace Service Account which can be configured with a
 minimal set of permissions for calling Infrastructure Manager. Infrastructure Manager uses a separate
 service account with a set of permissions required by the given Terraform configuration.
@@ -14,7 +14,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "im-workspace" {
   source = "terraform-google-modules/bootstrap/google//modules/im_cloudbuild_workspace"
-  version = "~> 7.0"
+  version = "~> 7.1"
 
   project_id = var.project_id
   deployment_id = var.deployment_id
@@ -56,13 +56,6 @@ for actuating resources.
 | github\_pat\_secret | The secret ID within Secret Manager for an existing personal access token for GitHub. | `string` | `""` | no |
 | github\_pat\_secret\_version | The secret version ID or alias for the GitHub PAT secret. Uses the latest if not provided. | `string` | `""` | no |
 | github\_personal\_access\_token | Personal access token for a GitHub repository. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
-| gitlab\_api\_access\_token | GitLab personal access token with api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
-| gitlab\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing api access token for GitLab. | `string` | `""` | no |
-| gitlab\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab api token secret. Uses the latest if not provided. | `string` | `""` | no |
-| gitlab\_host\_uri | The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing read\_api access token for GitLab. | `string` | `""` | no |
-| gitlab\_read\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab read\_api token secret. Uses the latest if not provided. | `string` | `""` | no |
 | host\_connection\_name | Name for the VCS connection. Generated if not given. | `string` | `""` | no |
 | im\_deployment\_ref | Git branch or ref configured to run infra-manager apply. All other refs will run plan by default. | `string` | n/a | yes |
 | im\_deployment\_repo\_dir | The directory inside the repo where the Terraform root config is located. If empty defaults to repo root. | `string` | `""` | no |
@@ -75,8 +68,9 @@ for actuating resources.
 | pull\_request\_comment\_control | Configure builds to run whether a repository owner or collaborator needs to comment /gcbrun. | `string` | `"COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"` | no |
 | repo\_connection\_name | Connection name for linked repository. Generated if not given. | `string` | `""` | no |
 | substitutions | Optional map of substitutions to use in builds if using a custom Cloud Build YAML definition. | `map(string)` | `{}` | no |
-| tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform:1.2.3"` | no |
+| tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform"` | no |
 | tf\_repo\_type | Type of repo | `string` | `"GITHUB"` | no |
+| tf\_version | Terraform version to use for Infrastructure Manager and the Cloud Builder image. | `string` | `"1.2.3"` | no |
 | trigger\_location | Location of for Cloud Build triggers created in the workspace. Matches `location` if not given. | `string` | `"us-central1"` | no |
 
 ## Outputs
@@ -86,11 +80,9 @@ for actuating resources.
 | cloudbuild\_apply\_trigger\_id | Trigger used for running infra-manager apply |
 | cloudbuild\_preview\_trigger\_id | Trigger used for running infra-manager preview |
 | cloudbuild\_sa | Service account used by the Cloud Build triggers |
-| im\_deployment\_repo\_uri | The URI of the repo where the Terraform configs are stored and triggers are created for |
+| github\_secret\_id | The secret ID for the GitHub secret containing the personal access token. |
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
-| location | Location for Infrastructure Manager deployment. |
 | repo\_connection\_id | The Cloud Build repository connection ID |
-| trigger\_location | Location of for Cloud Build triggers created in the workspace. Matches `location` if not given. |
 | vcs\_connection\_id | The Cloud Build VCS host connection ID |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

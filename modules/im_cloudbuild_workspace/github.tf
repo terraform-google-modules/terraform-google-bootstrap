@@ -23,13 +23,15 @@ locals {
   create_github_secret           = local.is_gh_repo && var.github_personal_access_token != ""
   existing_github_secret_version = local.is_gh_repo && var.github_pat_secret != "" ? data.google_secret_manager_secret_version.existing_github_pat_secret_version[0].name : ""
   github_secret_version_id       = local.create_github_secret ? google_secret_manager_secret_version.github_token_secret_version[0].name : local.existing_github_secret_version
+
+  secret_id = var.github_personal_access_token != "" ? google_secret_manager_secret.github_token_secret[0].id : data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
 }
 
 // Create a secret containing the personal access token and grant permissions to the Service Agent.
 resource "google_secret_manager_secret" "github_token_secret" {
   count     = local.create_github_secret ? 1 : 0
   project   = var.project_id
-  secret_id = "im-github-${local.gh_name}"
+  secret_id = "im-github-${random_id.resources_random_id.dec}-${local.gh_name}"
 
   labels = {
     label = "im-${var.deployment_id}"
@@ -47,13 +49,6 @@ resource "google_secret_manager_secret_version" "github_token_secret_version" {
   secret_data = var.github_personal_access_token
 }
 
-resource "google_secret_manager_secret_iam_policy" "github_iam_policy" {
-  count       = local.create_github_secret ? 1 : 0
-  project     = google_secret_manager_secret.github_token_secret[0].project
-  secret_id   = google_secret_manager_secret.github_token_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
-}
-
 data "google_secret_manager_secret" "existing_github_pat_secret" {
   count     = var.github_pat_secret != "" ? 1 : 0
   project   = var.project_id
@@ -67,9 +62,8 @@ data "google_secret_manager_secret_version" "existing_github_pat_secret_version"
   version = var.github_pat_secret_version != "" ? var.github_pat_secret_version : null
 }
 
-resource "google_secret_manager_secret_iam_policy" "existing_github_secret_iam_policy" {
-  count       = var.github_pat_secret != "" ? 1 : 0
-  project     = data.google_secret_manager_secret.existing_github_pat_secret[0].project
-  secret_id   = data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
+resource "google_secret_manager_secret_iam_member" "github_token_iam_member" {
+  secret_id = local.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }

@@ -15,10 +15,9 @@
 package im_cloudbuild_workspace_github
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
-	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -27,140 +26,157 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
-	"github.com/cli/go-gh/v2/pkg/api"
+	"github.com/google/go-github/v60/github"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/stretchr/testify/assert"
 )
 
-type PullRequest struct {
-	Url    string `json:"url"`
-	ID     int    `json:"id"`
-	State  string `json:"state"`
-	Number int    `json:"number"`
-}
-
-type MergedPullRequestResponse struct {
-	SHA     string `json:"sha"`
-	Merged  bool   `json:"merged"`
-	Message string `json:"messsage"`
-}
-
 type GitHubClient struct {
-	t      *testing.T
-	client *api.RESTClient
-	owner  string
-	repo   string
+	t          *testing.T
+	client     *github.Client
+	owner      string
+	repoName   string
+	repository *github.Repository
 }
 
 func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
 	t.Helper()
-	opts := api.ClientOptions{
-		Host:      "github.com",
-		AuthToken: token,
-	}
-	client, err := api.NewRESTClient(opts)
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	client := github.NewClient(nil).WithAuthToken(token)
 	return &GitHubClient{
-		t:      t,
-		client: client,
-		owner:  owner,
-		repo:   repo,
+		t:        t,
+		client:   client,
+		owner:    owner,
+		repoName: repo,
 	}
 }
 
 // GetOpenPullRequest gets an open pull request for a given branch if it exists.
-func (gh *GitHubClient) GetOpenPullRequest(branch string) *PullRequest {
-	resp := []PullRequest{}
-	path := fmt.Sprintf("repos/%s/%s/pulls?state=open&head=%s", gh.owner, gh.repo, branch)
-	err := gh.client.Get(path, &resp)
-	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
+func (gh *GitHubClient) GetOpenPullRequest(ctx context.Context, branch string) *github.PullRequest {
+	opts := &github.PullRequestListOptions{
+		State: "open",
+		Head:  branch,
 	}
-	if len(resp) == 0 {
+	prs, resp, err := gh.client.PullRequests.List(ctx, gh.owner, gh.repoName, opts)
+	if resp.StatusCode != 422 && err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	if len(prs) == 0 {
 		return nil
 	}
-	// There should only be single pull request for a specified HEAD branch
-	return &resp[len(resp)-1]
+	return prs[0]
 }
 
-func (gh *GitHubClient) CreatePullRequest(title, branch, base string) PullRequest {
-	body := map[string]interface{}{
-		"title": title,
-		"head":  branch,
-		"base":  "main",
+func (gh *GitHubClient) CreatePullRequest(ctx context.Context, title, branch, base string) *github.PullRequest {
+	newPR := &github.NewPullRequest{
+		Title: github.String(title),
+		Head:  github.String(branch),
+		Base:  github.String(base),
 	}
-	jsonBody, err := json.Marshal(body)
+	pr, _, err := gh.client.PullRequests.Create(ctx, gh.owner, gh.repoName, newPR)
 	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
+		gh.t.Fatal(err.Error())
 	}
-	resp := PullRequest{}
-	err = gh.client.Post(fmt.Sprintf("repos/%s/%s/pulls", gh.owner, gh.repo), bytes.NewBuffer(jsonBody), &resp)
-	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
-	}
-	return resp
+	return pr
 }
 
-func (gh *GitHubClient) ClosePullRequest(pr *PullRequest) {
-	body := map[string]interface{}{
-		"state": "closed",
-	}
-	jsonBody, err := json.Marshal(body)
+func (gh *GitHubClient) MergePullRequest(ctx context.Context, pr *github.PullRequest, commitTitle, commitMessage string) *github.PullRequestMergeResult {
+	result, _, err := gh.client.PullRequests.Merge(ctx, gh.owner, gh.repoName, *pr.Number, commitMessage, nil)
 	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
+		gh.t.Fatal(err.Error())
 	}
-	_, err = gh.client.Request(http.MethodPatch, fmt.Sprintf("repos/%s/%s/pulls/%d", gh.owner, gh.repo, pr.Number), bytes.NewBuffer(jsonBody))
+	return result
+}
+
+func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullRequest) {
+	pr.State = github.String("closed")
+	_, _, err := gh.client.PullRequests.Edit(ctx, gh.owner, gh.repoName, *pr.Number, pr)
 	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
+		gh.t.Fatal(err.Error())
 	}
 }
 
-func (gh *GitHubClient) MergePullRequest(pr *PullRequest, commitTitle, commitMessage string) MergedPullRequestResponse {
-	body := map[string]interface{}{
-		"commit_title":   commitTitle,
-		"commit_message": commitMessage,
+func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
+	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
+	if resp.StatusCode != 404 && err != nil {
+		gh.t.Fatal(err.Error())
 	}
-	jsonBody, err := json.Marshal(body)
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
+	newRepo := &github.Repository{
+		Name:     github.String(repoName),
+		AutoInit: github.Bool(true),
+	}
+	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
 	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
+		gh.t.Fatal(err.Error())
 	}
-	resp := MergedPullRequestResponse{}
-	err = gh.client.Put(fmt.Sprintf("repos/%s/%s/pulls/%d/merge", gh.owner, gh.repo, pr.Number), bytes.NewBuffer(jsonBody), &resp)
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) AddFileToRepository(ctx context.Context, file []byte) {
+	opts := &github.RepositoryContentFileOptions{
+		Content: file,
+		Message: github.String("Setup commit"),
+	}
+	_, _, err := gh.client.Repositories.CreateFile(ctx, gh.owner, gh.repoName, "main.tf", opts)
 	if err != nil {
-		gh.t.Fatalf(err.Error(), err)
+		gh.t.Fatal(err.Error())
 	}
-	return resp
+}
+
+func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
+	_, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
+	if err != nil {
+		gh.t.Fatal(err.Error())
+	}
 }
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
+	ctx := context.Background()
+
 	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
+	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", getSetupRandomString(t)))
+
+	repo := client.GetRepository(ctx)
+	if repo == nil {
+		client.CreateRepository(ctx, client.owner, client.repoName)
+		client.AddFileToRepository(ctx, getTerraformExample(t))
+	}
+
 	vars := map[string]interface{}{
-		"im_github_pat": githubPAT,
+		"im_github_pat":  githubPAT,
+		"repository_url": client.repository.GetCloneURL(),
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
-		projectID := bpt.GetStringOutput("project_id")
-		triggerLocation := bpt.GetStringOutput("trigger_location")
-		repoURL := bpt.GetStringOutput("repo_url")
-		repoURLSplit := strings.Split(repoURL, "/")
+		t.Cleanup(func() {
+			// Close the preview pull request if it was still left open
+			pr := client.GetOpenPullRequest(ctx, "preview")
+			if pr != nil {
+				client.ClosePullRequest(ctx, pr)
+			}
+		})
 
-		// cloud build triggers
-		triggers := []string{"preview", "apply"}
-		for _, trigger := range triggers {
-			triggerOP := lastElem(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
-			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerOP, projectID, triggerLocation)
-			assert.Equal(fmt.Sprintf("im-infra-manager-git-example-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/cb-sa-infra-manager-git-exampl@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
-		}
+		projectID := bpt.GetStringOutput("project_id")
+		secretID := bpt.GetStringOutput("github_secret_id")
+		triggerLocation := "us-central1"
+		repoURLSplit := strings.Split(client.repository.GetCloneURL(), "/")
+
+		// CB P4SA IAM
+		projectNum := gcloud.Runf(t, "projects describe %s --format='value(projectNumber)'", projectID).Get("projectNumber")
+		iamOP := gcloud.Runf(t, "secrets get-iam-policy %s --project %s --flatten bindings --filter bindings.members:'serviceAccount:service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com'", secretID, projectID, projectNum).Array()
+		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
 
 		// CB SA IAM
 		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
-		iamOP := gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
+		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
 		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
 
 		// IM SA IAM
@@ -188,12 +204,10 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		gitRun("config", "user.email", "tf-robot@example.com")
 		gitRun("config", "user.name", "TF Robot")
 
-		client := NewGitHubClient(t, githubPAT, user, repo)
-
 		// push commits on preview and main branches
 		// preview branch should trigger preview trigger
 		// main branch should trigger apply trigger
-		var pullRequest PullRequest
+		var pullRequest *github.PullRequest
 		branches := []string{"preview", "main"}
 		for _, branch := range branches {
 			_, err := git.RunCmdE("checkout", branch)
@@ -208,15 +222,15 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 				gitRun("push", "--set-upstream", "origin", branch, "-f")
 
 				// Close existing pull requests (if they exist)
-				pr := client.GetOpenPullRequest(branch)
+				pr := client.GetOpenPullRequest(ctx, branch)
 				if pr != nil {
-					client.ClosePullRequest(pr)
+					client.ClosePullRequest(ctx, pr)
 				}
-				pullRequest = client.CreatePullRequest("preview PR", branch, "main")
+				pullRequest = client.CreatePullRequest(ctx, "preview PR", branch, "main")
 				lastCommit = git.GetLatestCommit()
 			case "main":
-				mergedPr := client.MergePullRequest(&pullRequest, "main commit", "main message")
-				lastCommit = mergedPr.SHA
+				mergedPr := client.MergePullRequest(ctx, pullRequest, "main commit", "main message")
+				lastCommit = *mergedPr.SHA
 			}
 
 			// filter builds triggered based on pushed commit sha
@@ -233,8 +247,8 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 						return false, nil
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
-						t.Errorf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
-						return false, nil
+						t.Logf("%v", build[0])
+						t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
 					}
 					return true, nil
 				}
@@ -245,12 +259,18 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			switch branch {
 			case "preview":
 				assert.Equal(previewTrigger, build.Get("buildTriggerId").String(), "was triggered by preview trigger")
-				// TODO What else to test about the triggers?
 			case "main":
 				assert.Equal(applyTrigger, build.Get("buildTriggerId").String(), "was triggered by apply trigger")
-				// TODO What else to test about the triggers?
 			}
 		}
+	})
+
+	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		// Guarantee clean up even if the normal gcloud/teardown run into errors
+		t.Cleanup(func() { client.DeleteRepository(ctx) })
+		projectID := bpt.GetStringOutput("project_id")
+		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
+		bpt.DefaultTeardown(assert)
 	})
 
 	bpt.Test()
@@ -260,4 +280,20 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 // Typically used to grab a resource ID from a full resource name.
 func lastElem(name, sep string) string {
 	return strings.Split(name, sep)[len(strings.Split(name, sep))-1]
+}
+
+// getTerraformExample returns the contents of the example main.tf file.
+func getTerraformExample(t *testing.T) []byte {
+	t.Helper()
+	contents, err := os.ReadFile("files/main.tf")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	return contents
+}
+
+func getSetupRandomString(t *testing.T) string {
+	t.Helper()
+	setup := tft.NewTFBlueprintTest(t)
+	return setup.GetTFSetupStringOutput("random_testing_string")
 }

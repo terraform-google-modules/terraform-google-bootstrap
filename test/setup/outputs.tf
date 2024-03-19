@@ -54,3 +54,8 @@ output "default_region" {
 output "org_project_creators" {
   value = ["serviceAccount:${google_service_account.int_test.email}"]
 }
+
+output "random_testing_string" {
+  description = "Access the random ID created in setup for labeling other resources."
+  value       = random_id.suffix.hex
+}

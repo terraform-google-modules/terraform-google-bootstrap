@@ -21,11 +21,14 @@ module "im_workspace" {
   deployment_id = "im-example-github-deployment"
 
   tf_repo_type           = "GITHUB"
-  im_deployment_repo_uri = "https://github.com/im-goose/infra-manager-git-example.git"
+  im_deployment_repo_uri = var.repository_url
   im_deployment_ref      = "main"
   im_tf_variables        = "project_id=${var.project_id}"
   infra_manager_sa_roles = ["roles/compute.networkAdmin"]
+  tf_version             = "1.2.3"
 
+  // Found in the URL of your Cloud Build GitHub app configuration settings
+  // https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen#connecting_a_github_host_programmatically
   github_app_installation_id   = "47590865"
   github_personal_access_token = var.im_github_pat
 }

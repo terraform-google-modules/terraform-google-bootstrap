@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.1.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v7.0.0...v7.1.0) (2024-03-12)
+
+
+### Features
+
+* Infrastructure Manager workspace blueprint ([#271](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/271)) ([61ec4eb](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/61ec4eb0f40526bc62f3d8e06eafc2c8185bf454))
+
 ## [7.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v6.5.0...v7.0.0) (2024-01-13)
 
 

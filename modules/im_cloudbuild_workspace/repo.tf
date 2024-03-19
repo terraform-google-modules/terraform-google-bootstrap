@@ -21,19 +21,17 @@ locals {
   repo           = local.is_gh_repo ? local.gh_name : local.gl_project
   default_prefix = local.repo
 
-  host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${var.project_id}-${var.deployment_id}"
-  repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${local.repo}"
+  host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${random_id.resources_random_id.dec}-${var.project_id}-${var.deployment_id}"
+  repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${random_id.resources_random_id.dec}-${local.repo}"
 }
 
 data "google_project" "project" {
   project_id = var.project_id
 }
 
-data "google_iam_policy" "serviceagent_secretAccessor" {
-  binding {
-    role    = "roles/secretmanager.secretAccessor"
-    members = ["serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
-  }
+// Added to various IDs to prevent potential conflicts for deployments targeting the same repository.
+resource "random_id" "resources_random_id" {
+  byte_length = 4
 }
 
 // Create the VCS connection.
@@ -66,13 +64,6 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
       webhook_secret_secret_version = google_secret_manager_secret_version.gitlab_webhook_secret_version[0].name
     }
   }
-
-  depends_on = [
-    google_secret_manager_secret_iam_policy.github_iam_policy,
-    google_secret_manager_secret_iam_policy.api_secret_policy,
-    google_secret_manager_secret_iam_policy.read_api_secret_policy,
-    google_secret_manager_secret_iam_policy.webhook_secret_policy,
-  ]
 }
 
 // Create the repository connection.
