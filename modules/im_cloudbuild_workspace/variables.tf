@@ -130,10 +130,16 @@ variable "cloudbuild_ignored_files" {
   default     = []
 }
 
+variable "tf_version" {
+  description = "Terraform version to use for Infrastructure Manager and the Cloud Builder image."
+  type        = string
+  default     = "1.2.3"
+}
+
 variable "tf_cloudbuilder" {
   description = "Name of the Cloud Builder image used for running build steps."
   type        = string
-  default     = "hashicorp/terraform:1.5.7"
+  default     = "hashicorp/terraform"
 }
 
 variable "tf_repo_type" {

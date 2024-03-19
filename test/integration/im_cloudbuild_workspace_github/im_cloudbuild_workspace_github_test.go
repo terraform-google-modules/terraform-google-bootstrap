@@ -156,6 +156,14 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
+		t.Cleanup(func() {
+			// Close the preview pull request if it was still left open
+			pr := client.GetOpenPullRequest(ctx, "preview")
+			if pr != nil {
+				client.ClosePullRequest(ctx, pr)
+			}
+		})
+
 		projectID := bpt.GetStringOutput("project_id")
 		secretID := bpt.GetStringOutput("github_secret_id")
 		triggerLocation := "us-central1"
@@ -258,9 +266,10 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	})
 
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		// Guarantee clean up even if the normal gcloud/teardown run into errors
+		t.Cleanup(func() { client.DeleteRepository(ctx) })
 		projectID := bpt.GetStringOutput("project_id")
 		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
-		client.DeleteRepository(ctx)
 		bpt.DefaultTeardown(assert)
 	})
 
