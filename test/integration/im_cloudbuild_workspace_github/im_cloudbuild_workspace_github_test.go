@@ -267,10 +267,12 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
-		t.Cleanup(func() { client.DeleteRepository(ctx) })
+		t.Cleanup(func() {
+			client.DeleteRepository(ctx)
+			bpt.DefaultTeardown(assert)
+		})
 		projectID := bpt.GetStringOutput("project_id")
 		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
-		bpt.DefaultTeardown(assert)
 	})
 
 	bpt.Test()
