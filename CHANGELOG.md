@@ -7,6 +7,18 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.2.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v7.1.0...v7.2.0) (2024-03-21)
+
+
+### Features
+
+* Add tf_version variable for Infra Manager module ([#279](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/279)) ([f176e92](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f176e929b4898626cd0f3ef0d5ce35b16bed1c54))
+
+
+### Bug Fixes
+
+* Update check existing deployments command ([#275](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/275)) ([8623af7](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/8623af7aa82c156a6c17fbf908362efe7dc47e58))
+
 ## [7.1.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v7.0.0...v7.1.0) (2024-03-12)
 
 
