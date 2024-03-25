@@ -18,21 +18,6 @@ output "project_id" {
   value = var.project_id
 }
 
-output "repo_url" {
-  description = "The URI of the repo where the Terraform configs are stored and triggers are created for"
-  value       = module.im_workspace.im_deployment_repo_uri
-}
-
-output "location" {
-  description = "Location for Infrastructure Manager deployment."
-  value       = module.im_workspace.location
-}
-
-output "trigger_location" {
-  description = "Location of for Cloud Build triggers created in the workspace. Matches `location` if not given."
-  value       = module.im_workspace.trigger_location
-}
-
 output "cloudbuild_preview_trigger_id" {
   description = "Trigger used for creating IM previews"
   value       = module.im_workspace.cloudbuild_preview_trigger_id
@@ -51,4 +36,16 @@ output "cloudbuild_sa" {
 output "infra_manager_sa" {
   description = "Service account used by Infrastructure Manager"
   value       = module.im_workspace.infra_manager_sa
+}
+
+output "gitlab_api_secret_id" {
+  description = "The secret ID for the secret containing the GitLab api access token."
+  value       = module.im_workspace.gitlab_api_secret_id
+  sensitive   = true
+}
+
+output "gitlab_read_api_secret_id" {
+  description = "The secret ID for the secret containing the GitLab read api access token."
+  value       = module.im_workspace.gitlab_read_api_secret_id
+  sensitive   = true
 }

@@ -23,10 +23,12 @@ locals {
   create_api_secret           = local.is_gl_repo && var.gitlab_api_access_token != ""
   existing_api_secret_version = local.is_gl_repo && var.gitlab_api_access_token_secret != "" ? data.google_secret_manager_secret_version.existing_gitlab_api_secret_version[0].name : ""
   gitlab_api_secret_version   = local.create_api_secret ? google_secret_manager_secret_version.gitlab_api_secret_version[0].name : local.existing_api_secret_version
+  api_secret_id               = local.is_gl_repo ? (local.create_api_secret ? google_secret_manager_secret.gitlab_api_secret[0].id : data.google_secret_manager_secret.existing_gitlab_api_secret[0].secret_id) : ""
 
   create_read_api_secret           = local.is_gl_repo && var.gitlab_read_api_access_token != ""
   existing_read_api_secret_version = local.is_gl_repo && var.gitlab_read_api_access_token_secret != "" ? data.google_secret_manager_secret_version.existing_gitlab_read_api_secret_version[0].name : ""
   gitlab_read_api_secret_version   = local.create_read_api_secret ? google_secret_manager_secret_version.gitlab_read_api_secret_version[0].name : local.existing_read_api_secret_version
+  read_api_secret_id               = local.is_gl_repo ? (local.create_read_api_secret ? google_secret_manager_secret.gitlab_read_api_secret[0].id : data.google_secret_manager_secret.existing_gitlab_read_api_secret[0].secret_id) : ""
 }
 
 resource "random_id" "gitlab_resources_random_id" {
@@ -44,13 +46,6 @@ resource "google_secret_manager_secret" "gitlab_api_secret" {
   replication {
     auto {}
   }
-}
-
-resource "google_secret_manager_secret_iam_policy" "api_secret_policy" {
-  count       = local.create_api_secret ? 1 : 0
-  project     = google_secret_manager_secret.gitlab_api_secret[0].project
-  secret_id   = google_secret_manager_secret.gitlab_api_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
 }
 
 resource "google_secret_manager_secret_version" "gitlab_api_secret_version" {
@@ -71,17 +66,14 @@ resource "google_secret_manager_secret" "gitlab_read_api_secret" {
   }
 }
 
-resource "google_secret_manager_secret_iam_policy" "read_api_secret_policy" {
-  count       = local.create_read_api_secret ? 1 : 0
-  project     = google_secret_manager_secret.gitlab_read_api_secret[0].project
-  secret_id   = google_secret_manager_secret.gitlab_read_api_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
-}
-
 resource "google_secret_manager_secret_version" "gitlab_read_api_secret_version" {
   count       = local.create_read_api_secret ? 1 : 0
   secret      = google_secret_manager_secret.gitlab_read_api_secret[0].id
   secret_data = var.gitlab_read_api_access_token
+}
+
+resource "random_uuid" "random_webhook_secret" {
+  count = local.is_gl_repo ? 1 : 0
 }
 
 resource "google_secret_manager_secret" "gitlab_webhook_secret" {
@@ -94,17 +86,6 @@ resource "google_secret_manager_secret" "gitlab_webhook_secret" {
   replication {
     auto {}
   }
-}
-
-resource "google_secret_manager_secret_iam_policy" "webhook_secret_policy" {
-  count       = local.is_gl_repo ? 1 : 0
-  project     = google_secret_manager_secret.gitlab_webhook_secret[0].project
-  secret_id   = google_secret_manager_secret.gitlab_webhook_secret[0].secret_id
-  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
-}
-
-resource "random_uuid" "random_webhook_secret" {
-  count = local.is_gl_repo ? 1 : 0
 }
 
 resource "google_secret_manager_secret_version" "gitlab_webhook_secret_version" {
@@ -137,4 +118,25 @@ data "google_secret_manager_secret_version" "existing_gitlab_read_api_secret_ver
   project = var.project_id
   secret  = data.google_secret_manager_secret.existing_gitlab_read_api_secret[0].id
   version = var.gitlab_read_api_access_token_secret_version != "" ? var.gitlab_read_api_access_token_secret_version : null
+}
+
+resource "google_secret_manager_secret_iam_member" "gitlab_api_secret_member" {
+  count     = local.is_gl_repo ? 1 : 0
+  secret_id = local.api_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret_iam_member" "gitlab_read_api_secret_member" {
+  count     = local.is_gl_repo ? 1 : 0
+  secret_id = local.read_api_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret_iam_member" "gitlab_webhook_secret_member" {
+  count     = local.is_gl_repo ? 1 : 0
+  secret_id = google_secret_manager_secret.gitlab_webhook_secret[0].id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }

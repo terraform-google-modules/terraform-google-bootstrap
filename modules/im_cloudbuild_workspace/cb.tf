@@ -72,11 +72,18 @@ resource "google_cloudbuild_trigger" "triggers" {
   repository_event_config {
     repository = google_cloudbuildv2_repository.repository_connection.id
     dynamic "pull_request" {
-      for_each = each.key == "preview" ? [1] : []
+      for_each = (each.key == "preview") && (local.is_gh_repo) ? [1] : []
       content {
         branch          = var.im_deployment_ref
         invert_regex    = false
         comment_control = var.pull_request_comment_control
+      }
+    }
+    dynamic "push" {
+      for_each = (each.key == "preview") && (local.is_gl_repo) ? [1] : []
+      content {
+        branch       = var.im_deployment_ref
+        invert_regex = true
       }
     }
     dynamic "push" {
