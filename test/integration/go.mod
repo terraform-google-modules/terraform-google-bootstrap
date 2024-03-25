@@ -5,10 +5,10 @@ go 1.21
 toolchain go1.21.6
 
 require (
-	github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.12.0
+	github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.13.1
 	github.com/google/go-github/v60 v60.0.0
 	github.com/gruntwork-io/terratest v0.46.11
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -78,7 +78,7 @@ require (
 	github.com/zclconf/go-cty v1.14.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/mod v0.15.0 // indirect
+	golang.org/x/mod v0.16.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
@@ -93,7 +93,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.58.3 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230905202853-d090da108d2f // indirect
 	sigs.k8s.io/kustomize/kyaml v0.16.0 // indirect
