@@ -175,6 +175,18 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
+		t.Cleanup(func() {
+			// Close existing pull requests (if they exist)
+			mr := client.GetOpenMergeRequest("preview")
+			if mr != nil {
+				client.CloseMergeRequest(mr)
+			}
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteProject()
+			}
+		})
+
 		projectID := bpt.GetStringOutput("project_id")
 		apiSecretID := bpt.GetStringOutput("gitlab_api_secret_id")
 		readApiSecretID := bpt.GetStringOutput("gitlab_read_api_secret_id")

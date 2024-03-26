@@ -106,8 +106,9 @@ func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
 
 func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
 	newRepo := &github.Repository{
-		Name:     github.String(repoName),
-		AutoInit: github.Bool(true),
+		Name:       github.String(repoName),
+		AutoInit:   github.Bool(true),
+		Visibility: github.String("private"),
 	}
 	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
 	if err != nil {
@@ -161,6 +162,10 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			pr := client.GetOpenPullRequest(ctx, "preview")
 			if pr != nil {
 				client.ClosePullRequest(ctx, pr)
+			}
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteRepository(ctx)
 			}
 		})
 
