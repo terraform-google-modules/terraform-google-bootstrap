@@ -9,6 +9,7 @@ require (
 	github.com/google/go-github/v60 v60.0.0
 	github.com/gruntwork-io/terratest v0.46.11
 	github.com/stretchr/testify v1.9.0
+	github.com/xanzy/go-gitlab v0.99.0
 )
 
 require (
@@ -21,10 +22,7 @@ require (
 	github.com/alexflint/go-filemutex v1.3.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.45.5 // indirect
-	github.com/aymanbagabas/go-osc52 v1.0.3 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
-	github.com/cli/safeexec v1.0.0 // indirect
-	github.com/cli/shurcooL-graphql v0.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-errors/errors v1.5.0 // indirect
 	github.com/go-openapi/jsonpointer v0.20.0 // indirect
@@ -51,30 +49,22 @@ require (
 	github.com/hashicorp/hcl/v2 v2.18.0 // indirect
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20231204233900-a34142ec2a72 // indirect
 	github.com/hashicorp/terraform-json v0.17.1 // indirect
-	github.com/henvic/httpretty v0.0.6 // indirect
 	github.com/jinzhu/copier v0.4.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
-	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-zglob v0.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.2-0.20210821155943-2d9075ca8770 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/muesli/termenv v0.13.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/thlib/go-timezone-local v0.0.0-20210907160436-ef149e42d28e // indirect
-	github.com/tidwall/gjson v1.17.0 // indirect
+	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/tmccombs/hcl2json v0.6.0 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
-	github.com/xanzy/go-gitlab v0.99.0 // indirect
 	github.com/zclconf/go-cty v1.14.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
@@ -83,7 +73,6 @@ require (
 	golang.org/x/oauth2 v0.12.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
