@@ -43,7 +43,7 @@ func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
 	t.Helper()
 	client, err := gitlab.NewClient(token)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err.Error())
 	}
 	return &GitLabClient{
 		t:         t,
@@ -110,7 +110,7 @@ func (gl *GitLabClient) GetOpenMergeRequest(branch string) *gitlab.MergeRequest 
 	}
 	mergeRequests, _, err := gl.client.MergeRequests.ListProjectMergeRequests(gl.ProjectName(), &opts)
 	if err != nil {
-		gl.t.Fatalf(err.Error(), err)
+		gl.t.Fatal(err.Error())
 	}
 	if len(mergeRequests) == 0 {
 		return nil
@@ -126,7 +126,7 @@ func (gl *GitLabClient) CreateMergeRequest(title, branch, base string) *gitlab.M
 	}
 	mergeRequest, _, err := gl.client.MergeRequests.CreateMergeRequest(gl.ProjectName(), &opts)
 	if err != nil {
-		gl.t.Fatalf(err.Error(), err)
+		gl.t.Fatal(err.Error())
 	}
 	return mergeRequest
 }
@@ -134,7 +134,7 @@ func (gl *GitLabClient) CreateMergeRequest(title, branch, base string) *gitlab.M
 func (gl *GitLabClient) CloseMergeRequest(mr *gitlab.MergeRequest) {
 	_, err := gl.client.MergeRequests.DeleteMergeRequest(gl.ProjectName(), mr.IID)
 	if err != nil {
-		gl.t.Fatalf(err.Error(), err)
+		gl.t.Fatal(err.Error())
 	}
 }
 
@@ -144,7 +144,7 @@ func (gl *GitLabClient) AcceptMergeRequest(mr *gitlab.MergeRequest, commitMessag
 	}
 	merged, resp, err := gl.client.MergeRequests.AcceptMergeRequest(gl.ProjectName(), mr.IID, &opts)
 	if err != nil {
-		gl.t.Fatalf(err.Error(), err)
+		gl.t.Fatal(err.Error())
 	}
 	if resp.StatusCode != 200 {
 		gl.t.Fatalf("failed to accept merge request %v", resp)
