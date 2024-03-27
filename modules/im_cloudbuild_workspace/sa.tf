@@ -39,6 +39,13 @@ resource "google_project_iam_member" "cb_config_admin_role" {
   member  = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 
+resource "google_project_iam_member" "cb_config_agent_role" {
+  count   = local.create_cloudbuild_sa ? 1 : 0
+  project = var.project_id
+  role    = "roles/config.agent"
+  member  = "serviceAccount:${local.cloudbuild_sa_email}"
+}
+
 # Allow trigger logs to be written
 resource "google_project_iam_member" "cb_logWriter_role" {
   count   = local.create_cloudbuild_sa ? 1 : 0

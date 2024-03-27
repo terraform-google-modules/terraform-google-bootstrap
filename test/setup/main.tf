@@ -43,6 +43,10 @@ module "project" {
     {
       api   = "cloudbuild.googleapis.com",
       roles = ["roles/cloudbuild.builds.builder"]
+    },
+    {
+      api   = "config.googleapis.com",
+      roles = ["roles/cloudconfig.serviceAgent"]
     }
   ]
 }

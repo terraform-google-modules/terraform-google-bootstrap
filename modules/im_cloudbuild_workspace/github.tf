@@ -24,7 +24,7 @@ locals {
   existing_github_secret_version = local.is_gh_repo && var.github_pat_secret != "" ? data.google_secret_manager_secret_version.existing_github_pat_secret_version[0].name : ""
   github_secret_version_id       = local.create_github_secret ? google_secret_manager_secret_version.github_token_secret_version[0].name : local.existing_github_secret_version
 
-  secret_id = var.github_personal_access_token != "" ? google_secret_manager_secret.github_token_secret[0].id : data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id
+  github_secret_id = local.is_gh_repo ? (local.create_github_secret ? google_secret_manager_secret.github_token_secret[0].id : data.google_secret_manager_secret.existing_github_pat_secret[0].secret_id) : ""
 }
 
 // Create a secret containing the personal access token and grant permissions to the Service Agent.
@@ -63,7 +63,8 @@ data "google_secret_manager_secret_version" "existing_github_pat_secret_version"
 }
 
 resource "google_secret_manager_secret_iam_member" "github_token_iam_member" {
-  secret_id = local.secret_id
+  count     = local.is_gh_repo ? 1 : 0
+  secret_id = local.github_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }

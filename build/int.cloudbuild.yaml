@@ -26,19 +26,19 @@ steps:
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
   - 'TF_VAR_group_org_admins=test-gcp-org-admins@test.blueprints.joonix.net'
   - 'TF_VAR_group_billing_admins=test-gcp-billing-admins@test.blueprints.joonix.net'
-  secretEnv: ['IM_GITHUB_PAT']
+  secretEnv: ['IM_GITHUB_PAT', 'IM_GITLAB_PAT']
 - id: init-all
   waitFor:
     - prepare
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run all --stage init --verbose']
-  secretEnv: ['IM_GITHUB_PAT']
+  secretEnv: ['IM_GITHUB_PAT', 'IM_GITLAB_PAT']
 - id: create-all
   waitFor:
     - init-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create']
-  secretEnv: ['IM_GITHUB_PAT']
+  secretEnv: ['IM_GITHUB_PAT', 'IM_GITLAB_PAT']
 - id: converge-simple
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge simple-default']
@@ -154,10 +154,31 @@ steps:
   args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitHub --stage teardown --verbose']
   secretEnv: ['IM_GITHUB_PAT']
 
+- id: apply-imworkspace-gitlab
+  waitFor:
+      - create-all
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitLab --stage apply --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+- id: verify-imworkspace-gitlab
+  waitFor:
+      - apply-imworkspace-gitlab
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitLab --stage verify --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+- id: teardown-imworkspace-gitlab
+  waitFor:
+      - verify-imworkspace-gitlab
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestIMCloudBuildWorkspaceGitLab --stage teardown --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+
 availableSecrets:
   secretManager:
   - versionName: $_IM_GITHUB_PAT_SECRET_ID/versions/latest
     env: 'IM_GITHUB_PAT'
+  - versionName: $_IM_GITLAB_PAT_SECRET_ID/versions/latest
+    env: 'IM_GITLAB_PAT'
 tags:
 - 'ci'
 - 'integration'

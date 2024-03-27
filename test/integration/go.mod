@@ -9,6 +9,7 @@ require (
 	github.com/google/go-github/v60 v60.0.0
 	github.com/gruntwork-io/terratest v0.46.11
 	github.com/stretchr/testify v1.9.0
+	github.com/xanzy/go-gitlab v0.99.0
 )
 
 require (
@@ -41,6 +42,7 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.7.2 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f // indirect
@@ -72,6 +74,7 @@ require (
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.138.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect

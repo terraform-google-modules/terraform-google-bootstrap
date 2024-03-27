@@ -17,7 +17,6 @@ package im_cloudbuild_workspace_github
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -25,10 +24,11 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
-	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/google/go-github/v60/github"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 type GitHubClient struct {
@@ -106,8 +106,9 @@ func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
 
 func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
 	newRepo := &github.Repository{
-		Name:     github.String(repoName),
-		AutoInit: github.Bool(true),
+		Name:       github.String(repoName),
+		AutoInit:   github.Bool(true),
+		Visibility: github.String("private"),
 	}
 	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
 	if err != nil {
@@ -138,13 +139,13 @@ func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
-	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", getSetupRandomString(t)))
+	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
+	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", utils.GetRandomStringFromSetup(t)))
 
 	repo := client.GetRepository(ctx)
 	if repo == nil {
 		client.CreateRepository(ctx, client.owner, client.repoName)
-		client.AddFileToRepository(ctx, getTerraformExample(t))
+		client.AddFileToRepository(ctx, utils.GetFileContents(t, "files/main.tf"))
 	}
 
 	vars := map[string]interface{}{
@@ -162,6 +163,10 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			if pr != nil {
 				client.ClosePullRequest(ctx, pr)
 			}
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteRepository(ctx)
+			}
 		})
 
 		projectID := bpt.GetStringOutput("project_id")
@@ -172,21 +177,21 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		// CB P4SA IAM
 		projectNum := gcloud.Runf(t, "projects describe %s --format='value(projectNumber)'", projectID).Get("projectNumber")
 		iamOP := gcloud.Runf(t, "secrets get-iam-policy %s --project %s --flatten bindings --filter bindings.members:'serviceAccount:service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com'", secretID, projectID, projectNum).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
 
 		// CB SA IAM
-		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
+		cbSA := utils.LastElement(bpt.GetStringOutput("cloudbuild_sa"), "/")
 		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
 
 		// IM SA IAM
-		imSA := lastElem(bpt.GetStringOutput("infra_manager_sa"), "/")
+		imSA := utils.LastElement(bpt.GetStringOutput("infra_manager_sa"), "/")
 		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, imSA).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.agent")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.agent")
 
 		// e2e test for testing actuation through both preview/apply branches
-		previewTrigger := lastElem(bpt.GetStringOutput("cloudbuild_preview_trigger_id"), "/")
-		applyTrigger := lastElem(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
+		previewTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_preview_trigger_id"), "/")
+		applyTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
 
 		// set up repo
 		tmpDir := t.TempDir()
@@ -253,7 +258,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 					return true, nil
 				}
 			}
-			utils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
+			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
 			build := gcloud.Run(t, buildListCmd, gcloud.WithLogger(logger.Discard)).Array()[0]
 
 			switch branch {
@@ -267,33 +272,13 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
-		t.Cleanup(func() { client.DeleteRepository(ctx) })
+		t.Cleanup(func() {
+			client.DeleteRepository(ctx)
+			bpt.DefaultTeardown(assert)
+		})
 		projectID := bpt.GetStringOutput("project_id")
 		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-github-deployment --project %s --quiet", projectID, projectID)
-		bpt.DefaultTeardown(assert)
 	})
 
 	bpt.Test()
-}
-
-// lastElem gets the last element in a string separated by sep.
-// Typically used to grab a resource ID from a full resource name.
-func lastElem(name, sep string) string {
-	return strings.Split(name, sep)[len(strings.Split(name, sep))-1]
-}
-
-// getTerraformExample returns the contents of the example main.tf file.
-func getTerraformExample(t *testing.T) []byte {
-	t.Helper()
-	contents, err := os.ReadFile("files/main.tf")
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return contents
-}
-
-func getSetupRandomString(t *testing.T) string {
-	t.Helper()
-	setup := tft.NewTFBlueprintTest(t)
-	return setup.GetTFSetupStringOutput("random_testing_string")
 }

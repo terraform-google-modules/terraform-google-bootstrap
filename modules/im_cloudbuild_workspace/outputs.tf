@@ -46,6 +46,18 @@ output "repo_connection_id" {
 
 output "github_secret_id" {
   description = "The secret ID for the GitHub secret containing the personal access token."
-  value       = local.secret_id
+  value       = local.github_secret_id
+  sensitive   = true
+}
+
+output "gitlab_api_secret_id" {
+  description = "The secret ID for the GitLab secret containing the token with api access."
+  value       = local.api_secret_id
+  sensitive   = true
+}
+
+output "gitlab_read_api_secret_id" {
+  description = "The secret ID for the GitLab secret containing the token with read_api access."
+  value       = local.read_api_secret_id
   sensitive   = true
 }

@@ -2,7 +2,7 @@
 
 This IM Cloud Build Workspace blueprint creates an opinionated workflow for actuating Terraform
 resources on Cloud Build using Infrastructure Manager. A set of Cloud Build triggers manage
-preview and apply operations on a configuration stored in a GitHub repository.
+preview and apply operations on a configuration stored in a GitHub or GitLab repository.
 The Cloud Build triggers use a per-workspace Service Account which can be configured with a
 minimal set of permissions for calling Infrastructure Manager. Infrastructure Manager uses a separate
 service account with a set of permissions required by the given Terraform configuration.
@@ -56,6 +56,13 @@ for actuating resources.
 | github\_pat\_secret | The secret ID within Secret Manager for an existing personal access token for GitHub. | `string` | `""` | no |
 | github\_pat\_secret\_version | The secret version ID or alias for the GitHub PAT secret. Uses the latest if not provided. | `string` | `""` | no |
 | github\_personal\_access\_token | Personal access token for a GitHub repository. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
+| gitlab\_api\_access\_token | GitLab personal access token with api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
+| gitlab\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing api access token for GitLab. | `string` | `""` | no |
+| gitlab\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab api token secret. Uses the latest if not provided. | `string` | `""` | no |
+| gitlab\_host\_uri | The URI of the GitLab Enterprise host this connection is for. Defaults to non-enterprise. | `string` | `""` | no |
+| gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope. If provided, creates a secret within Secret Manager. | `string` | `""` | no |
+| gitlab\_read\_api\_access\_token\_secret | The secret ID within Secret Manager for an existing read\_api access token for GitLab. | `string` | `""` | no |
+| gitlab\_read\_api\_access\_token\_secret\_version | The secret version ID or alias for the GitLab read\_api token secret. Uses the latest if not provided. | `string` | `""` | no |
 | host\_connection\_name | Name for the VCS connection. Generated if not given. | `string` | `""` | no |
 | im\_deployment\_ref | Git branch or ref configured to run infra-manager apply. All other refs will run plan by default. | `string` | n/a | yes |
 | im\_deployment\_repo\_dir | The directory inside the repo where the Terraform root config is located. If empty defaults to repo root. | `string` | `""` | no |
@@ -81,6 +88,8 @@ for actuating resources.
 | cloudbuild\_preview\_trigger\_id | Trigger used for running infra-manager preview |
 | cloudbuild\_sa | Service account used by the Cloud Build triggers |
 | github\_secret\_id | The secret ID for the GitHub secret containing the personal access token. |
+| gitlab\_api\_secret\_id | The secret ID for the GitLab secret containing the token with api access. |
+| gitlab\_read\_api\_secret\_id | The secret ID for the GitLab secret containing the token with read\_api access. |
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
 | repo\_connection\_id | The Cloud Build repository connection ID |
 | vcs\_connection\_id | The Cloud Build VCS host connection ID |
