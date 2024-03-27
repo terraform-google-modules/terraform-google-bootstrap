@@ -25,10 +25,11 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
-	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/google/go-github/v60/github"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 type GitHubClient struct {
@@ -139,8 +140,8 @@ func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
-	githubPAT := utils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", getSetupRandomString(t)))
+	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
+	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", utils.GetRandomStringFromSetup(t)))
 
 	repo := client.GetRepository(ctx)
 	if repo == nil {
@@ -177,17 +178,17 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		// CB P4SA IAM
 		projectNum := gcloud.Runf(t, "projects describe %s --format='value(projectNumber)'", projectID).Get("projectNumber")
 		iamOP := gcloud.Runf(t, "secrets get-iam-policy %s --project %s --flatten bindings --filter bindings.members:'serviceAccount:service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com'", secretID, projectID, projectNum).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
 
 		// CB SA IAM
 		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
 		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
 
 		// IM SA IAM
 		imSA := lastElem(bpt.GetStringOutput("infra_manager_sa"), "/")
 		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, imSA).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.agent")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.agent")
 
 		// e2e test for testing actuation through both preview/apply branches
 		previewTrigger := lastElem(bpt.GetStringOutput("cloudbuild_preview_trigger_id"), "/")
@@ -258,7 +259,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 					return true, nil
 				}
 			}
-			utils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
+			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
 			build := gcloud.Run(t, buildListCmd, gcloud.WithLogger(logger.Discard)).Array()[0]
 
 			switch branch {
@@ -297,10 +298,4 @@ func getTerraformExample(t *testing.T) []byte {
 		t.Fatal(err.Error())
 	}
 	return contents
-}
-
-func getSetupRandomString(t *testing.T) string {
-	t.Helper()
-	setup := tft.NewTFBlueprintTest(t)
-	return setup.GetTFSetupStringOutput("random_testing_string")
 }
