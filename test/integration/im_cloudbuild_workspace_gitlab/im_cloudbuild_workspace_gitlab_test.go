@@ -16,7 +16,6 @@ package im_cloudbuild_workspace_gitlab
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -160,7 +159,7 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 	proj := client.GetProject()
 	if proj == nil {
 		client.CreateProject()
-		client.AddFileToProject(getTerraformExample(t))
+		client.AddFileToProject(utils.GetFileContents(t, "files/main.tf"))
 	}
 
 	vars := map[string]interface{}{
@@ -198,18 +197,18 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/secretmanager.secretAccessor")
 
 		// CB SA IAM
-		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
+		cbSA := utils.LastElement(bpt.GetStringOutput("cloudbuild_sa"), "/")
 		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
 		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.admin")
 
 		// IM SA IAM
-		imSA := lastElem(bpt.GetStringOutput("infra_manager_sa"), "/")
+		imSA := utils.LastElement(bpt.GetStringOutput("infra_manager_sa"), "/")
 		iamOP = gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, imSA).Array()
 		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/config.agent")
 
 		// e2e test for testing actuation through both preview/apply branches
-		previewTrigger := lastElem(bpt.GetStringOutput("cloudbuild_preview_trigger_id"), "/")
-		applyTrigger := lastElem(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
+		previewTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_preview_trigger_id"), "/")
+		applyTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
 
 		// set up repo
 		tmpDir := t.TempDir()
@@ -302,20 +301,4 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 	})
 
 	bpt.Test()
-}
-
-// lastElem gets the last element in a string separated by sep.
-// Typically used to grab a resource ID from a full resource name.
-func lastElem(name, sep string) string {
-	return strings.Split(name, sep)[len(strings.Split(name, sep))-1]
-}
-
-// getTerraformExample returns the contents of the example main.tf file.
-func getTerraformExample(t *testing.T) []byte {
-	t.Helper()
-	contents, err := os.ReadFile("files/main.tf")
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return contents
 }
