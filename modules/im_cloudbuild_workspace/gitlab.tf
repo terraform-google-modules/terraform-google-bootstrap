@@ -120,23 +120,9 @@ data "google_secret_manager_secret_version" "existing_gitlab_read_api_secret_ver
   version = var.gitlab_read_api_access_token_secret_version != "" ? var.gitlab_read_api_access_token_secret_version : null
 }
 
-resource "google_secret_manager_secret_iam_member" "gitlab_api_secret_member" {
-  count     = local.is_gl_repo ? 1 : 0
-  secret_id = local.api_secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
-
-resource "google_secret_manager_secret_iam_member" "gitlab_read_api_secret_member" {
-  count     = local.is_gl_repo ? 1 : 0
-  secret_id = local.read_api_secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
-
-resource "google_secret_manager_secret_iam_member" "gitlab_webhook_secret_member" {
-  count     = local.is_gl_repo ? 1 : 0
-  secret_id = google_secret_manager_secret.gitlab_webhook_secret[0].id
+resource "google_secret_manager_secret_iam_member" "gitlab_secret_members" {
+  for_each  = toset(local.is_gl_repo ? [local.api_secret_id, local.read_api_secret_id, google_secret_manager_secret.gitlab_webhook_secret[0].id] : [])
+  secret_id = each.value
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }
