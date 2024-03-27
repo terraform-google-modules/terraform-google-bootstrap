@@ -69,7 +69,8 @@ func (gl *GitLabClient) GetProject() *gitlab.Project {
 
 func (gl *GitLabClient) CreateProject() {
 	opts := &gitlab.CreateProjectOptions{
-		Name:        gitlab.Ptr(gl.repo),
+		Name: gitlab.Ptr(gl.repo),
+		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
 		NamespaceID: gitlab.Ptr(84326276),
 		// Required otherwise Cloud Build errors on creating the connection
 		InitializeWithReadme: gitlab.Ptr(true),
@@ -101,7 +102,7 @@ func (gl *GitLabClient) DeleteProject() {
 	gl.project = nil
 }
 
-// GetOpenMergeRequest gets an open merge request for a given branch if it exists.
+// GetOpenMergeRequest gets the last opened merge request for a given branch if it exists.
 func (gl *GitLabClient) GetOpenMergeRequest(branch string) *gitlab.MergeRequest {
 	state := "opened"
 	opts := gitlab.ListProjectMergeRequestsOptions{
