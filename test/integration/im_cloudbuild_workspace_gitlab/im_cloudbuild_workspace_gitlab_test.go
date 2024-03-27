@@ -267,7 +267,6 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 
 					latestWorkflowRunStatus := build[0].Get("status").String()
 					if latestWorkflowRunStatus == "SUCCESS" {
-						t.Logf("josephdthomas - logging the build at end of polling")
 						t.Logf("%v", build)
 						return false, nil
 					}
