@@ -15,7 +15,7 @@
  */
 
 module "im_workspace" {
-  source = "josephdt12/bootstrap/google//modules/im_cloudbuild_workspace"
+  source = "../../modules/im_cloudbuild_workspace"
 
   project_id    = var.project_id
   deployment_id = "im-example-github-deployment"
