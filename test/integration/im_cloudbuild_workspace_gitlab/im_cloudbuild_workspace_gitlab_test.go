@@ -132,10 +132,6 @@ func (gl *GitLabClient) CreateMergeRequest(title, branch, base string) *gitlab.M
 }
 
 func (gl *GitLabClient) CloseMergeRequest(mr *gitlab.MergeRequest) {
-	// opts := gitlab.UpdateMergeRequestOptions{
-	// 	StateEvent: gitlab.Ptr("close"),
-	// }
-	// _, _, err := gl.client.MergeRequests.UpdateMergeRequest(gl.ProjectName(), mr.IID, &opts)
 	_, err := gl.client.MergeRequests.DeleteMergeRequest(gl.ProjectName(), mr.IID)
 	if err != nil {
 		gl.t.Fatalf(err.Error(), err)
