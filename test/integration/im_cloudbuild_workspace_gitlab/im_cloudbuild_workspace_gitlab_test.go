@@ -104,10 +104,9 @@ func (gl *GitLabClient) DeleteProject() {
 
 // GetOpenMergeRequest gets the last opened merge request for a given branch if it exists.
 func (gl *GitLabClient) GetOpenMergeRequest(branch string) *gitlab.MergeRequest {
-	state := "opened"
 	opts := gitlab.ListProjectMergeRequestsOptions{
-		State:        &state,
-		SourceBranch: &branch,
+		State:        gitlab.Ptr("opened"),
+		SourceBranch: gitlab.Ptr(branch),
 	}
 	mergeRequests, _, err := gl.client.MergeRequests.ListProjectMergeRequests(gl.ProjectName(), &opts)
 	if err != nil {
@@ -121,9 +120,9 @@ func (gl *GitLabClient) GetOpenMergeRequest(branch string) *gitlab.MergeRequest 
 
 func (gl *GitLabClient) CreateMergeRequest(title, branch, base string) *gitlab.MergeRequest {
 	opts := gitlab.CreateMergeRequestOptions{
-		Title:        &title,
-		SourceBranch: &branch,
-		TargetBranch: &base,
+		Title:        gitlab.Ptr(title),
+		SourceBranch: gitlab.Ptr(branch),
+		TargetBranch: gitlab.Ptr(base),
 	}
 	mergeRequest, _, err := gl.client.MergeRequests.CreateMergeRequest(gl.ProjectName(), &opts)
 	if err != nil {
