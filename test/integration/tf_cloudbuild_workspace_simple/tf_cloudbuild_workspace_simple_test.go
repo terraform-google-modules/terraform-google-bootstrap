@@ -18,15 +18,15 @@ package tf_cloudbuild_workspace_simple
 import (
 	"fmt"
 	"path"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
-	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
@@ -40,16 +40,16 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 		// cloud build triggers
 		triggers := []string{"plan", "apply"}
 		for _, trigger := range triggers {
-			triggerOP := lastElem(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
+			triggerOP := utils.LastElement(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
 			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s", triggerOP, projectID)
 			assert.Equal(fmt.Sprintf("tf-configs-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
 			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-tf-configs@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
 		// artifacts, state and log buckets
-		logsBucket := lastElem(bpt.GetStringOutput("logs_bucket"), "/")
-		stateBucket := lastElem(bpt.GetStringOutput("state_bucket"), "/")
-		artifactsBucket := lastElem(bpt.GetStringOutput("artifacts_bucket"), "/")
+		logsBucket := utils.LastElement(bpt.GetStringOutput("logs_bucket"), "/")
+		stateBucket := utils.LastElement(bpt.GetStringOutput("state_bucket"), "/")
+		artifactsBucket := utils.LastElement(bpt.GetStringOutput("artifacts_bucket"), "/")
 		buckets := []string{artifactsBucket, logsBucket, stateBucket}
 		for _, bucket := range buckets {
 			// we can't use runf since we need to override --format json with --json for alpha storage
@@ -60,15 +60,15 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 		}
 
 		// CB SA IAM
-		cbSA := lastElem(bpt.GetStringOutput("cloudbuild_sa"), "/")
+		cbSA := utils.LastElement(bpt.GetStringOutput("cloudbuild_sa"), "/")
 		iamOP := gcloud.Runf(t, "projects get-iam-policy %s --flatten bindings --filter bindings.members:'serviceAccount:%s'", projectID, cbSA).Array()
-		utils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/compute.networkAdmin")
+		cftutils.GetFirstMatchResult(t, iamOP, "bindings.role", "roles/compute.networkAdmin")
 
 		// e2e test for testing actuation through both plan/apply branches
-		applyTrigger := lastElem(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
-		planTrigger := lastElem(bpt.GetStringOutput("cloudbuild_plan_trigger_id"), "/")
+		applyTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
+		planTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_plan_trigger_id"), "/")
 		// setup repo
-		csr := lastElem(bpt.GetStringOutput("csr_repo_url"), "/")
+		csr := utils.LastElement(bpt.GetStringOutput("csr_repo_url"), "/")
 		tmpDir := t.TempDir()
 		git := git.NewCmdConfig(t, git.WithDir(tmpDir))
 		gcloud.Runf(t, "source repos clone %s %s --project %s", csr, tmpDir, projectID)
@@ -109,7 +109,7 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 					return true, nil
 				}
 			}
-			utils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
+			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
 			build := gcloud.Runf(t, buildListCmd).Array()[0]
 			switch branch {
 			case "plan":
@@ -123,8 +123,4 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 	})
 
 	bpt.Test()
-}
-
-func lastElem(name, sep string) string {
-	return strings.Split(name, sep)[len(strings.Split(name, sep))-1]
 }

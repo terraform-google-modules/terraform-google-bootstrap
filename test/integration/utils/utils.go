@@ -27,6 +27,6 @@ func GetFileContents(t *testing.T, path string) []byte {
 
 // LastElement gets the last element in a string separated by sep.
 // Typically used to grab a resource ID from a full resource name.
-func LastElement(name, sep string) string {
-	return strings.Split(name, sep)[len(strings.Split(name, sep))-1]
+func LastElement(str, sep string) string {
+	return strings.Split(str, sep)[len(strings.Split(str, sep))-1]
 }
