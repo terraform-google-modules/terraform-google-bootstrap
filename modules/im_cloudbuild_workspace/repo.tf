@@ -18,7 +18,7 @@ locals {
   # Remove ".git" suffix if it's included
   url = trimsuffix(var.im_deployment_repo_uri, ".git")
 
-  repo           = local.gh_name
+  repo           = local.is_gh_repo ? local.gh_name : local.gl_project
   default_prefix = local.repo
 
   host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${random_id.resources_random_id.dec}-${var.project_id}-${var.deployment_id}"
@@ -48,6 +48,20 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
       authorizer_credential {
         oauth_token_secret_version = local.github_secret_version_id
       }
+    }
+  }
+
+  dynamic "gitlab_config" {
+    for_each = local.is_gl_repo ? [1] : []
+    content {
+      host_uri = var.gitlab_host_uri != "" ? var.gitlab_host_uri : null
+      authorizer_credential {
+        user_token_secret_version = local.gitlab_api_secret_version
+      }
+      read_authorizer_credential {
+        user_token_secret_version = local.gitlab_read_api_secret_version
+      }
+      webhook_secret_secret_version = google_secret_manager_secret_version.gitlab_webhook_secret_version[0].name
     }
   }
 }
