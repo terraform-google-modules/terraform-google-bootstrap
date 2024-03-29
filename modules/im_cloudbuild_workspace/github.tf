@@ -17,7 +17,7 @@
 locals {
   # GitHub repo url of form "github.com/owner/name"
   is_gh_repo        = var.tf_repo_type == "GITHUB"
-  gh_repo_url_split = local.is_gh_repo ? split("/", local.url) : []
+  gh_repo_url_split = local.is_gh_repo ? split("/", local.repoURLWithoutSuffix) : []
   gh_name           = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 1] : ""
 
   create_github_secret           = local.is_gh_repo && var.github_personal_access_token != ""

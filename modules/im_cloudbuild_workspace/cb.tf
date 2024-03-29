@@ -22,7 +22,7 @@ locals {
     location        = var.location
     deployment_id   = var.deployment_id
     service_account = local.im_sa
-    source_repo     = var.im_deployment_repo_uri
+    source_repo     = local.repoURL
     source_repo_dir = var.im_deployment_repo_dir
     tf_vars         = var.im_tf_variables
   })
@@ -45,7 +45,7 @@ locals {
         "apply",
         "projects/${var.project_id}/locations/${var.location}/deployments/${var.deployment_id}",
         "--service-account=${local.im_sa}",
-        "--git-source-repo=${var.im_deployment_repo_uri}",
+        "--git-source-repo=${local.repoURL}",
         var.im_deployment_repo_dir != "" ? "--git-source-directory=${var.im_deployment_repo_dir}" : "",
         var.im_deployment_ref != "" ? "--git-source-ref=${var.im_deployment_ref}" : "",
         var.im_tf_variables != "" ? "--input-values=${var.im_tf_variables}" : "",
@@ -66,7 +66,7 @@ resource "google_cloudbuild_trigger" "triggers" {
   project            = var.project_id
   location           = var.trigger_location
   name               = substr("im-${each.key}-${random_id.resources_random_id.dec}-${local.default_prefix}", 0, 64)
-  description        = "${title(each.key)} Terraform configs for ${var.im_deployment_repo_uri} ${var.im_deployment_repo_dir}"
+  description        = "${title(each.key)} Terraform configs for ${local.repoURL} ${var.im_deployment_repo_dir}"
   include_build_logs = local.is_gh_repo ? "INCLUDE_BUILD_LOGS_WITH_STATUS" : null
 
   repository_event_config {

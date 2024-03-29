@@ -17,7 +17,7 @@
 locals {
   # GitLab repo url of form "[host_uri]/[owners]/project"
   is_gl_repo        = var.tf_repo_type == "GITLAB"
-  gl_repo_url_split = local.is_gl_repo ? split("/", local.url) : []
+  gl_repo_url_split = local.is_gl_repo ? split("/", local.repoURLWithoutSuffix) : []
   gl_project        = local.is_gl_repo ? local.gl_repo_url_split[length(local.gl_repo_url_split) - 1] : ""
 
   create_api_secret           = local.is_gl_repo && var.gitlab_api_access_token != ""

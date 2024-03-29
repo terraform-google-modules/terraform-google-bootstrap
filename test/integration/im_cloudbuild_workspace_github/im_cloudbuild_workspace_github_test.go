@@ -148,9 +148,11 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		client.AddFileToRepository(ctx, utils.GetFileContents(t, "files/main.tf"))
 	}
 
+	// Testing the module's feature of appending the ".git" suffix if it's missing
+	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
 		"im_github_pat":  githubPAT,
-		"repository_url": client.repository.GetCloneURL(),
+		"repository_url": repoURL,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
