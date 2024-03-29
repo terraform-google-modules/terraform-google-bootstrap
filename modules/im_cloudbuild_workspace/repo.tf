@@ -16,7 +16,7 @@
 
 locals {
   repoURL = endswith(var.im_deployment_repo_uri, ".git") ? var.im_deployment_repo_uri : "${var.im_deployment_repo_uri}.git"
-  # Remove the ".git" suffix for parsing the url for owner/repo 
+  // Remove the ".git" suffix for parsing the url for owner/repo
   repoURLWithoutSuffix = trimsuffix(local.repoURL, ".git")
 
   repo           = local.is_gh_repo ? local.gh_name : local.gl_project
