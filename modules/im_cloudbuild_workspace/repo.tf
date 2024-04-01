@@ -15,8 +15,9 @@
  */
 
 locals {
-  # Remove ".git" suffix if it's included
-  url = trimsuffix(var.im_deployment_repo_uri, ".git")
+  repoURL = endswith(var.im_deployment_repo_uri, ".git") ? var.im_deployment_repo_uri : "${var.im_deployment_repo_uri}.git"
+  // Remove the ".git" suffix for parsing the url for owner/repo
+  repoURLWithoutSuffix = trimsuffix(local.repoURL, ".git")
 
   repo           = local.is_gh_repo ? local.gh_name : local.gl_project
   default_prefix = local.repo
@@ -72,5 +73,5 @@ resource "google_cloudbuildv2_repository" "repository_connection" {
   location          = var.location
   name              = local.repo_connection_name
   parent_connection = google_cloudbuildv2_connection.vcs_connection.name
-  remote_uri        = var.im_deployment_repo_uri
+  remote_uri        = local.repoURL
 }
