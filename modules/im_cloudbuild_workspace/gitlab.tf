@@ -122,6 +122,7 @@ data "google_secret_manager_secret_version" "existing_gitlab_read_api_secret_ver
 
 resource "google_secret_manager_secret_iam_member" "gitlab_secret_members" {
   for_each  = local.is_gl_repo ? { "api" = local.api_secret_id, "read_api" = local.read_api_secret_id, "webhook" = google_secret_manager_secret.gitlab_webhook_secret[0].id } : {}
+  project   = var.project_id
   secret_id = each.value
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"

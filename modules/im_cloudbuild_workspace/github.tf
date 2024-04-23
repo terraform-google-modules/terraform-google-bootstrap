@@ -64,6 +64,7 @@ data "google_secret_manager_secret_version" "existing_github_pat_secret_version"
 
 resource "google_secret_manager_secret_iam_member" "github_token_iam_member" {
   count     = local.is_gh_repo ? 1 : 0
+  project   = var.project_id
   secret_id = local.github_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
