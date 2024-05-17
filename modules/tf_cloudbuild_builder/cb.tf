@@ -88,10 +88,11 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 }
 
 resource "google_service_account" "cb_sa" {
-  count        = var.cloudbuild_sa == "" ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-cb-builder-sa"
-  display_name = "SA for Terraform builder build trigger. Managed by Terraform."
+  count                        = var.cloudbuild_sa == "" ? 1 : 0
+  project                      = var.project_id
+  account_id                   = "tf-cb-builder-sa"
+  display_name                 = "SA for Terraform builder build trigger. Managed by Terraform."
+  create_ignore_already_exists = true
 }
 
 # https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts#permissions
