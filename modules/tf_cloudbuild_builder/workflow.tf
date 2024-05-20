@@ -26,10 +26,11 @@ locals {
 }
 
 resource "google_service_account" "workflow_sa" {
-  count        = var.workflow_sa == "" ? 1 : 0
-  project      = var.project_id
-  account_id   = "terraform-runner-workflow-sa"
-  display_name = "SA for TF Builder Workflow. Managed by Terraform."
+  count                        = var.workflow_sa == "" ? 1 : 0
+  project                      = var.project_id
+  account_id                   = "terraform-runner-workflow-sa"
+  display_name                 = "SA for TF Builder Workflow. Managed by Terraform."
+  create_ignore_already_exists = true
 }
 
 resource "google_workflows_workflow" "builder" {
