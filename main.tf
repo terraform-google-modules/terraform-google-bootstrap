@@ -90,9 +90,10 @@ module "enable_cross_project_service_account_usage" {
 resource "google_service_account" "org_terraform" {
   count = var.create_terraform_sa ? 1 : 0
 
-  project      = module.seed_project.project_id
-  account_id   = var.tf_service_account_id
-  display_name = var.tf_service_account_name
+  project                      = module.seed_project.project_id
+  account_id                   = var.tf_service_account_id
+  display_name                 = var.tf_service_account_name
+  create_ignore_already_exists = true
 }
 
 /***********************************************
