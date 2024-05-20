@@ -29,7 +29,7 @@ locals {
 
 module "artifacts_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name          = var.artifacts_bucket_name != "" ? var.artifacts_bucket_name : "${local.default_prefix}-build-artifacts-${var.project_id}"
   project_id    = var.project_id
@@ -45,7 +45,7 @@ resource "google_storage_bucket_iam_member" "artifacts_admin" {
 
 module "log_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name          = var.log_bucket_name != "" ? var.log_bucket_name : "${local.default_prefix}-build-logs-${var.project_id}"
   project_id    = var.project_id
@@ -62,7 +62,7 @@ resource "google_storage_bucket_iam_member" "log_admin" {
 # Custom bucket for storing TF state
 module "state_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 5.0"
+  version = "~> 6.0"
   count   = var.create_state_bucket ? 1 : 0
 
   name          = var.create_state_bucket_name != "" ? var.create_state_bucket_name : "${local.default_prefix}-build-state-${var.project_id}"
