@@ -7,6 +7,25 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v7.2.0...v8.0.0) (2024-05-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Update Terraform terraform-google-modules/project-factory/google to v15 ([#290](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/290))
+* **deps:** Update Terraform terraform-google-modules/cloud-storage/google to v6 ([#291](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/291))
+
+### Features
+
+* Set project field on secret IAM member ([#287](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/287)) ([0efe030](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/0efe03022c7893614ead441e29f513880bac6337))
+
+
+### Bug Fixes
+
+* **deps:** Update Terraform terraform-google-modules/cloud-storage/google to v6 ([#291](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/291)) ([3854ea6](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/3854ea6d98fa93184d80c650ba9ca6b04ad43297))
+* **deps:** Update Terraform terraform-google-modules/project-factory/google to v15 ([#290](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/290)) ([eeffa37](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/eeffa37122b00c25670ca68b438e9c1f4bc712e8))
+* enable create_ignore for service accounts ([#292](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/292)) ([7c8477b](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/7c8477bd6137745176d27a4e092c997b0da64149))
+
 ## [7.2.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v7.1.0...v7.2.0) (2024-04-01)
 
 
