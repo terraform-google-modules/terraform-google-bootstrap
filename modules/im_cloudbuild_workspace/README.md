@@ -14,7 +14,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "im-workspace" {
   source = "terraform-google-modules/bootstrap/google//modules/im_cloudbuild_workspace"
-  version = "~> 7.2"
+  version = "~> 8.0"
 
   project_id = var.project_id
   deployment_id = var.deployment_id
