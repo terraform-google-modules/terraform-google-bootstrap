@@ -6,7 +6,7 @@ toolchain go1.21.10
 
 require (
 	github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.14.1
-	github.com/google/go-github/v60 v60.0.0
+	github.com/google/go-github/v62 v62.0.0
 	github.com/gruntwork-io/terratest v0.46.14
 	github.com/stretchr/testify v1.9.0
 	github.com/xanzy/go-gitlab v0.105.0
@@ -33,7 +33,6 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
