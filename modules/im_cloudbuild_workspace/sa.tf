@@ -55,7 +55,7 @@ resource "google_project_iam_member" "cb_logWriter_role" {
   member  = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 
-# Allows the Cloud Build service account to act as the Infra Manger service account
+# Allows the Cloud Build service account to act as the Infra Manager service account
 resource "google_project_iam_member" "cb_serviceAccountUser_role" {
   count   = local.create_cloudbuild_sa ? 1 : 0
   project = var.project_id
