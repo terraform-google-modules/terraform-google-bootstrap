@@ -20,7 +20,9 @@ locals {
   repoURLWithoutSuffix = trimsuffix(local.repoURL, ".git")
 
   repo           = local.is_gh_repo ? local.gh_name : local.gl_project
-  default_prefix = local.repo
+
+  // Remove any invalid characters from the repo name, and convert to lowercase
+  default_prefix = lower(replace(local.repo, "/[^a-z0-9-]/", "-"))
 
   host_connection_name = var.host_connection_name != "" ? var.host_connection_name : "im-${random_id.resources_random_id.dec}-${var.project_id}-${var.deployment_id}"
   repo_connection_name = var.repo_connection_name != "" ? var.repo_connection_name : "im-${random_id.resources_random_id.dec}-${local.repo}"
