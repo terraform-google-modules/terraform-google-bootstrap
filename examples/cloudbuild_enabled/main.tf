@@ -20,7 +20,7 @@
 
 module "seed_bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
-  version = "~> 7.0"
+  version = "~> 8.0"
 
   org_id                  = var.org_id
   billing_account         = var.billing_account
@@ -34,7 +34,7 @@ module "seed_bootstrap" {
 
 module "cloudbuild_bootstrap" {
   source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild"
-  version = "~> 7.0"
+  version = "~> 8.0"
 
   org_id                  = var.org_id
   billing_account         = var.billing_account
