@@ -31,6 +31,10 @@ locals {
   gh_owner          = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 2] : ""
   gh_name           = local.is_gh_repo ? local.gh_repo_url_split[length(local.gh_repo_url_split) - 1] : ""
 
+  is_cb_v2_repo = var.tf_repo_type == "CLOUDBUILD_V2_REPOSITORY"
+  # Generic repo name extracted from format projects/{{project}}/locations/{{location}}/connections/{{name}}
+  cb_v2_repo_name = local.is_cb_v2_repo ? element(split("/", cloudbuildv2_repository_id), length(split("/", cloudbuildv2_repository_id)) - 1) : ""
+
   # default build steps
   default_entrypoint = "terraform"
   default_build_plan = [
@@ -48,7 +52,7 @@ locals {
   }
 
   # default prefix computed from repo name and dir if specified of form ${repo}-${dir?}-${plan/apply}
-  repo           = local.is_source_repo ? local.source_repo_name : local.gh_name
+  repo           = local.is_source_repo ? local.source_repo_name : local.is_cb_v2_repo ? local.cb_v2_repo_name : local.gh_name
   default_prefix = var.prefix != "" ? var.prefix : replace(var.tf_repo_dir != "" ? "${local.repo}-${var.tf_repo_dir}" : local.repo, "/", "-")
 
   # default substitutions
@@ -75,6 +79,30 @@ resource "google_cloudbuild_trigger" "triggers" {
       branch_name  = local.apply_branches_regex
       repo_name    = local.source_repo_name
       invert_regex = each.key == "apply" ? false : true
+    }
+  }
+
+  # Generic Cloud Build 2nd Gen Repository
+  dynamic "repository_event_config" {
+    for_each = local.is_cb_v2_repo ? [1] : []
+    content {
+      repository = var.cloudbuildv2_repository_id
+      # plan for PRs targeting apply branches
+      dynamic "pull_request" {
+        for_each = each.key != "apply" ? [1] : []
+        content {
+          branch       = local.apply_branches_regex
+          invert_regex = false
+        }
+      }
+      # apply for pushes to apply branches
+      dynamic "push" {
+        for_each = each.key != "apply" ? [] : [1]
+        content {
+          branch       = local.apply_branches_regex
+          invert_regex = false
+        }
+      }
     }
   }
 
