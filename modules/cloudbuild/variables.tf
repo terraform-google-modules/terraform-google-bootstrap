@@ -108,23 +108,6 @@ variable "storage_bucket_labels" {
   default     = {}
 }
 
-variable "create_cloud_source_repos" {
-  description = "If shared Cloud Source Repos should be created."
-  type        = bool
-  default     = true
-}
-
-variable "cloud_source_repos" {
-  description = "List of Cloud Source Repos to create with CloudBuild triggers."
-  type        = list(string)
-
-  default = [
-    "gcp-org",
-    "gcp-networks",
-    "gcp-projects",
-  ]
-}
-
 variable "folder_id" {
   description = "The ID of a folder to host this project"
   type        = string
