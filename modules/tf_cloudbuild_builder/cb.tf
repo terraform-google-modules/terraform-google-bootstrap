@@ -38,6 +38,8 @@ locals {
   source_repo_url_split = local.is_source_repo ? split("/", var.dockerfile_repo_uri) : []
   source_repo_project   = local.is_source_repo ? local.source_repo_url_split[4] : ""
   source_repo_name      = local.is_source_repo ? local.source_repo_url_split[6] : ""
+
+  use_repo_id = var.dockerfile_repo_id != ""
 }
 
 resource "google_cloudbuild_trigger" "build_trigger" {
@@ -45,10 +47,25 @@ resource "google_cloudbuild_trigger" "build_trigger" {
   location    = var.trigger_location
   name        = var.trigger_name
   description = "Builds a Terraform runner image. Managed by Terraform."
-  source_to_build {
-    uri       = var.dockerfile_repo_uri
-    ref       = var.dockerfile_repo_ref
-    repo_type = var.dockerfile_repo_type
+
+
+  # repository accepts Generic Cloud Build 2nd Gen Repository
+  dynamic "source_to_build" {
+    for_each = local.use_repo_id ? [1] : []
+    content {
+      repository = var.dockerfile_repo_id
+      ref        = var.dockerfile_repo_ref
+      repo_type  = var.dockerfile_repo_type
+    }
+  }
+
+  dynamic "source_to_build" {
+    for_each = local.use_repo_id ? [] : [1]
+    content {
+      uri       = var.dockerfile_repo_uri
+      ref       = var.dockerfile_repo_ref
+      repo_type = var.dockerfile_repo_type
+    }
   }
 
   # todo(bharathkkb): switch to yaml after https://github.com/hashicorp/terraform-provider-google/issues/9818

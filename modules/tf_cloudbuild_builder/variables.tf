@@ -98,8 +98,15 @@ variable "trigger_location" {
 }
 
 variable "dockerfile_repo_uri" {
-  description = "The URI of the repo where the Dockerfile for Terraform builder is stored"
+  description = "The URI of the repo where the Dockerfile for Terraform builder is stored. Either specify this or the variable `dockerfile_repo_id` for cloudbuildv2 repositories."
   type        = string
+  default     = ""
+}
+
+variable "dockerfile_repo_id" {
+  description = "The repository id where the Dockerfile for Terraform builder is stored. Either specify this or the variable `dockerfile_repo_uri`."
+  type        = string
+  default     = ""
 }
 
 variable "dockerfile_repo_ref" {

@@ -190,7 +190,7 @@ variable "worker_pool_id" {
 }
 
 variable "cloudbuildv2_repository_id" {
-  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
+  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
   type        = string
   default     = ""
 }
