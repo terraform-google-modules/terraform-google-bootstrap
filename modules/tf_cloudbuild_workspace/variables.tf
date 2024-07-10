@@ -148,6 +148,12 @@ variable "prefix" {
   default     = ""
 }
 
+variable "cloudbuildv2_repository_id" {
+  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
+  type        = string
+  default     = ""
+}
+
 variable "tf_repo_uri" {
   description = "The URI of the repo where Terraform configs are stored."
   type        = string
@@ -185,12 +191,6 @@ variable "enable_worker_pool" {
 
 variable "worker_pool_id" {
   description = "Custom private worker pool ID. Format: 'projects/PROJECT_ID/locations/REGION/workerPools/PRIVATE_POOL_ID'."
-  type        = string
-  default     = ""
-}
-
-variable "cloudbuildv2_repository_id" {
-  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
   type        = string
   default     = ""
 }
