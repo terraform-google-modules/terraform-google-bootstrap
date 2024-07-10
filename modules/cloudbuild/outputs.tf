@@ -29,11 +29,6 @@ output "gcs_bucket_cloudbuild_logs" {
   value       = google_storage_bucket.cloudbuild_logs.name
 }
 
-output "csr_repos" {
-  description = "List of Cloud Source Repos created by the module, linked to Cloud Build triggers."
-  value       = google_sourcerepo_repository.gcp_repo
-}
-
 output "tf_runner_artifact_repo" {
   description = "GAR Repo created to store runner images"
   value       = google_artifact_registry_repository.tf-image-repo.name

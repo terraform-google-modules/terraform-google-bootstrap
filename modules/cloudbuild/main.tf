@@ -17,7 +17,7 @@
 locals {
   cloudbuild_project_id       = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "cloudbuild")
   gar_repo_name               = var.gar_repo_name != "" ? var.gar_repo_name : format("%s-%s", var.project_prefix, "tf-runners")
-  cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com", "artifactregistry.googleapis.com"]
+  cloudbuild_apis             = ["cloudbuild.googleapis.com", "cloudkms.googleapis.com", "artifactregistry.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = distinct(concat(var.activate_apis, local.cloudbuild_apis))
   apply_branches_regex        = "^(${join("|", var.terraform_apply_branches)})$"
@@ -147,98 +147,6 @@ resource "google_storage_bucket" "cloudbuild_artifacts" {
   versioning {
     enabled = true
   }
-}
-
-/******************************************
-  Create Cloud Source Repos
-*******************************************/
-
-resource "google_sourcerepo_repository" "gcp_repo" {
-  for_each = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
-  project  = module.cloudbuild_project.project_id
-  name     = each.value
-}
-
-/******************************************
-  Cloud Source Repo IAM
-*******************************************/
-
-resource "google_project_iam_member" "org_admins_source_repo_admin" {
-  count   = var.create_cloud_source_repos ? 1 : 0
-  project = module.cloudbuild_project.project_id
-  role    = "roles/source.admin"
-  member  = "group:${var.group_org_admins}"
-}
-
-/***********************************************
- Cloud Build - Main branch triggers
- ***********************************************/
-
-resource "google_cloudbuild_trigger" "main_trigger" {
-  for_each        = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
-  project         = module.cloudbuild_project.project_id
-  description     = "${each.value} - terraform apply."
-  service_account = var.terraform_sa_name
-
-  trigger_template {
-    branch_name = local.apply_branches_regex
-    repo_name   = each.value
-  }
-
-  substitutions = {
-    _ORG_ID               = var.org_id
-    _BILLING_ID           = var.billing_account
-    _DEFAULT_REGION       = var.default_region
-    _GAR_REPOSITORY       = local.gar_name
-    _TF_SA_EMAIL          = var.terraform_sa_email
-    _STATE_BUCKET_NAME    = var.terraform_state_bucket
-    _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
-    _LOGS_BUCKET_NAME     = google_storage_bucket.cloudbuild_logs.name
-    _TF_ACTION            = "apply"
-  }
-
-  filename = var.cloudbuild_apply_filename
-  depends_on = [
-    google_sourcerepo_repository.gcp_repo,
-    google_service_account_iam_member.org_admin_terraform_sa_impersonate,
-    time_sleep.impersonate_propagation
-  ]
-}
-
-/***********************************************
- Cloud Build - Non Main branch triggers
- ***********************************************/
-
-resource "google_cloudbuild_trigger" "non_main_trigger" {
-  for_each        = var.create_cloud_source_repos ? toset(var.cloud_source_repos) : []
-  project         = module.cloudbuild_project.project_id
-  description     = "${each.value} - terraform plan."
-  service_account = var.terraform_sa_name
-
-  trigger_template {
-    invert_regex = true
-    branch_name  = local.apply_branches_regex
-    repo_name    = each.value
-  }
-
-  substitutions = {
-    _ORG_ID               = var.org_id
-    _BILLING_ID           = var.billing_account
-    _DEFAULT_REGION       = var.default_region
-    _GAR_REPOSITORY       = local.gar_name
-    _TF_SA_EMAIL          = var.terraform_sa_email
-    _STATE_BUCKET_NAME    = var.terraform_state_bucket
-    _ARTIFACT_BUCKET_NAME = google_storage_bucket.cloudbuild_artifacts.name
-    _LOGS_BUCKET_NAME     = google_storage_bucket.cloudbuild_logs.name
-    _TF_ACTION            = "plan"
-  }
-
-  filename = var.cloudbuild_plan_filename
-  depends_on = [
-    google_sourcerepo_repository.gcp_repo,
-    google_service_account_iam_member.org_admin_terraform_sa_impersonate,
-    time_sleep.impersonate_propagation
-  ]
 }
 
 /***********************************************

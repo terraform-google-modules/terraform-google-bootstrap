@@ -49,11 +49,6 @@ output "gcs_bucket_cloudbuild_logs" {
   value       = module.cloudbuild_bootstrap.gcs_bucket_cloudbuild_logs
 }
 
-output "csr_repos" {
-  description = "List of Cloud Source Repos created by the module, linked to Cloud Build triggers."
-  value       = module.cloudbuild_bootstrap.csr_repos
-}
-
 output "tf_runner_artifact_repo" {
   description = "GAR Repo created to store runner images"
   value       = module.cloudbuild_bootstrap.tf_runner_artifact_repo
