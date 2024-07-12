@@ -1,3 +1,12 @@
+## Github Requirements for Cloud Build Connection
+
+When using a Cloud Build 2nd generation repository, a Cloud Build connection to your repository provider will be needed. For Github connections you will need:
+
+- [Install Cloud Build App on Github](https://github.com/apps/google-cloud-build).
+- [Create Personal Access Token on Github with `repo` and `read:user` (or if app is installed in org use `read:org`)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+
+For more information on this topic refer to the ["Connect with Github Documentation"](https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen)
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
