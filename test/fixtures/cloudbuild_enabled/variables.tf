@@ -55,3 +55,9 @@ variable "org_project_creators" {
   type        = list(string)
   default     = []
 }
+
+variable "force_destroy" {
+  description = "If supplied, the logs and artifacts buckets will be deleted even while containing objects."
+  type        = bool
+  default     = false
+}

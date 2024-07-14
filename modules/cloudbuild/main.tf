@@ -127,10 +127,12 @@ resource "google_project_iam_member" "org_admins_cloudbuild_viewer" {
 *******************************************/
 
 resource "google_storage_bucket" "cloudbuild_logs" {
-  project                     = module.cloudbuild_project.project_id
-  name                        = format("%s-%s-%s", module.cloudbuild_project.project_id, "cloudbuild-logs", random_id.suffix.hex)
-  location                    = var.default_region
-  labels                      = var.storage_bucket_labels
+  project  = module.cloudbuild_project.project_id
+  name     = format("%s-%s-%s", module.cloudbuild_project.project_id, "cloudbuild-logs", random_id.suffix.hex)
+  location = var.default_region
+  labels   = var.storage_bucket_labels
+
+  force_destroy               = var.force_destroy
   uniform_bucket_level_access = true
 }
 
@@ -143,6 +145,7 @@ resource "google_storage_bucket" "cloudbuild_artifacts" {
   name                        = format("%s-%s-%s", var.project_prefix, "cloudbuild-artifacts", random_id.suffix.hex)
   location                    = var.default_region
   labels                      = var.storage_bucket_labels
+  force_destroy               = var.force_destroy
   uniform_bucket_level_access = true
   versioning {
     enabled = true
