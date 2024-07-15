@@ -13,7 +13,11 @@ For more information on this topic refer to the ["Connect with Github Documentat
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | cloudbuildv2\_repository\_id | Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`. | `string` | n/a | yes |
+| create\_cloudbuild\_sa | Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified. | `bool` | `true` | no |
+| create\_cloudbuild\_sa\_name | Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty | `string` | `""` | no |
+| github\_pat | GitHub personal access token. | `string` | n/a | yes |
 | project\_id | The ID of the project in which to provision resources. | `string` | n/a | yes |
+| repository\_uri | The URI of the repo where the Terraform configs are stored. | `string` | n/a | yes |
 
 ## Outputs
 
