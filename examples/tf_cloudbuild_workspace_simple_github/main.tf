@@ -18,8 +18,13 @@ module "tf_workspace" {
   source = "../../modules/tf_cloudbuild_workspace"
 
   project_id                 = module.enabled_google_apis.project_id
+  tf_repo_type               = "CLOUDBUILD_V2_REPOSITORY"
   cloudbuildv2_repository_id = var.cloudbuildv2_repository_id
   tf_repo_uri                = ""
+  location                   = "us-central1"
+  trigger_location           = "us-central1"
+  create_cloudbuild_sa       = var.create_cloudbuild_sa
+  create_cloudbuild_sa_name  = var.create_cloudbuild_sa_name
 
   # allow log/state buckets to be destroyed
   buckets_force_destroy = true
@@ -30,4 +35,14 @@ module "tf_workspace" {
   }
   cloudbuild_env_vars = ["TF_VAR_project_id=${var.project_id}"]
 
+  depends_on = [module.enabled_google_apis]
+}
+
+module "bootstrap_github_repo" {
+  source  = "terraform-google-modules/gcloud/google"
+  version = "~> 3.1"
+  upgrade = false
+
+  create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
+  create_cmd_body       = "${var.github_pat} ${var.repository_uri} ${path.module}/files"
 }

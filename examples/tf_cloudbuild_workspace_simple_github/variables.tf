@@ -23,3 +23,26 @@ variable "cloudbuildv2_repository_id" {
   description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
   type        = string
 }
+
+variable "create_cloudbuild_sa" {
+  description = "Create a Service Account for use in Cloud Build. If false `cloudbuild_sa` has to be specified."
+  type        = bool
+  default     = true
+}
+
+variable "create_cloudbuild_sa_name" {
+  description = "Custom name to be used in the creation of the Cloud Build service account if `create_cloudbuild_sa` is true. Defaults to generated name if empty"
+  type        = string
+  default     = ""
+}
+
+variable "github_pat" {
+  description = "GitHub personal access token."
+  type        = string
+  sensitive   = true
+}
+
+variable "repository_uri" {
+  description = "The URI of the repo where the Terraform configs are stored."
+  type        = string
+}
