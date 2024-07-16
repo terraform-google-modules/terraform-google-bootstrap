@@ -27,9 +27,9 @@ TF_CONFIG_PATH=$3
 
 
 # extract portion after https:// from URL
-URL_PARTS=($(echo $REPO_URL | awk -F/ '{print $3, $4, $5}'))
+IFS="/"; mapfile -t -d / URL_PARTS < <(echo "$REPO_URL")
 # construct the new authenticated URL
-AUTH_REPO_URL="https://${GITHUB_TOKEN}:@${URL_PARTS[0]}/${URL_PARTS[1]}/${URL_PARTS[2]}"
+AUTH_REPO_URL="https://${GITHUB_TOKEN}:@${URL_PARTS[2]}/${URL_PARTS[3]}/${URL_PARTS[4]}"
 
 tmp_dir=$(mktemp -d)
 git clone "${AUTH_REPO_URL}" "${tmp_dir}"
