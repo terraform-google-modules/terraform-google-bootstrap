@@ -59,6 +59,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | create\_cloud\_source\_repos | If shared Cloud Source Repos should be created. | `bool` | `true` | no |
 | default\_region | Default region to create resources where applicable. | `string` | `"us-central1"` | no |
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
+| force\_destroy | If supplied, the logs and artifacts buckets will be deleted even while containing objects. | `bool` | `false` | no |
 | gar\_repo\_name | Custom name to use for GAR repo. | `string` | `""` | no |
 | gcloud\_version | Default gcloud image version. | `string` | `"388.0.0-slim"` | no |
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
