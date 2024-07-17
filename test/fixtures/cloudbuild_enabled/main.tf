@@ -23,5 +23,6 @@ module "cloudbuild_enabled" {
   group_billing_admins = var.group_billing_admins
   default_region       = var.default_region
   project_prefix       = "cft-test-cb"
+  force_destroy        = var.force_destroy
 }
 

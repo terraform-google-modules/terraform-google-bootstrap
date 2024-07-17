@@ -51,3 +51,9 @@ variable "project_prefix" {
   default     = "cft"
   type        = string
 }
+
+variable "force_destroy" {
+  description = "If supplied, the logs and artifacts buckets will be deleted even while containing objects."
+  type        = bool
+  default     = false
+}
