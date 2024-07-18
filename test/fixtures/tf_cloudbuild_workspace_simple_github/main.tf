@@ -15,10 +15,10 @@
  */
 
 locals {
-  # GitHub repo url of form "github.com/owner/name"
   github_app_installation_id = "47590865"
   location                   = "us-central1"
-  repoURL                    = endswith(var.repository_uri, ".git") ? var.repository_uri : "${var.repository_uri}.git"
+  # GitHub repo url of form "github.com/owner/name"
+  repoURL = endswith(var.repository_uri, ".git") ? var.repository_uri : "${var.repository_uri}.git"
 
   repoURLWithoutSuffix = trimsuffix(local.repoURL, ".git")
   gh_repo_url_split    = split("/", local.repoURLWithoutSuffix)
@@ -28,7 +28,7 @@ locals {
   github_secret_id         = google_secret_manager_secret.github_token_secret.id
 
   host_connection_name = "cb-${random_id.resources_random_id.dec}-${var.project_id}"
-  repo_connection_name = "cb-${random_id.resources_random_id.dec}-${local.gh_name}"
+  repo_connection_name = local.gh_name
 }
 
 module "github_workspace" {
@@ -36,8 +36,6 @@ module "github_workspace" {
 
   project_id                 = var.project_id
   cloudbuildv2_repository_id = google_cloudbuildv2_repository.repository_connection.id
-  create_cloudbuild_sa       = true
-  create_cloudbuild_sa_name  = "tf-deploy-cb-github"
   github_pat                 = var.im_github_pat
   repository_uri             = var.repository_uri
 }

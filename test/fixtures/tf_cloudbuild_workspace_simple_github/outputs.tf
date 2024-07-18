@@ -13,3 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "cloudbuild_plan_trigger_id" {
+  description = "Trigger used for running TF plan"
+  value       = module.github_workspace.cloudbuild_plan_trigger_id
+}
+
+output "cloudbuild_apply_trigger_id" {
+  description = "Trigger used for running TF apply"
+  value       = module.github_workspace.cloudbuild_apply_trigger_id
+}
+
+output "cloudbuild_sa" {
+  description = "SA used by Cloud Build triggers"
+  value       = module.github_workspace.cloudbuild_sa
+}
+
+output "state_bucket" {
+  description = "Bucket for storing TF state"
+  value       = module.github_workspace.state_bucket
+}
+
+output "logs_bucket" {
+  description = "Bucket for storing TF logs"
+  value       = module.github_workspace.logs_bucket
+}
+
+output "artifacts_bucket" {
+  description = "Bucket for storing TF plans"
+  value       = module.github_workspace.artifacts_bucket
+}
+
+output "project_id" {
+  value = var.project_id
+}

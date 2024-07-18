@@ -44,11 +44,6 @@ output "artifacts_bucket" {
   value       = module.tf_workspace.artifacts_bucket
 }
 
-output "github_repo_id" {
-  description = "CSR repo for storing TF configs"
-  value       = "TBD"
-}
-
 output "project_id" {
   value = var.project_id
 }

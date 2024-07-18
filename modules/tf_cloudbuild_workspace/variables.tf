@@ -149,14 +149,15 @@ variable "prefix" {
 }
 
 variable "cloudbuildv2_repository_id" {
-  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
+  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be set if repository type is `CLOUDBUILD_V2_REPOSITORY`."
   type        = string
   default     = ""
 }
 
 variable "tf_repo_uri" {
-  description = "The URI of the repo where Terraform configs are stored."
+  description = "The URI of the repo where Terraform configs are stored. Must be set if repository type is not `CLOUDBUILD_V2_REPOSITORY`."
   type        = string
+  default     = ""
 }
 
 variable "tf_apply_branches" {

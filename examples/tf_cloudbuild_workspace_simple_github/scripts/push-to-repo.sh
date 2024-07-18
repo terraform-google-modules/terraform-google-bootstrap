@@ -27,7 +27,7 @@ TF_CONFIG_PATH=$3
 
 
 # extract portion after https:// from URL
-IFS="/"; mapfile -t -d / URL_PARTS < <(echo "$REPO_URL")
+IFS="/"; mapfile -t -d / URL_PARTS < <(printf "%s" "$REPO_URL")
 # construct the new authenticated URL
 AUTH_REPO_URL="https://${GITHUB_TOKEN}:@${URL_PARTS[2]}/${URL_PARTS[3]}/${URL_PARTS[4]}"
 
@@ -44,5 +44,6 @@ git commit -m "init tf configs"
 git push origin plan -f
 sleep 60
 git checkout main || git checkout -b main
+git merge plan
 git push origin main -f
 sleep 120

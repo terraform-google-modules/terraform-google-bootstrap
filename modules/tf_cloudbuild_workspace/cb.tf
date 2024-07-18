@@ -52,8 +52,9 @@ locals {
   }
 
   # default prefix computed from repo name and dir if specified of form ${repo}-${dir?}-${plan/apply}
-  repo           = local.is_source_repo ? local.source_repo_name : local.is_cb_v2_repo ? local.cb_v2_repo_name : local.gh_name
-  default_prefix = var.prefix != "" ? var.prefix : replace(var.tf_repo_dir != "" ? "${local.repo}-${var.tf_repo_dir}" : local.repo, "/", "-")
+  repo                 = local.is_source_repo ? local.source_repo_name : local.is_cb_v2_repo ? local.cb_v2_repo_name : local.gh_name
+  default_prefix       = var.prefix != "" ? var.prefix : replace(var.tf_repo_dir != "" ? "${local.repo}-${var.tf_repo_dir}" : local.repo, "/", "-")
+  repo_uri_description = local.is_cb_v2_repo ? local.cb_v2_repo_name : var.tf_repo_uri
 
   # default substitutions
   default_subst = merge({
@@ -70,7 +71,7 @@ resource "google_cloudbuild_trigger" "triggers" {
   project     = var.project_id
   location    = var.trigger_location
   name        = "${local.default_prefix}-${each.key}"
-  description = "${title(each.key)} Terraform configs for ${var.tf_repo_uri} ${var.tf_repo_dir}. Managed by Terraform."
+  description = "${title(each.key)} Terraform configs for ${local.repo_uri_description} ${var.tf_repo_dir}. Managed by Terraform."
 
   # CSR repo
   dynamic "trigger_template" {
