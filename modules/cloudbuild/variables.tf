@@ -108,6 +108,12 @@ variable "storage_bucket_labels" {
   default     = {}
 }
 
+variable "force_destroy" {
+  description = "If supplied, the logs and artifacts buckets will be deleted even while containing objects."
+  type        = bool
+  default     = false
+}
+
 variable "create_cloud_source_repos" {
   description = "If shared Cloud Source Repos should be created."
   type        = bool

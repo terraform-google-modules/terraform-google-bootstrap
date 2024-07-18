@@ -30,6 +30,7 @@ module "seed_bootstrap" {
   org_project_creators    = var.org_project_creators
   sa_enable_impersonation = true
   project_prefix          = var.project_prefix
+  force_destroy           = var.force_destroy
 }
 
 module "cloudbuild_bootstrap" {
@@ -45,4 +46,5 @@ module "cloudbuild_bootstrap" {
   terraform_sa_name       = module.seed_bootstrap.terraform_sa_name
   terraform_state_bucket  = module.seed_bootstrap.gcs_bucket_tfstate
   project_prefix          = var.project_prefix
+  force_destroy           = var.force_destroy
 }
