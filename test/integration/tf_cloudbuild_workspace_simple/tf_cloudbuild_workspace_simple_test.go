@@ -106,6 +106,10 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 					if latestWorkflowRunStatus == "SUCCESS" {
 						return false, nil
 					}
+					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
+						t.Logf("%v", build[0])
+						t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
+					}
 					return true, nil
 				}
 			}
