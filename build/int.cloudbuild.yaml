@@ -192,6 +192,25 @@ steps:
   args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitHub --stage teardown --verbose']
   secretEnv: ['IM_GITHUB_PAT']
 
+- id: apply-tfworkspace-gitlab
+  waitFor:
+      - create-all
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitLab --stage apply --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+- id: verify-tfworkspace-gitlab
+  waitFor:
+      - apply-tfworkspace-gitlab
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitLab --stage verify --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+- id: teardown-tfworkspace-gitlab
+  waitFor:
+      - verify-tfworkspace-gitlab
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitLab --stage teardown --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+
 availableSecrets:
   secretManager:
   - versionName: $_IM_GITHUB_PAT_SECRET_ID/versions/latest
