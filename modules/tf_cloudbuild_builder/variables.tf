@@ -104,9 +104,15 @@ variable "dockerfile_repo_uri" {
 }
 
 variable "dockerfile_repo_id" {
-  description = "The repository id where the Dockerfile for Terraform builder is stored. Either specify this or the variable `dockerfile_repo_uri`."
+  description = "The repository id where the Dockerfile for Terraform builder is stored. Use for Cloudbuild 2nd gen repository.  Either specify this or the variable `dockerfile_repo_uri`."
   type        = string
   default     = ""
+}
+
+variable "use_cloudbuildv2_repository" {
+  description = "Use Cloudbuild 2nd gen repository"
+  type        = bool
+  default     = false
 }
 
 variable "dockerfile_repo_ref" {

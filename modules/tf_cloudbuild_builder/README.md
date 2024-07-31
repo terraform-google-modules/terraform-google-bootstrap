@@ -93,12 +93,13 @@ resources of this module:
 ```hcl
 "iam.googleapis.com",
 "compute.googleapis.com",
-"sourcerepo.googleapis.com",
 "workflows.googleapis.com",
 "artifactregistry.googleapis.com",
 "cloudbuild.googleapis.com",
 "cloudscheduler.googleapis.com"
 ```
+
+If using Cloud Source Repositories, `"sourcerepo.googleapis.com"` API must also be enabled.
 
 ## Contributing
 

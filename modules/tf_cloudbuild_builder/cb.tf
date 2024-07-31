@@ -33,13 +33,11 @@ locals {
   img_tags_subst = [for tag in keys(local.tags_subst) : "${local.gar_uri}:v$${${tag}}"]
 
   # extract CSR project_id and repo name for granting reader access to CSR repo
-  is_source_repo = var.dockerfile_repo_type == "CLOUD_SOURCE_REPOSITORIES"
+  is_source_repo = var.dockerfile_repo_type == "CLOUD_SOURCE_REPOSITORIES" && !var.use_cloudbuildv2_repository
   # url of form https://source.developers.google.com/p/<PROJECT_ID>/r/<REPO>
   source_repo_url_split = local.is_source_repo ? split("/", var.dockerfile_repo_uri) : []
   source_repo_project   = local.is_source_repo ? local.source_repo_url_split[4] : ""
   source_repo_name      = local.is_source_repo ? local.source_repo_url_split[6] : ""
-
-  use_repo_id = var.dockerfile_repo_id != ""
 }
 
 resource "google_cloudbuild_trigger" "build_trigger" {
@@ -51,7 +49,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 
   # repository accepts Generic Cloud Build 2nd Gen Repository
   dynamic "source_to_build" {
-    for_each = local.use_repo_id ? [1] : []
+    for_each = var.use_cloudbuildv2_repository ? [1] : []
     content {
       repository = var.dockerfile_repo_id
       ref        = var.dockerfile_repo_ref
@@ -60,7 +58,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
   }
 
   dynamic "source_to_build" {
-    for_each = local.use_repo_id ? [] : [1]
+    for_each = var.use_cloudbuildv2_repository ? [] : [1]
     content {
       uri       = var.dockerfile_repo_uri
       ref       = var.dockerfile_repo_ref
@@ -97,6 +95,10 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 
   substitutions   = local.tags_subst
   service_account = local.cloudbuild_sa
+
+  lifecycle {
+    ignore_changes = [source_to_build.repo_type] // When using GitLab the value provided need to be "UNKNOWN" but when providing this value the API return empty.
+  }
 
   depends_on = [
     google_artifact_registry_repository_iam_member.push_images,

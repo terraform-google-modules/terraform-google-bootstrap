@@ -1,0 +1,218 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// define test package name
+package tf_cloudbuild_builder_simple_github
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
+	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
+	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
+	"github.com/google/go-github/v63/github"
+	"github.com/stretchr/testify/assert"
+)
+
+
+type GitHubClient struct {
+	t          *testing.T
+	client     *github.Client
+	owner      string
+	repoName   string
+	repository *github.Repository
+}
+
+func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
+	t.Helper()
+	client := github.NewClient(nil).WithAuthToken(token)
+	return &GitHubClient{
+		t:        t,
+		client:   client,
+		owner:    owner,
+		repoName: repo,
+	}
+}
+
+func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
+	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
+	if resp.StatusCode != 404 && err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
+	newRepo := &github.Repository{
+		Name:       github.String(repoName),
+		AutoInit:   github.Bool(true),
+		Private:    github.Bool(true),
+		Visibility: github.String("private"),
+	}
+	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
+	if err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
+	resp, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
+	if resp.StatusCode != 404 && err != nil {
+		gh.t.Fatal(err.Error())
+	}
+}
+
+func TestTFCloudBuildBuilderGitHub(t *testing.T) {
+	ctx := context.Background()
+	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
+	owner := "im-goose"
+	repoName := fmt.Sprintf("b-gh-test-%s", utils.GetRandomStringFromSetup(t))
+	client := NewGitHubClient(t, githubPAT, owner, repoName)
+
+	repo := client.GetRepository(ctx)
+	if repo == nil {
+		client.CreateRepository(ctx, client.owner, client.repoName)
+	}
+
+	// Testing the module's feature of appending the ".git" suffix if it's missing
+	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
+	vars := map[string]interface{}{
+		"im_github_pat":  githubPAT,
+		"repository_uri": repoURL,
+	}
+	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
+
+	bpt.DefineVerify(func(assert *assert.Assertions) {
+		bpt.DefaultVerify(assert)
+
+		t.Cleanup(func() {
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteRepository(ctx)
+			}
+		})
+
+		projectID := bpt.GetStringOutput("project_id")
+		artifactRepo := bpt.GetStringOutput("artifact_repo")
+		artifactRepoDockerRegistry := fmt.Sprintf("us-central1-docker.pkg.dev/%s/%s/terraform", projectID, artifactRepo)
+		schedulerID := bpt.GetStringOutput("scheduler_id")
+		workflowID := bpt.GetStringOutput("workflow_id")
+		triggerFQN := bpt.GetStringOutput("cloudbuild_trigger_id")
+		repositoryID := bpt.GetStringOutput("repository_id")
+		triggerId := strings.Split(triggerFQN, "/")[len(strings.Split(triggerFQN, "/"))-1]
+
+		schedulerOP := gcloud.Runf(t, "scheduler jobs describe %s", schedulerID)
+		assert.Contains(schedulerOP.Get("name").String(), "trigger-terraform-runner-workflow", "has the correct name")
+		assert.Equal("0 8 * * *", schedulerOP.Get("schedule").String(), "has the correct schedule")
+		assert.Equal(fmt.Sprintf("https://workflowexecutions.googleapis.com/v1/%s/executions", workflowID), schedulerOP.Get("httpTarget.uri").String(), "has the correct target")
+
+		workflowOP := gcloud.Runf(t, "workflows describe %s", workflowID)
+		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow", "has the correct name")
+		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/terraform-runner-workflow-sa@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
+
+		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region us-central1", triggerId, projectID)
+		log.Print(cloudBuildOP)
+		assert.Equal("tf-cloud-builder-build", cloudBuildOP.Get("name").String(), "has the correct name")
+		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+		assert.Equal(repositoryID, cloudBuildOP.Get("sourceToBuild.repository").String(), "is connected to expected repo")
+		expectedSubsts := []string{"_TERRAFORM_FULL_VERSION", "_TERRAFORM_MAJOR_VERSION", "_TERRAFORM_MINOR_VERSION"}
+		gotSubsts := cloudBuildOP.Get("substitutions").Map()
+		imgs := cftutils.GetResultStrSlice(cloudBuildOP.Get("build.images").Array())
+		for _, subst := range expectedSubsts {
+			_, found := gotSubsts[subst]
+			assert.Truef(found, "has %s substituion", found)
+			assert.Contains(imgs, fmt.Sprintf("%s:v${%s}", artifactRepoDockerRegistry, subst), "tags correct image")
+		}
+
+		// e2e test
+		oldWorkflowRuns := gcloud.Runf(t, "workflows executions list %s", workflowID).Array()
+		// sometimes scheduler takes a minute to kick off workflow due to eventually consistent IAM
+		// continue to retrigger a few times until a new workflow is kicked off
+		triggerWorkflowFn := func() (bool, error) {
+			gcloud.Runf(t, "scheduler jobs run %s", schedulerID)
+			// workflow may take a few secs to trigger
+			time.Sleep(10 * time.Second)
+			newWorkflowRuns := gcloud.Runf(t, "workflows executions list %s", workflowID).Array()
+			// new workflow is kicked off since list has an additional workflow run
+			if len(newWorkflowRuns)-len(oldWorkflowRuns) > 0 {
+				return false, nil
+			}
+			return true, nil
+		}
+		cftutils.Poll(t, triggerWorkflowFn, 21, 10*time.Second)
+
+		// poll until workflow complete
+		// workflow will poll CB LRO to completion
+		pollWorkflowFn := func() (bool, error) {
+			latestWorkflowRun := gcloud.Runf(t, "workflows executions list %s --sort-by=startTime --limit=1", workflowID).Array()
+			latestWorkflowRunStatus := latestWorkflowRun[0].Get("state").String()
+			if latestWorkflowRunStatus == "SUCCEEDED" {
+				return false, nil
+			}
+			// if failed it maybe due to eventually consistent IAM, retry trigger
+			if latestWorkflowRunStatus == "FAILED" {
+				triggerWorkflowFn()
+			}
+			return true, nil
+		}
+		cftutils.Poll(t, pollWorkflowFn, 100, 20*time.Second)
+
+		// Poll the build to wait for it to run
+		buildListCmd := fmt.Sprintf("builds list --filter buildTriggerId='%s' --region %s --project %s --limit 1 --sort-by ~createTime", triggerId, "us-central1", projectID)
+		// poll build until complete
+		pollCloudBuild := func(cmd string) func() (bool, error) {
+			return func() (bool, error) {
+				build := gcloud.Runf(t, cmd).Array()
+				if len(build) < 1 {
+					return true, nil
+				}
+				latestWorkflowRunStatus := build[0].Get("status").String()
+				if latestWorkflowRunStatus == "SUCCESS" {
+					return false, nil
+				}
+				if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
+					t.Logf("%v", build[0])
+					t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
+				}
+				return true, nil
+			}
+		}
+		cftutils.Poll(t, pollCloudBuild(buildListCmd), 100, 10*time.Second)
+
+		// Check if the images where created
+		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags", artifactRepoDockerRegistry).Array()
+		assert.Equal(1, len(images), "only one image is in registry")
+		imageTags := strings.Split(images[0].Get("tags").String(), ",")
+		assert.Equal(3, len(imageTags), "image has three tags")
+	})
+
+	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		// Guarantee clean up even if the normal gcloud/teardown run into errors
+		t.Cleanup(func() {
+			client.DeleteRepository(ctx)
+			bpt.DefaultTeardown(assert)
+		})
+	})
+
+	bpt.Test()
+}
