@@ -97,7 +97,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
   service_account = local.cloudbuild_sa
 
   lifecycle {
-    ignore_changes = [source_to_build.repo_type] // When using GitLab the value provided need to be "UNKNOWN" but when providing this value the API return empty.
+    ignore_changes = [source_to_build[0].repo_type] // When using GitLab the value provided need to be "UNKNOWN" but when providing this value the API return empty.
   }
 
   depends_on = [
