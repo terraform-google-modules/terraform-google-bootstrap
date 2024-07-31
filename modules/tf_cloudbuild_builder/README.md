@@ -38,7 +38,7 @@ This module creates:
 | cb\_logs\_bucket\_force\_destroy | When deleting the bucket for storing CloudBuild logs, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_sa | Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
 | dockerfile\_repo\_dir | The directory inside the repo where the Dockerfile is located. If empty defaults to repo root. | `string` | `""` | no |
-| dockerfile\_repo\_id | The repository id where the Dockerfile for Terraform builder is stored. Either specify this or the variable `dockerfile_repo_uri`. | `string` | `""` | no |
+| dockerfile\_repo\_id | The repository id where the Dockerfile for Terraform builder is stored. Use for Cloudbuild 2nd gen repository.  Either specify this or the variable `dockerfile_repo_uri`. | `string` | `""` | no |
 | dockerfile\_repo\_ref | The branch or tag to use. Use refs/heads/branchname for branches or refs/tags/tagname for tags. | `string` | `"refs/heads/main"` | no |
 | dockerfile\_repo\_type | Type of repo | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
 | dockerfile\_repo\_uri | The URI of the repo where the Dockerfile for Terraform builder is stored. Either specify this or the variable `dockerfile_repo_id` for cloudbuildv2 repositories. | `string` | `""` | no |
@@ -50,6 +50,7 @@ This module creates:
 | terraform\_version | The initial terraform version in semantic version format. | `string` | `"1.1.0"` | no |
 | trigger\_location | Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool. | `string` | `"global"` | no |
 | trigger\_name | Name of the Cloud Build trigger building the Terraform builder. | `string` | `"tf-cloud-builder-build"` | no |
+| use\_cloudbuildv2\_repository | Use Cloudbuild 2nd gen repository | `bool` | `false` | no |
 | worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
 | workflow\_name | Name of the workflow managing builds. | `string` | `"terraform-runner-workflow"` | no |
 | workflow\_region | The region of the workflow. | `string` | `"us-central1"` | no |

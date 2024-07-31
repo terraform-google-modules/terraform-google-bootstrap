@@ -36,7 +36,7 @@ output "cloudbuild_trigger_id" {
 
 output "repository_id" {
   description = "ID of the v2 repository"
-  value = google_cloudbuildv2_repository.repository_connection.id
+  value       = google_cloudbuildv2_repository.repository_connection.id
 }
 
 output "project_id" {

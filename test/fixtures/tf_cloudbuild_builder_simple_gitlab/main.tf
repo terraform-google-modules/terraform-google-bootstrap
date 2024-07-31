@@ -15,7 +15,7 @@
  */
 
 locals {
-  location                   = "us-central1"
+  location = "us-central1"
   # GitLab repo url of form "gitlab.com/owner/name"
   repoURL = endswith(var.repository_uri, ".git") ? var.repository_uri : "${var.repository_uri}.git"
 
