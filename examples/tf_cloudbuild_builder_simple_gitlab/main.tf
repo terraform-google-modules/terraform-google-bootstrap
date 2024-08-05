@@ -24,6 +24,9 @@ module "cloudbuilder" {
   use_cloudbuildv2_repository = true
   trigger_location            = "us-central1"
   gar_repo_location           = "us-central1"
+  bucket_name                 = "tf-cloudbuilder-build-logs-${var.project_id}-gl"
+  gar_repo_name               = "tf-runners-gl"
+  workflow_name               = "terraform-runner-workflow-gl"
 
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
