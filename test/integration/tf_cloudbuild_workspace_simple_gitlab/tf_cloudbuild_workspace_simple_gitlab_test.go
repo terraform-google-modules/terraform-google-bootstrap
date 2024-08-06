@@ -207,6 +207,9 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 						t.Logf("%v", build[0])
+						err, logs := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s", build[0].Get("id")))
+						t.Logf("err %v", err)
+						t.Logf("logs %s", logs)
 						t.Fatalf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
 						return false, nil
 					}
