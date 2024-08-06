@@ -122,17 +122,17 @@ func TestTFCloudBuildBuilderGitHub(t *testing.T) {
 		triggerId := strings.Split(triggerFQN, "/")[len(strings.Split(triggerFQN, "/"))-1]
 
 		schedulerOP := gcloud.Runf(t, "scheduler jobs describe %s", schedulerID)
-		assert.Contains(schedulerOP.Get("name").String(), "trigger-terraform-runner-workflow", "has the correct name")
+		assert.Contains(schedulerOP.Get("name").String(), "trigger-terraform-runner-workflow-gh", "has the correct name")
 		assert.Equal("0 8 * * *", schedulerOP.Get("schedule").String(), "has the correct schedule")
 		assert.Equal(fmt.Sprintf("https://workflowexecutions.googleapis.com/v1/%s/executions", workflowID), schedulerOP.Get("httpTarget.uri").String(), "has the correct target")
 
 		workflowOP := gcloud.Runf(t, "workflows describe %s", workflowID)
-		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow", "has the correct name")
+		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow-gh", "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/terraform-runner-workflow-sa@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
 
 		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region us-central1", triggerId, projectID)
 		log.Print(cloudBuildOP)
-		assert.Equal("tf-cloud-builder-build", cloudBuildOP.Get("name").String(), "has the correct name")
+		assert.Equal("tf-cloud-builder-build-gh", cloudBuildOP.Get("name").String(), "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		assert.Equal(repositoryID, cloudBuildOP.Get("sourceToBuild.repository").String(), "is connected to expected repo")
 		expectedSubsts := []string{"_TERRAFORM_FULL_VERSION", "_TERRAFORM_MAJOR_VERSION", "_TERRAFORM_MINOR_VERSION"}

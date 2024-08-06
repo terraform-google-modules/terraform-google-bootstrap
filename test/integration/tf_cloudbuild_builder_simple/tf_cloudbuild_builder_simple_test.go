@@ -99,6 +99,28 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 		}
 		utils.Poll(t, pollWorkflowFn, 100, 20*time.Second)
 
+		// Poll the build to wait for it to run
+		buildListCmd := fmt.Sprintf("builds list --filter buildTriggerId='%s' --region %s --project %s --limit 1 --sort-by ~createTime", triggerId, "us-central1", projectID)
+		// poll build until complete
+		pollCloudBuild := func(cmd string) func() (bool, error) {
+			return func() (bool, error) {
+				build := gcloud.Runf(t, cmd).Array()
+				if len(build) < 1 {
+					return true, nil
+				}
+				latestWorkflowRunStatus := build[0].Get("status").String()
+				if latestWorkflowRunStatus == "SUCCESS" {
+					return false, nil
+				}
+				if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
+					t.Logf("%v", build[0])
+					t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
+				}
+				return true, nil
+			}
+		}
+		utils.Poll(t, pollCloudBuild(buildListCmd), 100, 10*time.Second)
+
 		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags", artifactRepoDockerRegistry).Array()
 		assert.Equal(1, len(images), "only one image is in registry")
 		imageTags := strings.Split(images[0].Get("tags").String(), ",")
