@@ -22,6 +22,9 @@ module "tf_workspace" {
   cloudbuildv2_repository_id = var.cloudbuildv2_repository_id
   location                   = "us-central1"
   trigger_location           = "us-central1"
+  artifacts_bucket_name      = "tf-configs-build-artifacts-${var.project_id}-gl"
+  log_bucket_name            = "tf-configs-build-logs-${var.project_id}-gl"
+  create_state_bucket_name   = "tf-configs-build-state-${var.project_id}-gl"
 
   # allow log/state buckets to be destroyed
   buckets_force_destroy = true
