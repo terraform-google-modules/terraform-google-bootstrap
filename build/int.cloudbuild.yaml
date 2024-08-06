@@ -213,7 +213,7 @@ steps:
 
 - id: apply-tfworkspace-github
   waitFor:
-      - create-all
+      - teardown-tfworkspace
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitHub --stage apply --verbose']
   secretEnv: ['IM_GITHUB_PAT']
@@ -232,7 +232,7 @@ steps:
 
 - id: apply-tfworkspace-gitlab
   waitFor:
-      - create-all
+      - teardown-tfworkspace-github
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitLab --stage apply --verbose']
   secretEnv: ['IM_GITLAB_PAT']
