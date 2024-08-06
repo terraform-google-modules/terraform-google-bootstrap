@@ -103,7 +103,7 @@ func (gl *GitLabClient) DeleteProject() {
 }
 
 func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
-	repoName := fmt.Sprintf("cb-bp-test-%s", utils.GetRandomStringFromSetup(t))
+	repoName := fmt.Sprintf("cb-bp-gl-%s", utils.GetRandomStringFromSetup(t))
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
 	owner := "infrastructure-manager"
 

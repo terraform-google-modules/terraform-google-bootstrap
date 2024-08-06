@@ -84,7 +84,7 @@ func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
 func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 	ctx := context.Background()
 
-	repoName := fmt.Sprintf("cb-bp-test-%s", utils.GetRandomStringFromSetup(t))
+	repoName := fmt.Sprintf("cb-bp-gh-%s", utils.GetRandomStringFromSetup(t))
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
 	owner := "im-goose"
 	client := NewGitHubClient(t, githubPAT, owner, repoName)
