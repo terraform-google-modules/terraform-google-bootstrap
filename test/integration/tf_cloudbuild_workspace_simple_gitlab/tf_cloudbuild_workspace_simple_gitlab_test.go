@@ -130,13 +130,14 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 			}
 		})
 
+		location := "us-central1"
 		projectID := bpt.GetStringOutput("project_id")
 
 		// cloud build triggers
 		triggers := []string{"plan", "apply"}
 		for _, trigger := range triggers {
 			triggerOP := utils.LastElement(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
-			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --region %s --project %s", triggerOP, "us-central1", projectID)
+			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --region %s --project %s", triggerOP, location, projectID)
 			assert.Equal(fmt.Sprintf("%s-%s", repoName, trigger), cloudBuildOP.Get("name").String(), "should have the correct name")
 			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-%s@%s.iam.gserviceaccount.com", projectID, repoName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
@@ -190,8 +191,7 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 			gitRun("push", "-u", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s.git", gitlabPAT, owner, repoName), branch, "-f")
 			lastCommit := git.GetLatestCommit()
 			// filter builds triggered based on pushed commit sha
-			triggerLocation := "us-central1"
-			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --region %s --limit 1 --sort-by ~createTime", lastCommit, projectID, triggerLocation)
+			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --region %s --limit 1 --sort-by ~createTime", lastCommit, projectID, location)
 			// poll build until complete
 			pollCloudBuild := func(cmd string) func() (bool, error) {
 				return func() (bool, error) {
@@ -207,7 +207,7 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 						t.Logf("%v", build[0])
-						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s --region %s", build[0].Get("id"), "us-central1"))
+						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s --region %s", build[0].Get("id"), location))
 						t.Logf("err %v", err)
 						t.Logf("logs %s", logs)
 						t.Fatalf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)

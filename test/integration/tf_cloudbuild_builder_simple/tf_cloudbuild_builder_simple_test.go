@@ -34,9 +34,10 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
+		location := "us-central1"
 		projectID := bpt.GetStringOutput("project_id")
 		artifactRepo := bpt.GetStringOutput("artifact_repo")
-		artifactRepoDockerRegistry := fmt.Sprintf("us-central1-docker.pkg.dev/%s/%s/terraform", projectID, artifactRepo)
+		artifactRepoDockerRegistry := fmt.Sprintf("%s-docker.pkg.dev/%s/%s/terraform", location, projectID, artifactRepo)
 		schedulerID := bpt.GetStringOutput("scheduler_id")
 		workflowID := bpt.GetStringOutput("workflow_id")
 		triggerFQN := bpt.GetStringOutput("cloudbuild_trigger_id")
@@ -52,7 +53,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow", "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/terraform-runner-workflow-sa@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
 
-		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region us-central1", triggerId, projectID)
+		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerId, projectID, location)
 		log.Print(cloudBuildOP)
 		assert.Equal("tf-cloud-builder-build", cloudBuildOP.Get("name").String(), "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
@@ -100,7 +101,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 		utils.Poll(t, pollWorkflowFn, 100, 20*time.Second)
 
 		// Poll the build to wait for it to run
-		buildListCmd := fmt.Sprintf("builds list --filter buildTriggerId='%s' --region %s --project %s --limit 1 --sort-by ~createTime", triggerId, "us-central1", projectID)
+		buildListCmd := fmt.Sprintf("builds list --filter buildTriggerId='%s' --region %s --project %s --limit 1 --sort-by ~createTime", triggerId, location, projectID)
 		// poll build until complete
 		pollCloudBuild := func(cmd string) func() (bool, error) {
 			return func() (bool, error) {
