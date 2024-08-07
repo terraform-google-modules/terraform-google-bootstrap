@@ -89,7 +89,7 @@ steps:
 
 - id: apply-tfsource
   waitFor:
-      - destroy-cloudbuild-enabled
+      - destroy-simple-folder
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildSourceSimple --stage apply --verbose']
 - id: verify-tfsource
