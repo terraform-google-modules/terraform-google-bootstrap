@@ -36,7 +36,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 
 		projectID := bpt.GetStringOutput("project_id")
 		artifactRepo := bpt.GetStringOutput("artifact_repo")
-		artifactRepoDockerRegistry := fmt.Sprintf("us-docker.pkg.dev/%s/%s/terraform", projectID, artifactRepo)
+		artifactRepoDockerRegistry := fmt.Sprintf("us-central1-docker.pkg.dev/%s/%s/terraform", projectID, artifactRepo)
 		schedulerID := bpt.GetStringOutput("scheduler_id")
 		workflowID := bpt.GetStringOutput("workflow_id")
 		triggerFQN := bpt.GetStringOutput("cloudbuild_trigger_id")
@@ -52,7 +52,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow", "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/terraform-runner-workflow-sa@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
 
-		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s", triggerId, projectID)
+		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region us-central1", triggerId, projectID)
 		log.Print(cloudBuildOP)
 		assert.Equal("tf-cloud-builder-build", cloudBuildOP.Get("name").String(), "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
