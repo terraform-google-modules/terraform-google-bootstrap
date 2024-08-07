@@ -70,7 +70,6 @@ variable "gar_repo_name" {
 variable "gar_repo_location" {
   description = "Name of the location for the Google Artifact Repository."
   type        = string
-  default     = "us"
 }
 
 variable "terraform_version" {
@@ -94,7 +93,6 @@ variable "trigger_name" {
 variable "trigger_location" {
   description = "Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool."
   type        = string
-  default     = "global"
 }
 
 variable "dockerfile_repo_uri" {
