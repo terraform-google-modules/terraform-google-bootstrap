@@ -19,8 +19,9 @@ locals {
   generated_bucket_name      = var.random_suffix == true ? format("%s-%s-%s", var.project_prefix, "tfstate", random_id.suffix.hex) : format("%s-%s", var.project_prefix, "tfstate")
   supplied_bucket_name       = var.random_suffix == true ? format("%s-%s", var.state_bucket_name, random_id.suffix.hex) : var.state_bucket_name
   state_bucket_name          = var.state_bucket_name != "" ? local.supplied_bucket_name : local.generated_bucket_name
-  impersonation_apis         = distinct(concat(var.activate_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
-  activate_apis              = var.sa_enable_impersonation == true ? local.impersonation_apis : var.activate_apis
+  base_apis                  = distinct(concat(var.activate_apis, var.encrypt_gcs_bucket_tfstate ? ["cloudkms.googleapis.com"] : []))
+  impersonation_apis         = distinct(concat(local.base_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
+  activate_apis              = var.sa_enable_impersonation == true ? local.impersonation_apis : local.base_apis
   org_project_creators_tf_sa = var.create_terraform_sa ? ["serviceAccount:${google_service_account.org_terraform[0].email}"] : []
   org_project_creators       = distinct(concat(var.org_project_creators, local.org_project_creators_tf_sa, ["group:${var.group_org_admins}"]))
   is_organization            = var.parent_folder == "" ? true : false
