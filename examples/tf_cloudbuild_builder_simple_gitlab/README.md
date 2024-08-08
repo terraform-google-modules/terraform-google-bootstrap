@@ -24,6 +24,7 @@ For more information on this topic refer to the Cloud Build repositories (2nd ge
 | cloudbuild\_trigger\_id | Trigger used for building new TF Builder |
 | location | The location in which the resources were provisioned |
 | project\_id | The ID of the project in which the resources were provisioned |
+| repository\_id | ID of the Cloud Build repositories (2nd gen) repository |
 | scheduler\_id | Scheduler ID for periodically triggering TF Builder build Workflow |
 | workflow\_id | Workflow ID for triggering new TF Builder build |
 
