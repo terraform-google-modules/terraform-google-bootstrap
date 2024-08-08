@@ -121,7 +121,7 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 			}
 		})
 
-		location := "us-central1"
+		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
 		artifactRepo := bpt.GetStringOutput("artifact_repo")
 		artifactRepoDockerRegistry := fmt.Sprintf("%s-docker.pkg.dev/%s/%s/terraform", location, projectID, artifactRepo)

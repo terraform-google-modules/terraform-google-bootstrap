@@ -97,7 +97,7 @@ func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
-		"im_github_pat":  githubPAT,
+		"github_pat":  githubPAT,
 		"repository_uri": repoURL,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
@@ -112,7 +112,7 @@ func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 			}
 		})
 
-		location := "us-central1"
+		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
 
 		// cloud build triggers

@@ -45,5 +45,11 @@ output "artifacts_bucket" {
 }
 
 output "project_id" {
-  value = var.project_id
+  description = "The ID of the project in which the resources were provisioned"
+  value       = var.project_id
+}
+
+output "location" {
+  description = "The location in which the resources were provisioned"
+  value       = local.location
 }

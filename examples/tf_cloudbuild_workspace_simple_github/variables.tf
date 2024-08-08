@@ -19,11 +19,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "cloudbuildv2_repository_id" {
-  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be defined if repository type is `CLOUDBUILD_V2_REPOSITORY`."
-  type        = string
-}
-
 variable "github_pat" {
   description = "GitHub personal access token."
   type        = string
@@ -31,6 +26,6 @@ variable "github_pat" {
 }
 
 variable "repository_uri" {
-  description = "The URI of the repo where the Terraform configs are stored."
+  description = "The URI of the GitHub repository where the Terraform configs are stored."
   type        = string
 }

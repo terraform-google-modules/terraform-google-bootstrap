@@ -130,7 +130,7 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 			}
 		})
 
-		location := "us-central1"
+		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
 
 		// cloud build triggers
