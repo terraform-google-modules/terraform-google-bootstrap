@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-terraform {
-  backend "gcs" {
-    bucket = "tf-state-prod"
-    prefix = "terraform/csr/state"
-  }
+variable "project_id" {
+  description = "The ID of the project in which to provision resources."
+  type        = string
+}
+
+variable "github_pat" {
+  description = "GitHub personal access token."
+  type        = string
+  sensitive   = true
+}
+
+variable "repository_uri" {
+  description = "The URI of the GitHub repository where the Terraform configs are stored."
+  type        = string
 }

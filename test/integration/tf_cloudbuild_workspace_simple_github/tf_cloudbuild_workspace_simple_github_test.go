@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// define test package name
-package tf_cloudbuild_workspace_simple
+package tf_cloudbuild_workspace_simple_github
 
 import (
+	"context"
 	"fmt"
 	"path"
+	"strings"
 	"testing"
 	"time"
 
@@ -25,25 +26,102 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	"github.com/google/go-github/v63/github"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
-func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
-	bpt := tft.NewTFBlueprintTest(t)
+type GitHubClient struct {
+	t          *testing.T
+	client     *github.Client
+	owner      string
+	repoName   string
+	repository *github.Repository
+}
+
+func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
+	t.Helper()
+	client := github.NewClient(nil).WithAuthToken(token)
+	return &GitHubClient{
+		t:        t,
+		client:   client,
+		owner:    owner,
+		repoName: repo,
+	}
+}
+
+func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
+	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
+	if resp.StatusCode != 404 && err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
+	newRepo := &github.Repository{
+		Name:       github.String(repoName),
+		AutoInit:   github.Bool(true),
+		Private:    github.Bool(true),
+		Visibility: github.String("private"),
+	}
+	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
+	if err != nil {
+		gh.t.Fatal(err.Error())
+	}
+	gh.repository = repo
+	return repo
+}
+
+func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
+	resp, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
+	if resp.StatusCode != 404 && err != nil {
+		gh.t.Fatal(err.Error())
+	}
+}
+
+func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
+	ctx := context.Background()
+
+	repoName := fmt.Sprintf("cb-bp-gh-%s", utils.GetRandomStringFromSetup(t))
+	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
+	owner := "im-goose"
+	client := NewGitHubClient(t, githubPAT, owner, repoName)
+
+	repo := client.GetRepository(ctx)
+	if repo == nil {
+		client.CreateRepository(ctx, client.owner, client.repoName)
+	}
+
+	// Testing the module's feature of appending the ".git" suffix if it's missing
+	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
+	vars := map[string]interface{}{
+		"github_pat":  githubPAT,
+		"repository_uri": repoURL,
+	}
+	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
+		t.Cleanup(func() {
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteRepository(ctx)
+			}
+		})
+
+		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
 
 		// cloud build triggers
 		triggers := []string{"plan", "apply"}
 		for _, trigger := range triggers {
 			triggerOP := utils.LastElement(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
-			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s", triggerOP, projectID)
-			assert.Equal(fmt.Sprintf("tf-configs-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-tf-configs@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --region %s --project %s", triggerOP, location, projectID)
+			assert.Equal(fmt.Sprintf("%s-%s", repoName, trigger), cloudBuildOP.Get("name").String(), "should have the correct name")
+			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-%s@%s.iam.gserviceaccount.com", projectID, repoName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
 		// artifacts, state and log buckets
@@ -67,17 +145,18 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 		// e2e test for testing actuation through both plan/apply branches
 		applyTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
 		planTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_plan_trigger_id"), "/")
-		// setup repo
-		csr := utils.LastElement(bpt.GetStringOutput("csr_repo_url"), "/")
+
+		// set up repo
 		tmpDir := t.TempDir()
 		git := git.NewCmdConfig(t, git.WithDir(tmpDir))
-		gcloud.Runf(t, "source repos clone %s %s --project %s", csr, tmpDir, projectID)
 		gitRun := func(args ...string) {
 			_, err := git.RunCmdE(args...)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}
+
+		gitRun("clone", fmt.Sprintf("https://%s@github.com/%s/%s", githubPAT, owner, repoName), tmpDir)
 		gitRun("config", "user.email", "tf-robot@example.com")
 		gitRun("config", "user.name", "TF Robot")
 
@@ -94,7 +173,7 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 			gitRun("push", "--set-upstream", "origin", branch, "-f")
 			lastCommit := git.GetLatestCommit()
 			// filter builds triggered based on pushed commit sha
-			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --limit 1", lastCommit, projectID)
+			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --region %s --project %s --limit 1 --sort-by ~createTime", lastCommit, location, projectID)
 			// poll build until complete
 			pollCloudBuild := func(cmd string) func() (bool, error) {
 				return func() (bool, error) {
@@ -108,7 +187,7 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 						t.Logf("%v", build[0])
-						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s", build[0].Get("id")))
+						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s --region %s", build[0].Get("id"), location))
 						t.Logf("err %v", err)
 						t.Logf("logs %s", logs)
 						t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
@@ -127,6 +206,14 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(artifactsBucket, "apply"), "artifacts were uploaded to the correct location")
 			}
 		}
+	})
+
+	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		// Guarantee clean up even if the normal gcloud/teardown run into errors
+		t.Cleanup(func() {
+			client.DeleteRepository(ctx)
+			bpt.DefaultTeardown(assert)
+		})
 	})
 
 	bpt.Test()

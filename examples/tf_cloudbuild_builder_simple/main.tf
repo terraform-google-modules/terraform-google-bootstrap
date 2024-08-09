@@ -20,6 +20,8 @@ module "cloudbuilder" {
 
   project_id          = module.enabled_google_apis.project_id
   dockerfile_repo_uri = google_sourcerepo_repository.builder_dockerfile_repo.url
+  trigger_location    = "us-central1"
+  gar_repo_location   = "us-central1"
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
 }

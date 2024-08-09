@@ -21,6 +21,8 @@ locals {
     gar_repo_location = var.gar_repo_location
     gar_repo_name     = var.gar_repo_name
     trigger_id        = var.trigger_name
+    location          = var.trigger_location
+    trigger_hash      = google_cloudbuild_trigger.build_trigger.trigger_id
   })
   workflow_sa = coalesce(var.workflow_sa, google_service_account.workflow_sa[0].email)
 }

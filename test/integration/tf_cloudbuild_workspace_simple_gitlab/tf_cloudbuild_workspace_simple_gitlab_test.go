@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// define test package name
-package tf_cloudbuild_workspace_simple
+package tf_cloudbuild_workspace_simple_gitlab
 
 import (
 	"fmt"
@@ -25,25 +24,122 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
+	"github.com/xanzy/go-gitlab"
 )
 
-func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
-	bpt := tft.NewTFBlueprintTest(t)
+type GitLabClient struct {
+	t         *testing.T
+	client    *gitlab.Client
+	group     string
+	namespace int
+	repo      string
+	project   *gitlab.Project
+}
+
+func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
+	t.Helper()
+	client, err := gitlab.NewClient(token)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	return &GitLabClient{
+		t:         t,
+		client:    client,
+		group:     "infrastructure-manager",
+		namespace: 84326276,
+		repo:      repo,
+	}
+}
+
+func (gl *GitLabClient) ProjectName() string {
+	return fmt.Sprintf("%s/%s", gl.group, gl.repo)
+}
+
+func (gl *GitLabClient) GetProject() *gitlab.Project {
+	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
+	if resp.StatusCode != 404 && err != nil {
+		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
+	}
+	gl.project = proj
+	return proj
+}
+
+func (gl *GitLabClient) CreateProject() {
+	opts := &gitlab.CreateProjectOptions{
+		Name: gitlab.Ptr(gl.repo),
+		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
+		NamespaceID: gitlab.Ptr(gl.namespace),
+		// Required otherwise Cloud Build errors on creating the connection
+		InitializeWithReadme: gitlab.Ptr(true),
+	}
+	proj, _, err := gl.client.Projects.CreateProject(opts)
+	if err != nil {
+		gl.t.Fatal(err.Error())
+	}
+	gl.project = proj
+}
+
+func (gl *GitLabClient) AddFileToProject(file []byte) {
+	opts := &gitlab.CreateFileOptions{
+		Branch:        gitlab.Ptr("main"),
+		CommitMessage: gitlab.Ptr("Initial config commit"),
+		Content:       gitlab.Ptr(string(file)),
+	}
+	_, _, err := gl.client.RepositoryFiles.CreateFile(gl.ProjectName(), "main.tf", opts)
+	if err != nil {
+		gl.t.Fatal(err.Error())
+	}
+}
+
+func (gl *GitLabClient) DeleteProject() {
+	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName())
+	if resp.StatusCode != 404 && err != nil {
+		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
+	}
+	gl.project = nil
+}
+
+func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
+	repoName := fmt.Sprintf("cb-bp-gl-%s", utils.GetRandomStringFromSetup(t))
+	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
+	owner := "infrastructure-manager"
+
+	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
+	proj := client.GetProject()
+	if proj == nil {
+		client.CreateProject()
+	}
+
+	vars := map[string]interface{}{
+		"gitlab_api_access_token":      gitlabPAT,
+		"gitlab_read_api_access_token": gitlabPAT,
+		"repository_uri":               client.project.HTTPURLToRepo,
+	}
+	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
+		t.Cleanup(func() {
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteProject()
+			}
+		})
+
+		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
 
 		// cloud build triggers
 		triggers := []string{"plan", "apply"}
 		for _, trigger := range triggers {
 			triggerOP := utils.LastElement(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
-			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s", triggerOP, projectID)
-			assert.Equal(fmt.Sprintf("tf-configs-%s", trigger), cloudBuildOP.Get("name").String(), "has the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-tf-configs@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --region %s --project %s", triggerOP, location, projectID)
+			assert.Equal(fmt.Sprintf("%s-%s", repoName, trigger), cloudBuildOP.Get("name").String(), "should have the correct name")
+			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-%s@%s.iam.gserviceaccount.com", projectID, repoName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
 		// artifacts, state and log buckets
@@ -67,17 +163,18 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 		// e2e test for testing actuation through both plan/apply branches
 		applyTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_apply_trigger_id"), "/")
 		planTrigger := utils.LastElement(bpt.GetStringOutput("cloudbuild_plan_trigger_id"), "/")
-		// setup repo
-		csr := utils.LastElement(bpt.GetStringOutput("csr_repo_url"), "/")
+
+		// set up repo
 		tmpDir := t.TempDir()
 		git := git.NewCmdConfig(t, git.WithDir(tmpDir))
-		gcloud.Runf(t, "source repos clone %s %s --project %s", csr, tmpDir, projectID)
 		gitRun := func(args ...string) {
 			_, err := git.RunCmdE(args...)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}
+
+		gitRun("clone", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s", gitlabPAT, owner, repoName), tmpDir)
 		gitRun("config", "user.email", "tf-robot@example.com")
 		gitRun("config", "user.name", "TF Robot")
 
@@ -91,32 +188,35 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 				git.RunCmdE("checkout", "-b", branch)
 			}
 			git.CommitWithMsg(fmt.Sprintf("%s commit", branch), []string{"--allow-empty"})
-			gitRun("push", "--set-upstream", "origin", branch, "-f")
+			gitRun("push", "-u", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s.git", gitlabPAT, owner, repoName), branch, "-f")
 			lastCommit := git.GetLatestCommit()
 			// filter builds triggered based on pushed commit sha
-			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --limit 1", lastCommit, projectID)
+			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --region %s --limit 1 --sort-by ~createTime", lastCommit, projectID, location)
 			// poll build until complete
 			pollCloudBuild := func(cmd string) func() (bool, error) {
 				return func() (bool, error) {
-					build := gcloud.Runf(t, cmd).Array()
+					build := gcloud.Run(t, cmd, gcloud.WithLogger(logger.Discard)).Array()
 					if len(build) < 1 {
 						return true, nil
 					}
+
 					latestWorkflowRunStatus := build[0].Get("status").String()
 					if latestWorkflowRunStatus == "SUCCESS" {
+						t.Logf("%v", build)
 						return false, nil
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 						t.Logf("%v", build[0])
-						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s", build[0].Get("id")))
+						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s --region %s", build[0].Get("id"), location))
 						t.Logf("err %v", err)
 						t.Logf("logs %s", logs)
-						t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
+						t.Fatalf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
+						return false, nil
 					}
 					return true, nil
 				}
 			}
-			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
+			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 15*time.Second)
 			build := gcloud.Runf(t, buildListCmd).Array()[0]
 			switch branch {
 			case "plan":
@@ -127,6 +227,14 @@ func TestTFCloudBuildWorkspaceSimple(t *testing.T) {
 				assert.Contains(build.Get("artifacts.objects.location").String(), path.Join(artifactsBucket, "apply"), "artifacts were uploaded to the correct location")
 			}
 		}
+	})
+
+	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		// Guarantee clean up even if the normal gcloud/teardown run into errors
+		t.Cleanup(func() {
+			client.DeleteProject()
+			bpt.DefaultTeardown(assert)
+		})
 	})
 
 	bpt.Test()

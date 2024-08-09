@@ -115,8 +115,9 @@ resources of this module:
 - Google Cloud Storage API `storage-api.googleapis.com`
 - Google Cloud Service Usage API: `serviceusage.googleapis.com`
 - Google Cloud Build API: `cloudbuild.googleapis.com`
-- Google Cloud Source Repo API: `sourcerepo.googleapis.com`
 - Google Cloud KMS API: `cloudkms.googleapis.com`
+
+If using Cloud Source Repositories, Google Cloud Source Repo API: `sourcerepo.googleapis.com` must also be enabled.
 
 This API can be enabled in the default project created during establishing an organization.
 

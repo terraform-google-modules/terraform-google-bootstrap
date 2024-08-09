@@ -148,9 +148,16 @@ variable "prefix" {
   default     = ""
 }
 
-variable "tf_repo_uri" {
-  description = "The URI of the repo where Terraform configs are stored."
+variable "cloudbuildv2_repository_id" {
+  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be set if repository type is `CLOUDBUILD_V2_REPOSITORY`."
   type        = string
+  default     = ""
+}
+
+variable "tf_repo_uri" {
+  description = "The URI of the repo where Terraform configs are stored. Must be set if repository type is not `CLOUDBUILD_V2_REPOSITORY`."
+  type        = string
+  default     = ""
 }
 
 variable "tf_apply_branches" {
@@ -168,12 +175,12 @@ variable "tf_repo_dir" {
 }
 
 variable "tf_repo_type" {
-  description = "Type of repo"
+  description = "Type of repo. When the repo type is CLOUDBUILD_V2_REPOSITORY, it will use the generig Cloudbuild 2nd gen Repository API."
   type        = string
   default     = "CLOUD_SOURCE_REPOSITORIES"
   validation {
-    condition     = contains(["CLOUD_SOURCE_REPOSITORIES", "GITHUB"], var.tf_repo_type)
-    error_message = "Must be one of CLOUD_SOURCE_REPOSITORIES or GITHUB."
+    condition     = contains(["CLOUD_SOURCE_REPOSITORIES", "GITHUB", "CLOUDBUILD_V2_REPOSITORY"], var.tf_repo_type)
+    error_message = "Must be one of CLOUD_SOURCE_REPOSITORIES, GITHUB, CLOUDBUILD_V2_REPOSITORY"
   }
 }
 
