@@ -23,6 +23,7 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 	"github.com/xanzy/go-gitlab"
 )
 
@@ -44,8 +45,8 @@ func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
 	return &GitLabClient{
 		t:         t,
 		client:    client,
-		group:     "mygroup5691232",
-		namespace: 91694854,
+		group:     "infrastructure-manager",
+		namespace: 84326276,
 		repo:      repo,
 	}
 }
@@ -99,12 +100,9 @@ func (gl *GitLabClient) DeleteProject() {
 }
 
 func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
-	// repoName := fmt.Sprintf("cb-bp-gl-%s", utils.GetRandomStringFromSetup(t))
-	repoName := fmt.Sprintf("cb-bp-gl-%s", "testeee")
+	repoName := fmt.Sprintf("cb-bp-gl-%s", utils.GetRandomStringFromSetup(t))
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-
 	owner := "infrastructure-manager"
-	owner = "ccolin-automation"
 
 	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
 	proj := client.GetProject()
@@ -115,8 +113,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 	vars := map[string]interface{}{
 		"gitlab_read_authorizer_credential": gitlabPAT,
 		"gitlab_authorizer_credential":      gitlabPAT,
-		"project_id":                        "ccolin-experiments",
-		"test_repo_name":                    "name1",
+		"test_repo_name":                    "test_repo",
 		"test_repo_url":                     client.project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
