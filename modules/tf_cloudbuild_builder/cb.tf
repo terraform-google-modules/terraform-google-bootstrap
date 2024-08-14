@@ -51,7 +51,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
   dynamic "source_to_build" {
     for_each = var.use_cloudbuildv2_repository ? [1] : []
     content {
-      repository = var.dockerfile_repo_id
+      repository = var.dockerfile_repo_uri
       ref        = var.dockerfile_repo_ref
       repo_type  = var.dockerfile_repo_type
     }

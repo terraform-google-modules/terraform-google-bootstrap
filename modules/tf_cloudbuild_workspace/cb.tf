@@ -33,7 +33,7 @@ locals {
 
   is_cb_v2_repo = var.tf_repo_type == "CLOUDBUILD_V2_REPOSITORY"
   # Generic repo name extracted from format projects/{{project}}/locations/{{location}}/connections/{{name}}
-  cb_v2_repo_name = local.is_cb_v2_repo ? element(split("/", var.cloudbuildv2_repository_id), length(split("/", var.cloudbuildv2_repository_id)) - 1) : ""
+  cb_v2_repo_name = local.is_cb_v2_repo ? element(split("/", var.tf_repo_uri), length(split("/", var.tf_repo_uri)) - 1) : ""
 
   # default build steps
   default_entrypoint = "terraform"
@@ -87,7 +87,7 @@ resource "google_cloudbuild_trigger" "triggers" {
   dynamic "repository_event_config" {
     for_each = local.is_cb_v2_repo ? [1] : []
     content {
-      repository = var.cloudbuildv2_repository_id
+      repository = var.tf_repo_uri
       # plan for non apply branch
       dynamic "push" {
         for_each = each.key != "apply" ? [1] : []

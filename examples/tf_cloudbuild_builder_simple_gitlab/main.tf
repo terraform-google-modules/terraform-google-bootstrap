@@ -41,7 +41,7 @@ module "cloudbuilder" {
   version = "~> 8.0"
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_id          = google_cloudbuildv2_repository.repository_connection.id
+  dockerfile_repo_uri         = google_cloudbuildv2_repository.repository_connection.id
   dockerfile_repo_type        = "UNKNOWN" // "GITLAB" is not one of the options available so we need to use "UNKNOWN"
   use_cloudbuildv2_repository = true
   trigger_location            = "us-central1"

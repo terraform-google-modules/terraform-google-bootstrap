@@ -42,7 +42,7 @@ module "cloudbuilder" {
   version = "~> 8.0"
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_id          = google_cloudbuildv2_repository.repository_connection.id
+  dockerfile_repo_uri         = google_cloudbuildv2_repository.repository_connection.id
   dockerfile_repo_type        = "GITHUB"
   use_cloudbuildv2_repository = true
   trigger_location            = local.location

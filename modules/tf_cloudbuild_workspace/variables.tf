@@ -28,7 +28,7 @@ variable "location" {
 variable "trigger_location" {
   description = "Location of for Cloud Build triggers created in the workspace. If using private pools should be the same location as the pool."
   type        = string
-  default     = "global"
+  default     = "us-central1"
 }
 
 variable "create_cloudbuild_sa" {
@@ -148,14 +148,8 @@ variable "prefix" {
   default     = ""
 }
 
-variable "cloudbuildv2_repository_id" {
-  description = "Cloudbuild 2nd gen repository ID. Format: 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'. Must be set if repository type is `CLOUDBUILD_V2_REPOSITORY`."
-  type        = string
-  default     = ""
-}
-
 variable "tf_repo_uri" {
-  description = "The URI of the repo where Terraform configs are stored. Must be set if repository type is not `CLOUDBUILD_V2_REPOSITORY`."
+  description = "The URI of the repo where Terraform configs are stored. If using Cloud Build Repositories (2nd Gen) this is the repository ID where the Dockerfile is stored. Repository ID Format is 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'."
   type        = string
   default     = ""
 }
@@ -175,12 +169,12 @@ variable "tf_repo_dir" {
 }
 
 variable "tf_repo_type" {
-  description = "Type of repo. When the repo type is CLOUDBUILD_V2_REPOSITORY, it will use the generig Cloudbuild 2nd gen Repository API."
+  description = "Type of repo. When the repo type is CLOUDBUILD_V2_REPOSITORY, it will use the generic Cloudbuild 2nd gen Repository API."
   type        = string
   default     = "CLOUD_SOURCE_REPOSITORIES"
   validation {
     condition     = contains(["CLOUD_SOURCE_REPOSITORIES", "GITHUB", "CLOUDBUILD_V2_REPOSITORY"], var.tf_repo_type)
-    error_message = "Must be one of CLOUD_SOURCE_REPOSITORIES, GITHUB, CLOUDBUILD_V2_REPOSITORY"
+    error_message = "Must be one of CLOUD_SOURCE_REPOSITORIES, GITHUB, or CLOUDBUILD_V2_REPOSITORY"
   }
 }
 

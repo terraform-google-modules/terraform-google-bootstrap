@@ -38,19 +38,18 @@ This module creates:
 | cb\_logs\_bucket\_force\_destroy | When deleting the bucket for storing CloudBuild logs, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_sa | Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
 | dockerfile\_repo\_dir | The directory inside the repo where the Dockerfile is located. If empty defaults to repo root. | `string` | `""` | no |
-| dockerfile\_repo\_id | The repository id where the Dockerfile for Terraform builder is stored. Use for Cloudbuild 2nd gen repository.  Either specify this or the variable `dockerfile_repo_uri`. | `string` | `""` | no |
 | dockerfile\_repo\_ref | The branch or tag to use. Use refs/heads/branchname for branches or refs/tags/tagname for tags. | `string` | `"refs/heads/main"` | no |
 | dockerfile\_repo\_type | Type of repo | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
-| dockerfile\_repo\_uri | The URI of the repo where the Dockerfile for Terraform builder is stored. Either specify this or the variable `dockerfile_repo_id` for cloudbuildv2 repositories. | `string` | `""` | no |
+| dockerfile\_repo\_uri | The URI of the repo where the Dockerfile for Terraform builder is stored. If using Cloud Build Repositories (2nd Gen) this is the repository ID where the Dockerfile is stored. Repository ID Format is 'projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}' | `string` | `""` | no |
 | enable\_worker\_pool | Set to true to use a private worker pool in the Cloud Build Trigger. | `bool` | `false` | no |
-| gar\_repo\_location | Name of the location for the Google Artifact Repository. | `string` | n/a | yes |
+| gar\_repo\_location | Name of the location for the Google Artifact Repository. | `string` | `"us-central1"` | no |
 | gar\_repo\_name | Name of the Google Artifact Repository where the Terraform builder images are stored. | `string` | `"tf-runners"` | no |
 | image\_name | Name of the image for the Terraform builder. | `string` | `"terraform"` | no |
 | project\_id | GCP project for Cloud Build trigger,workflow and scheduler. | `string` | n/a | yes |
 | terraform\_version | The initial terraform version in semantic version format. | `string` | `"1.1.0"` | no |
-| trigger\_location | Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool. | `string` | n/a | yes |
+| trigger\_location | Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool. | `string` | `"us-central1"` | no |
 | trigger\_name | Name of the Cloud Build trigger building the Terraform builder. | `string` | `"tf-cloud-builder-build"` | no |
-| use\_cloudbuildv2\_repository | Use Cloudbuild 2nd gen repository | `bool` | `false` | no |
+| use\_cloudbuildv2\_repository | Use Cloud Build repository (2nd gen) | `bool` | `false` | no |
 | worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
 | workflow\_name | Name of the workflow managing builds. | `string` | `"terraform-runner-workflow"` | no |
 | workflow\_region | The region of the workflow. | `string` | `"us-central1"` | no |
