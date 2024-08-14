@@ -25,6 +25,7 @@ import (
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/google/go-github/v63/github"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 type GitHubClient struct {
@@ -80,29 +81,24 @@ func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
 func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	ctx := context.Background()
 
-	// repoName := fmt.Sprintf("cb-bp-gh-%s", utils.GetRandomStringFromSetup(t))
-	repoName := fmt.Sprintf("cb-bp-gh-%s", "saaaaa")
+	repoName := fmt.Sprintf("cb-bp-gh-%s", utils.GetRandomStringFromSetup(t))
 
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
 
-	owner := "ccolin-automation"
+	owner := "im-goose"
 	client := NewGitHubClient(t, githubPAT, owner, repoName)
-
-	org := client.owner
-	org = ""
 
 	repo := client.GetRepository(ctx)
 	if repo == nil {
-		client.CreateRepository(ctx, org, client.repoName)
+		client.CreateRepository(ctx, client.owner, client.repoName)
 	}
 
 	repoURL := client.repository.GetCloneURL()
 
 	vars := map[string]interface{}{
 		"github_pat":     githubPAT,
-		"github_app_id":  "52258746",
-		"project_id":     "ccolin-experiments",
-		"test_repo_name": "name1",
+		"github_app_id":  "47590865",
+		"test_repo_name": "test_repo",
 		"test_repo_url":  repoURL,
 	}
 
