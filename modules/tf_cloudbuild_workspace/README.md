@@ -72,7 +72,7 @@ This module creates:
 | tf\_repo\_dir | The directory inside the repo where the Terrafrom root config is located. If empty defaults to repo root. | `string` | `""` | no |
 | tf\_repo\_type | Type of repo. When the repo type is CLOUDBUILD\_V2\_REPOSITORY, it will use the generic Cloudbuild 2nd gen Repository API. | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
 | tf\_repo\_uri | The URI of the repo where Terraform configs are stored. If using Cloud Build Repositories (2nd Gen) this is the repository ID where the Dockerfile is stored. Repository ID Format is 'projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}'. | `string` | `""` | no |
-| trigger\_location | Location of for Cloud Build triggers created in the workspace. If using private pools should be the same location as the pool. | `string` | `"us-central1"` | no |
+| trigger\_location | Location of for Cloud Build triggers created in the workspace. If using private pools should be the same location as the pool. | `string` | n/a | yes |
 | worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
 
 ## Outputs

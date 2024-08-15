@@ -2,11 +2,11 @@
 
 The v9.0 release of *bootstrap* is a backwards incompatible release.
 
-Some variables default values were replaced to align with the restriction that Cloud Build Repositories (2nd Gen) cannot be created in multi-regions or in the `global` region.
+Some variables default values were removed to align with the restriction that Cloud Build Repositories (2nd Gen) cannot be created in multi-regions or in the `global` region.
 
 You need to update your configurations if you used the default values to prevent resources to be recreated.
 
-## Default value for variable `trigger_location` in module `tf_cloudbuild_workspace` has changed
+## Default value for variable `trigger_location` in module `tf_cloudbuild_workspace` was removed
 
 To preserve the resources created before. include the input `trigger_location` with the previous default value in the module call
 
@@ -19,7 +19,7 @@ module "tf_workspace" {
 + trigger_location = "global"
 ```
 
-## Default value for variables `trigger_location` and `gar_repo_location` in module `tf_cloudbuild_builde` have changed
+## Default value for variables `trigger_location` and `gar_repo_location` in module `tf_cloudbuild_builde` were removed
 
 To preserve the resources created before, include the inputs `trigger_location` and `gar_repo_location` with the previous default values in the module call
 

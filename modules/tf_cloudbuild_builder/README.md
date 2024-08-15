@@ -42,12 +42,12 @@ This module creates:
 | dockerfile\_repo\_type | Type of repo | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
 | dockerfile\_repo\_uri | The URI of the repo where the Dockerfile for Terraform builder is stored. If using Cloud Build Repositories (2nd Gen) this is the repository ID where the Dockerfile is stored. Repository ID Format is 'projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}' | `string` | `""` | no |
 | enable\_worker\_pool | Set to true to use a private worker pool in the Cloud Build Trigger. | `bool` | `false` | no |
-| gar\_repo\_location | Name of the location for the Google Artifact Repository. | `string` | `"us-central1"` | no |
+| gar\_repo\_location | Name of the location for the Google Artifact Repository. | `string` | n/a | yes |
 | gar\_repo\_name | Name of the Google Artifact Repository where the Terraform builder images are stored. | `string` | `"tf-runners"` | no |
 | image\_name | Name of the image for the Terraform builder. | `string` | `"terraform"` | no |
 | project\_id | GCP project for Cloud Build trigger,workflow and scheduler. | `string` | n/a | yes |
 | terraform\_version | The initial terraform version in semantic version format. | `string` | `"1.1.0"` | no |
-| trigger\_location | Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool. | `string` | `"us-central1"` | no |
+| trigger\_location | Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool. | `string` | n/a | yes |
 | trigger\_name | Name of the Cloud Build trigger building the Terraform builder. | `string` | `"tf-cloud-builder-build"` | no |
 | use\_cloudbuildv2\_repository | Use Cloud Build repository (2nd gen) | `bool` | `false` | no |
 | worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
