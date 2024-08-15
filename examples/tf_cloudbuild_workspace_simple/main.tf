@@ -18,8 +18,9 @@ module "tf_workspace" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_workspace"
   version = "~> 8.0"
 
-  project_id  = module.enabled_google_apis.project_id
-  tf_repo_uri = google_sourcerepo_repository.tf_config_repo.url
+  project_id       = module.enabled_google_apis.project_id
+  tf_repo_uri      = google_sourcerepo_repository.tf_config_repo.url
+  trigger_location = "global"
   # allow log/state buckets to be destroyed
   buckets_force_destroy = true
   cloudbuild_sa_roles = { (module.enabled_google_apis.project_id) = {

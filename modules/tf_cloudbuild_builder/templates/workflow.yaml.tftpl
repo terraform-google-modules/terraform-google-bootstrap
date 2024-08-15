@@ -31,14 +31,18 @@ main:
                     raise: $${e}
     - logAndExit:
         return: $${"Found latest runner for "+latestTFReleaseVersion+" as "+currentRunner.body.version+", skipping build."}
-    - triggerRunnerBuild:
-        call: googleapis.cloudbuild.v1.projects.triggers.run
-        args:
-            projectId: ${project_id}
-            triggerId: ${trigger_id}
-            body:
-                substitutions:
-                    _TERRAFORM_FULL_VERSION: $${latestTFReleaseVersionNum}
-                    _TERRAFORM_MINOR_VERSION: $${latestTFReleaseMinor}
-                    _TERRAFORM_MAJOR_VERSION: $${latestTFReleaseMajor}
 
+    - triggerRunnerBuild:
+        call: http.post
+        args:
+            url: $${"https://cloudbuild.googleapis.com/v1/projects/${project_id}/locations/${location}/triggers/${trigger_hash}:run"}
+            auth:
+                type: OAuth2
+            body:
+                projectId: ${project_id}
+                triggerId: ${trigger_id}
+                source:
+                    substitutions:
+                        _TERRAFORM_FULL_VERSION: $${latestTFReleaseVersionNum}
+                        _TERRAFORM_MINOR_VERSION: $${latestTFReleaseMinor}
+                        _TERRAFORM_MAJOR_VERSION: $${latestTFReleaseMajor}

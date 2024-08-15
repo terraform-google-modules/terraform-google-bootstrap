@@ -2,6 +2,15 @@
 
 TF Cloud Build Workspace blueprint creates an opinionated workflow for actuating Terraform on Cloud Build. A set of Cloud Build triggers manage plan and apply operations on a root configuration stored in a VCS repo. Cloud Build triggers use a per workspace Service Account which can be configured with minimal permissions required by a given Terraform configuration. Optionally dedicated GCS buckets for state and log storage are also created.
 
+## Github Requirements for Cloud Build Connection
+
+When using a Cloud Build 2nd generation repository, a Cloud Build connection to your repository provider will be needed. For Github connections you will need:
+
+- [Install Cloud Build App on Github](https://github.com/apps/google-cloud-build).
+- [Create Personal Access Token on Github with `repo` and `read:user` (or if app is installed in org use `read:org`)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+
+For more information on this topic refer to the ["Connect with Github Documentation"](https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen)
+
 ## Usage
 
 Basic usage of this module is as follows:
@@ -61,9 +70,9 @@ This module creates:
 | tf\_apply\_branches | List of git branches configured to run terraform apply Cloud Build trigger. All other branches will run plan by default. | `list(string)` | <pre>[<br>  "main"<br>]</pre> | no |
 | tf\_cloudbuilder | Name of the Cloud Builder image used for running build steps. | `string` | `"hashicorp/terraform:1.3.10"` | no |
 | tf\_repo\_dir | The directory inside the repo where the Terrafrom root config is located. If empty defaults to repo root. | `string` | `""` | no |
-| tf\_repo\_type | Type of repo | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
-| tf\_repo\_uri | The URI of the repo where Terraform configs are stored. | `string` | n/a | yes |
-| trigger\_location | Location of for Cloud Build triggers created in the workspace. If using private pools should be the same location as the pool. | `string` | `"global"` | no |
+| tf\_repo\_type | Type of repo. When the repo type is CLOUDBUILD\_V2\_REPOSITORY, it will use the generic Cloudbuild 2nd gen Repository API. | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
+| tf\_repo\_uri | The URI of the repo where Terraform configs are stored. If using Cloud Build Repositories (2nd Gen) this is the repository ID where the Dockerfile is stored. Repository ID Format is 'projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}'. | `string` | `""` | no |
+| trigger\_location | Location of for Cloud Build triggers created in the workspace. If using private pools should be the same location as the pool. | `string` | n/a | yes |
 | worker\_pool\_id | Custom private worker pool ID. Format: 'projects/PROJECT\_ID/locations/REGION/workerPools/PRIVATE\_POOL\_ID'. | `string` | `""` | no |
 
 ## Outputs

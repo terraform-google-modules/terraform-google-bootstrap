@@ -70,7 +70,6 @@ variable "gar_repo_name" {
 variable "gar_repo_location" {
   description = "Name of the location for the Google Artifact Repository."
   type        = string
-  default     = "us"
 }
 
 variable "terraform_version" {
@@ -94,12 +93,18 @@ variable "trigger_name" {
 variable "trigger_location" {
   description = "Location of the Cloud Build trigger building the Terraform builder. If using private pools should be the same location as the pool."
   type        = string
-  default     = "global"
 }
 
 variable "dockerfile_repo_uri" {
-  description = "The URI of the repo where the Dockerfile for Terraform builder is stored"
+  description = "The URI of the repo where the Dockerfile for Terraform builder is stored. If using Cloud Build Repositories (2nd Gen) this is the repository ID where the Dockerfile is stored. Repository ID Format is 'projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}'"
   type        = string
+  default     = ""
+}
+
+variable "use_cloudbuildv2_repository" {
+  description = "Use Cloud Build repository (2nd gen)"
+  type        = bool
+  default     = false
 }
 
 variable "dockerfile_repo_ref" {

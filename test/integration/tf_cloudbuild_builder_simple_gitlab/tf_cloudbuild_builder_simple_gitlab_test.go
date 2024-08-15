@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // define test package name
-package tf_cloudbuild_builder_simple
+package tf_cloudbuild_builder_simple_github
 
 import (
 	"fmt"
@@ -24,43 +24,130 @@ import (
 
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
-	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
+	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
+	"github.com/xanzy/go-gitlab"
 )
 
-func TestTFCloudBuildBuilder(t *testing.T) {
-	bpt := tft.NewTFBlueprintTest(t)
+type GitLabClient struct {
+	t         *testing.T
+	client    *gitlab.Client
+	group     string
+	namespace int
+	repo      string
+	project   *gitlab.Project
+}
+
+func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
+	t.Helper()
+	client, err := gitlab.NewClient(token)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	return &GitLabClient{
+		t:         t,
+		client:    client,
+		group:     "infrastructure-manager",
+		namespace: 84326276,
+		repo:      repo,
+	}
+}
+
+func (gl *GitLabClient) ProjectName() string {
+	return fmt.Sprintf("%s/%s", gl.group, gl.repo)
+}
+
+func (gl *GitLabClient) GetProject() *gitlab.Project {
+	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
+	if resp.StatusCode != 404 && err != nil {
+		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
+	}
+	gl.project = proj
+	return proj
+}
+
+func (gl *GitLabClient) CreateProject() {
+	opts := &gitlab.CreateProjectOptions{
+		Name: gitlab.Ptr(gl.repo),
+		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
+		NamespaceID: gitlab.Ptr(gl.namespace),
+		// Required otherwise Cloud Build errors on creating the connection
+		InitializeWithReadme: gitlab.Ptr(true),
+	}
+	proj, _, err := gl.client.Projects.CreateProject(opts)
+	if err != nil {
+		gl.t.Fatal(err.Error())
+	}
+	gl.project = proj
+}
+
+func (gl *GitLabClient) DeleteProject() {
+	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName())
+	if resp.StatusCode != 404 && err != nil {
+		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
+	}
+	gl.project = nil
+}
+
+func TestTFCloudBuildBuilderGitLab(t *testing.T) {
+	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
+	owner := "im-goose"
+	repoName := fmt.Sprintf("b-gl-test-%s", utils.GetRandomStringFromSetup(t))
+
+	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
+
+	proj := client.GetProject()
+	if proj == nil {
+		client.CreateProject()
+	}
+
+	// Testing the module's feature of appending the ".git" suffix if it's missing
+	// repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
+	vars := map[string]interface{}{
+		"gitlab_api_access_token":      gitlabPAT,
+		"gitlab_read_api_access_token": gitlabPAT,
+		"repository_uri":               client.project.HTTPURLToRepo,
+	}
+	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
 
-		location := "us-central1"
+		t.Cleanup(func() {
+			// Delete the repository if we hit a failed state
+			if t.Failed() {
+				client.DeleteProject()
+			}
+		})
+
+		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
 		artifactRepo := bpt.GetStringOutput("artifact_repo")
 		artifactRepoDockerRegistry := fmt.Sprintf("%s-docker.pkg.dev/%s/%s/terraform", location, projectID, artifactRepo)
 		schedulerID := bpt.GetStringOutput("scheduler_id")
 		workflowID := bpt.GetStringOutput("workflow_id")
 		triggerFQN := bpt.GetStringOutput("cloudbuild_trigger_id")
+		repositoryID := bpt.GetStringOutput("repository_id")
 		triggerId := strings.Split(triggerFQN, "/")[len(strings.Split(triggerFQN, "/"))-1]
-		csrURL := bpt.GetStringOutput("csr_repo_url")
 
 		schedulerOP := gcloud.Runf(t, "scheduler jobs describe %s", schedulerID)
-		assert.Contains(schedulerOP.Get("name").String(), "trigger-terraform-runner-workflow", "has the correct name")
+		assert.Contains(schedulerOP.Get("name").String(), "trigger-terraform-runner-workflow-gl", "has the correct name")
 		assert.Equal("0 8 * * *", schedulerOP.Get("schedule").String(), "has the correct schedule")
 		assert.Equal(fmt.Sprintf("https://workflowexecutions.googleapis.com/v1/%s/executions", workflowID), schedulerOP.Get("httpTarget.uri").String(), "has the correct target")
 
 		workflowOP := gcloud.Runf(t, "workflows describe %s", workflowID)
-		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow", "has the correct name")
+		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow-gl", "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/terraform-runner-workflow-sa@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
 
 		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerId, projectID, location)
 		log.Print(cloudBuildOP)
-		assert.Equal("tf-cloud-builder-build", cloudBuildOP.Get("name").String(), "has the correct name")
+		assert.Equal("tf-cloud-builder-build-gl", cloudBuildOP.Get("name").String(), "has the correct name")
 		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
-		assert.Equal(csrURL, cloudBuildOP.Get("sourceToBuild.uri").String(), "is connected to expected repo")
+		assert.Equal(repositoryID, cloudBuildOP.Get("sourceToBuild.repository").String(), "is connected to expected repo")
 		expectedSubsts := []string{"_TERRAFORM_FULL_VERSION", "_TERRAFORM_MAJOR_VERSION", "_TERRAFORM_MINOR_VERSION"}
 		gotSubsts := cloudBuildOP.Get("substitutions").Map()
-		imgs := utils.GetResultStrSlice(cloudBuildOP.Get("build.images").Array())
+		imgs := cftutils.GetResultStrSlice(cloudBuildOP.Get("build.images").Array())
 		for _, subst := range expectedSubsts {
 			_, found := gotSubsts[subst]
 			assert.Truef(found, "has %s substituion", found)
@@ -82,7 +169,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 			}
 			return true, nil
 		}
-		utils.Poll(t, triggerWorkflowFn, 10, 10*time.Second)
+		cftutils.Poll(t, triggerWorkflowFn, 21, 10*time.Second)
 
 		// poll until workflow complete
 		// workflow will poll CB LRO to completion
@@ -98,7 +185,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 			}
 			return true, nil
 		}
-		utils.Poll(t, pollWorkflowFn, 100, 20*time.Second)
+		cftutils.Poll(t, pollWorkflowFn, 100, 20*time.Second)
 
 		// Poll the build to wait for it to run
 		buildListCmd := fmt.Sprintf("builds list --filter buildTriggerId='%s' --region %s --project %s --limit 1 --sort-by ~createTime", triggerId, location, projectID)
@@ -120,12 +207,21 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 				return true, nil
 			}
 		}
-		utils.Poll(t, pollCloudBuild(buildListCmd), 100, 10*time.Second)
+		cftutils.Poll(t, pollCloudBuild(buildListCmd), 100, 10*time.Second)
 
+		// Check if the images where created
 		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags", artifactRepoDockerRegistry).Array()
 		assert.Equal(1, len(images), "only one image is in registry")
 		imageTags := strings.Split(images[0].Get("tags").String(), ",")
 		assert.Equal(3, len(imageTags), "image has three tags")
+	})
+
+	bpt.DefineTeardown(func(assert *assert.Assertions) {
+		// Guarantee clean up even if the normal gcloud/teardown run into errors
+		t.Cleanup(func() {
+			client.DeleteProject()
+			bpt.DefaultTeardown(assert)
+		})
 	})
 
 	bpt.Test()

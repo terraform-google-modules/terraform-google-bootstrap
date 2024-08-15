@@ -33,7 +33,7 @@ locals {
   img_tags_subst = [for tag in keys(local.tags_subst) : "${local.gar_uri}:v$${${tag}}"]
 
   # extract CSR project_id and repo name for granting reader access to CSR repo
-  is_source_repo = var.dockerfile_repo_type == "CLOUD_SOURCE_REPOSITORIES"
+  is_source_repo = var.dockerfile_repo_type == "CLOUD_SOURCE_REPOSITORIES" && !var.use_cloudbuildv2_repository
   # url of form https://source.developers.google.com/p/<PROJECT_ID>/r/<REPO>
   source_repo_url_split = local.is_source_repo ? split("/", var.dockerfile_repo_uri) : []
   source_repo_project   = local.is_source_repo ? local.source_repo_url_split[4] : ""
@@ -45,10 +45,25 @@ resource "google_cloudbuild_trigger" "build_trigger" {
   location    = var.trigger_location
   name        = var.trigger_name
   description = "Builds a Terraform runner image. Managed by Terraform."
-  source_to_build {
-    uri       = var.dockerfile_repo_uri
-    ref       = var.dockerfile_repo_ref
-    repo_type = var.dockerfile_repo_type
+
+
+  # repository accepts Generic Cloud Build 2nd Gen Repository
+  dynamic "source_to_build" {
+    for_each = var.use_cloudbuildv2_repository ? [1] : []
+    content {
+      repository = var.dockerfile_repo_uri
+      ref        = var.dockerfile_repo_ref
+      repo_type  = var.dockerfile_repo_type
+    }
+  }
+
+  dynamic "source_to_build" {
+    for_each = var.use_cloudbuildv2_repository ? [] : [1]
+    content {
+      uri       = var.dockerfile_repo_uri
+      ref       = var.dockerfile_repo_ref
+      repo_type = var.dockerfile_repo_type
+    }
   }
 
   # todo(bharathkkb): switch to yaml after https://github.com/hashicorp/terraform-provider-google/issues/9818
@@ -80,6 +95,10 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 
   substitutions   = local.tags_subst
   service_account = local.cloudbuild_sa
+
+  lifecycle {
+    ignore_changes = [source_to_build[0].repo_type] // When using GitLab the value provided need to be "UNKNOWN" but when providing this value the API return empty.
+  }
 
   depends_on = [
     google_artifact_registry_repository_iam_member.push_images,

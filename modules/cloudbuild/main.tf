@@ -17,12 +17,13 @@
 locals {
   cloudbuild_project_id       = var.project_id != "" ? var.project_id : format("%s-%s", var.project_prefix, "cloudbuild")
   gar_repo_name               = var.gar_repo_name != "" ? var.gar_repo_name : format("%s-%s", var.project_prefix, "tf-runners")
-  cloudbuild_apis             = ["cloudbuild.googleapis.com", "sourcerepo.googleapis.com", "cloudkms.googleapis.com", "artifactregistry.googleapis.com"]
   impersonation_enabled_count = var.sa_enable_impersonation == true ? 1 : 0
   activate_apis               = distinct(concat(var.activate_apis, local.cloudbuild_apis))
   apply_branches_regex        = "^(${join("|", var.terraform_apply_branches)})$"
   gar_name                    = split("/", google_artifact_registry_repository.tf-image-repo.name)[length(split("/", google_artifact_registry_repository.tf-image-repo.name)) - 1]
   impersonate_service_account = var.impersonate_service_account != "" ? "--impersonate-service-account=${var.impersonate_service_account}" : ""
+  basic_apis                  = ["cloudbuild.googleapis.com", "cloudkms.googleapis.com", "artifactregistry.googleapis.com"]
+  cloudbuild_apis             = var.create_cloud_source_repos ? concat(["sourcerepo.googleapis.com"], local.basic_apis) : local.basic_apis
 }
 
 resource "random_id" "suffix" {

@@ -18,14 +18,15 @@ locals {
   cloudbuild_project_id = var.project_id != "" ? var.project_id : "tf-cloudbuild-"
   use_random_suffix     = var.project_id == ""
 
-  cloudbuild_apis = [
+  basic_apis = [
     "cloudbuild.googleapis.com",
-    "sourcerepo.googleapis.com",
     "storage-api.googleapis.com",
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "cloudbilling.googleapis.com"
   ]
+
+  cloudbuild_apis = length(var.cloud_source_repos) > 0 ? concat(["sourcerepo.googleapis.com"], local.basic_apis) : local.basic_apis
 
   activate_apis = distinct(concat(var.activate_apis, local.cloudbuild_apis))
 }
