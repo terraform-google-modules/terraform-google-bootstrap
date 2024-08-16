@@ -22,3 +22,4 @@ variable "gitlab_read_authorizer_credential" {
   description = "Credential for GitLab read authorizer"
   type        = string
 }
+
