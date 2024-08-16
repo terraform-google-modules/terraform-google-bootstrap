@@ -23,6 +23,17 @@ terraform {
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
       version = ">= 4.17, != 4.31.0, < 6"
     }
+
+    time = {
+      source  = "hashicorp/time"
+      version = "0.12.0"
+    }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "3.6.2"
+    }
+
     google-beta = {
       source = "hashicorp/google-beta"
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
