@@ -6,14 +6,14 @@ variable "project_id" {
 variable "credential_config" {
   description = "Object structure to pass credential, only one type of credential must be passed. Supported types are GITHUBv2 and GITLABv2"
   type = object({
-    credential_type                      = string
-    github_secret_id                     = optional(string, "cb-github-pat")
-    github_pat                           = optional(string)
-    github_app_id                           = optional(string)
-    gitlab_read_authorizer_credential    = optional(string)
+    credential_type                             = string
+    github_secret_id                            = optional(string, "cb-github-pat")
+    github_pat                                  = optional(string)
+    github_app_id                               = optional(string)
+    gitlab_read_authorizer_credential           = optional(string)
     gitlab_read_authorizer_credential_secret_id = optional(string, "cb-gitlab-read-api-credential")
-    gitlab_authorizer_credential         = optional(string)
-    gitlab_authorizer_credential_secret_id = optional(string, "cb-gitlab-api-credential")
+    gitlab_authorizer_credential                = optional(string)
+    gitlab_authorizer_credential_secret_id      = optional(string, "cb-gitlab-api-credential")
   })
 
   validation {

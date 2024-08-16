@@ -27,7 +27,7 @@ resource "google_cloudbuildv2_connection" "connection" {
     }
   }
 
-  depends_on = [ time_sleep.secret_iam_permission_propagation ]
+  depends_on = [time_sleep.secret_iam_permission_propagation]
 }
 
 resource "time_sleep" "secret_iam_permission_propagation" {
