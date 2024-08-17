@@ -129,13 +129,15 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		})
 
 		// validate if repository was created using the connection
+		project_id := bpt.GetTFSetupStringOutput("project_id")
+		location := "us-central1"
 		connection_id := bpt.GetStringOutput("cloudbuild_2nd_gen_connection")
 		connection_slice := strings.Split(connection_id, "/")
 
 		assert.True(len(connection_slice) > 0, "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
 
 		connection_name := connection_slice[len(connection_slice)-1]
-		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", "name1"), gcloud.WithCommonArgs([]string{"--project", "ccolin-experiments", "--region", "us-central1", "--connection", connection_name, "--format", "json"}))
+		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", "name1"), gcloud.WithCommonArgs([]string{"--project", project_id, "--region", location, "--connection", connection_name, "--format", "json"}))
 
 		assert.Equal(client.project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
