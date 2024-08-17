@@ -113,7 +113,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 	vars := map[string]interface{}{
 		"gitlab_read_authorizer_credential": gitlabPAT,
 		"gitlab_authorizer_credential":      gitlabPAT,
-		"test_repo_name":                    "test_repo",
+		"test_repo_name":                    repoName,
 		"test_repo_url":                     client.project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
@@ -137,7 +137,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		assert.True(len(connection_slice) > 0, "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
 
 		connection_name := connection_slice[len(connection_slice)-1]
-		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", "name1"), gcloud.WithCommonArgs([]string{"--project", project_id, "--region", location, "--connection", connection_name, "--format", "json"}))
+		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", repoName), gcloud.WithCommonArgs([]string{"--project", project_id, "--region", location, "--connection", connection_name, "--format", "json"}))
 
 		assert.Equal(client.project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})

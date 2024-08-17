@@ -98,7 +98,7 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	vars := map[string]interface{}{
 		"github_pat":     githubPAT,
 		"github_app_id":  "47590865",
-		"test_repo_name": "test_repo",
+		"test_repo_name": repoName,
 		"test_repo_url":  repoURL,
 	}
 
@@ -123,7 +123,7 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 		assert.True(len(connection_slice) > 0, "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
 
 		connection_name := connection_slice[len(connection_slice)-1]
-		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", "name1"), gcloud.WithCommonArgs([]string{"--project", project_id, "--region", location, "--connection", connection_name, "--format", "json"}))
+		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", repoName), gcloud.WithCommonArgs([]string{"--project", project_id, "--region", location, "--connection", connection_name, "--format", "json"}))
 
 		assert.Equal(repoURL, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
