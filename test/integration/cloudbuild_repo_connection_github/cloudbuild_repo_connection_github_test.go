@@ -81,7 +81,7 @@ func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
 func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	ctx := context.Background()
 
-	repoName := fmt.Sprintf("cb-bp-gh-%s", utils.GetRandomStringFromSetup(t))
+	repoName := fmt.Sprintf("conn-gh-%s", utils.GetRandomStringFromSetup(t))
 
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
 
