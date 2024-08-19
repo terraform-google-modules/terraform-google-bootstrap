@@ -30,7 +30,7 @@ variable "github_app_id" {
 }
 
 variable "repository_url" {
-  description = "The HTTPS clone URL of the test repository, ending with .git."
+  description = "The HTTPS clone URL of the repository, ending with .git."
   type        = string
 }
 
