@@ -23,10 +23,10 @@ output "cloud_build_repositories_2nd_gen_connection" {
 }
 
 output "cloud_build_repositories_2nd_gen_repositories" {
-  description = <<EOF
+  description = <<-EOF
   A map of created repositories associated with the Cloud Build connection.
   Each entry contains the repository's unique identifier and its remote URL.
-  Example format: 
+  Example format:
   "key_name" = {
     "id" =  "projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}",
     "url" = "https://github.com/{{account/org}}/{{repository_name}}.git"
