@@ -15,7 +15,7 @@
  */
 
 terraform {
-  required_version = ">=0.15.0"
+  required_version = ">=1.3"
 
   required_providers {
     google = {
@@ -26,12 +26,12 @@ terraform {
 
     time = {
       source  = "hashicorp/time"
-      version = "0.12.0"
+      version = ">= 0.12.0"
     }
 
     random = {
       source  = "hashicorp/random"
-      version = "3.6.2"
+      version = ">= 3.6.2"
     }
 
     google-beta = {
