@@ -16,6 +16,7 @@ package cloudbuild_repo_connection_gitlab
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -110,11 +111,13 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		client.CreateProject()
 	}
 
+	resourcesLocation := "us-central1"
 	vars := map[string]interface{}{
 		"gitlab_read_authorizer_credential": gitlabPAT,
 		"gitlab_authorizer_credential":      gitlabPAT,
 		"repository_name":                   repoName,
 		"repository_url":                    client.project.HTTPURLToRepo,
+		"location":                          resourcesLocation,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
@@ -129,15 +132,24 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		})
 
 		// validate if repository was created using the connection
-		project_id := bpt.GetTFSetupStringOutput("project_id")
-		location := "us-central1"
-		connection_id := bpt.GetStringOutput("cloud_build_repositories_2nd_gen_connection")
-		connection_slice := strings.Split(connection_id, "/")
+		projectId := bpt.GetTFSetupStringOutput("project_id")
+		connectionId := bpt.GetStringOutput("cloud_build_repositories_2nd_gen_connection")
 
-		assert.True(len(connection_slice) > 0, "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
+		connectionIdRegexPattern := `^projects/[^/]+/locations/[^/]+/connections/[^/]+$`
+		re := regexp.MustCompile(connectionIdRegexPattern)
+		assert.True(re.MatchString(connectionId), "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
 
-		connection_name := connection_slice[len(connection_slice)-1]
-		repository := gcloud.Runf(t, "builds repositories describe %s --project %s, --region %s --connection %s", repoName, project_id, location, connection_name)
+		connectionSlice := strings.Split(connectionId, "/")
+		// Extract the project, location and connection name from the connection_id
+		connectionProjectId := connectionSlice[1]
+		connectionLocation := connectionSlice[3]
+		connectionName := connectionSlice[len(connectionSlice)-1]
+
+		// Assert that the resource was created in the specified project and region
+		assert.Equal(projectId, connectionProjectId, "Connection project id should be the same as input project id.")
+		assert.Equal(resourcesLocation, connectionLocation, "Connection location should be the same as the location specified on the input.")
+
+		repository := gcloud.Runf(t, "builds repositories describe %s --project %s, --region %s --connection %s", repoName, projectId, resourcesLocation, connectionName)
 
 		assert.Equal(client.project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
