@@ -102,7 +102,6 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 		"github_app_id":   "47590865",
 		"repository_name": repoName,
 		"repository_url":  repoURL,
-		"location":        resourcesLocation,
 	}
 
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
@@ -133,7 +132,7 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 
 		// Assert that the resource was created in the specified project and region
 		assert.Equal(projectId, connectionProjectId, "Connection project id should be the same as input project id.")
-		assert.Equal(resourcesLocation, connectionLocation, "Connection location should be the same as the location specified on the input.")
+		assert.Equal(resourcesLocation, connectionLocation, "Connection location should be 'us-central'.")
 
 		repository := gcloud.Runf(t, "builds repositories describe %s --project %s --region %s --connection %s", repoName, projectId, resourcesLocation, connectionName)
 
