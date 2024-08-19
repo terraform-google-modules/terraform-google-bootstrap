@@ -19,12 +19,12 @@ variable "project_id" {
   type        = string
 }
 
-variable "test_repo_url" {
+variable "repository_url" {
   description = "The HTTPS clone URL of the test repository, ending with .git."
   type        = string
 }
 
-variable "test_repo_name" {
+variable "repository_name" {
   description = "The name of the test repository."
   type        = string
 }

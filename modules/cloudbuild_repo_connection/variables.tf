@@ -20,7 +20,17 @@ variable "project_id" {
 }
 
 variable "credential_config" {
-  description = "Object structure to pass credential, only one type of credential must be passed. Supported types are GITHUBv2 and GITLABv2"
+  description = <<-EOT
+  Credential configuration options:
+    - credential_type: Specifies the type of credential being used. Supported types are 'GITHUBv2' and 'GITLABv2'.
+    - github_secret_id: (Optional) The secret ID for GitHub credentials. Default is "cb-github-pat".
+    - github_pat: (Optional) The personal access token for GitHub authentication.
+    - github_app_id: (Optional) The application ID for a GitHub App used for authentication. For app installation, follow this link: https://github.com/apps/google-cloud-build
+    - gitlab_read_authorizer_credential: (Optional) The read authorizer credential for GitLab access.
+    - gitlab_read_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab read authorizer credential. Default is "cb-gitlab-read-api-credential".
+    - gitlab_authorizer_credential: (Optional) The authorizer credential for GitLab access.
+    - gitlab_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab authorizer credential. Default is "cb-gitlab-api-credential".
+  EOT
   type = object({
     credential_type                             = string
     github_secret_id                            = optional(string, "cb-github-pat")
@@ -33,45 +43,57 @@ variable "credential_config" {
   })
 
   validation {
-    condition = (
-      var.credential_config.credential_type == "GITHUBv2" ? (
-        var.credential_config.github_pat != null &&
-        var.credential_config.github_app_id != null &&
-        var.credential_config.gitlab_read_authorizer_credential == null &&
-        var.credential_config.gitlab_authorizer_credential == null
-        ) : var.credential_config.credential_type == "GITLABv2" ? (
-        var.credential_config.github_pat == null &&
-        var.credential_config.github_app_id == null &&
-        var.credential_config.gitlab_read_authorizer_credential != null &&
-        var.credential_config.gitlab_authorizer_credential != null
-      ) : false
-    )
-    error_message = "You must specify a valid credential_type ('GITHUBv2' or 'GITLABv2'). For 'GITHUBv2', all 'github_' prefixed variables must be defined and no 'gitlab_' prefixed variables should be defined. For 'GITLABv2', all 'gitlab_' prefixed variables must be defined and no 'github_' prefixed variables should be defined."
+    condition     = var.credential_config.credential_type == "GITLABv2" || var.credential_config.credential_type == "GITHUBv2"
+    error_message = "Specify one of the valid credential_types: 'GITLABv2' or 'GITHUBv2'."
+  }
+
+  validation {
+    condition = var.credential_config.credential_type == "GITLABv2" ? (
+      var.credential_config.gitlab_read_authorizer_credential != null &&
+      var.credential_config.gitlab_authorizer_credential != null
+    ) : true
+
+    error_message = "For 'GITLABv2', 'gitlab_read_authorizer_credential' and 'gitlab_authorizer_credential' must be defined."
+  }
+
+  validation {
+    condition = var.credential_config.credential_type == "GITHUBv2" ? (
+      var.credential_config.github_pat != null &&
+      var.credential_config.github_app_id != null
+    ) : true
+
+    error_message = "For 'GITHUBv2', 'github_pat' and 'github_app_id' must be defined."
   }
 }
 
-variable "cloudbuild_repos" {
-  description = "Object structure to bring your own repositories."
+variable "cloud_build_repositories" {
+  description = <<-EOT
+  Cloud Build repositories configuration:
+    - repository_name: The name of the repository to be used in Cloud Build.
+    - repository_url: The HTTPS clone URL for the repository. This URL must end with '.git' and be a valid HTTPS URL.
+
+  Each entry in this map must contain both `repository_name` and `repository_url` to properly integrate with the Cloud Build service.
+  EOT
   type = map(object({
-    repo_name = string,
-    repo_url  = string,
+    repository_name = string,
+    repository_url  = string,
   }))
 
   validation {
-    condition     = alltrue([for k, v in var.cloudbuild_repos : try(length(regex("^https://.*\\.git$", v.repo_url)) > 0, false)])
-    error_message = "Each repo_url must be a valid HTTPS git clone URL ending with '.git'."
+    condition     = alltrue([for k, v in var.cloud_build_repositories : try(length(regex("^https://.*\\.git$", v.repository_url)) > 0, false)])
+    error_message = "Each repository_url must be a valid HTTPS git clone URL ending with '.git'."
   }
 
 }
 
-variable "default_region" {
-  description = "Default resources location"
+variable "location" {
+  description = "Resources location."
   type        = string
   default     = "us-central1"
 }
 
 variable "cloudbuild_connection_name" {
-  description = "Cloudbuild Connection Name"
+  description = "Cloudbuild Connection Name."
   type        = string
   default     = "generic-cloudbuild-connection"
 }

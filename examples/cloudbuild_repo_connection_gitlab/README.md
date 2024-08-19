@@ -1,6 +1,6 @@
 ## Overview
 
-The example will create Cloud Build 2nd gen repositories using a Gitlab connection.
+The example will create Cloud Build repositories (2nd gen) using a Gitlab connection.
 
 ## Gitlab Requirements for Cloud Build Connection
 
@@ -18,14 +18,14 @@ For more information on this topic refer to the Cloud Build repositories (2nd ge
 | gitlab\_authorizer\_credential | Credential for GitLab authorizer | `string` | n/a | yes |
 | gitlab\_read\_authorizer\_credential | Credential for GitLab read authorizer | `string` | n/a | yes |
 | project\_id | The ID of the project in which to provision resources. | `string` | n/a | yes |
-| test\_repo\_name | The name of the test repository. | `string` | n/a | yes |
-| test\_repo\_url | The HTTPS clone URL of the test repository, ending with .git. | `string` | n/a | yes |
+| repository\_name | The name of the test repository. | `string` | n/a | yes |
+| repository\_url | The HTTPS clone URL of the test repository, ending with .git. | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| cloudbuild\_2nd\_gen\_connection | Cloudbuild connection created. |
-| cloudbuild\_2nd\_gen\_repositories | Created repositories. |
+| cloud\_build\_repositories\_2nd\_gen\_connection | Cloudbuild connection created. |
+| cloud\_build\_repositories\_2nd\_gen\_repositories | Created repositories. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

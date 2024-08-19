@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-output "cloudbuild_2nd_gen_connection" {
-  description = "Cloudbuild connection created."
+output "cloud_build_repositories_2nd_gen_connection" {
+  description = <<EOF
+  The unique identifier of the Cloud Build connection created within the specified Google Cloud project.
+  Example format: projects/{{project}}/locations/{{location}}/connections/{{name}}
+  EOF
   value       = google_cloudbuildv2_connection.connection.id
 }
 
-output "cloudbuild_2nd_gen_repositories" {
-  description = "Created repositories."
+output "cloud_build_repositories_2nd_gen_repositories" {
+  description = <<EOF
+  A map of created repositories associated with the Cloud Build connection.
+  Each entry contains the repository's unique identifier and its remote URL.
+  Example format: 
+  "key_name" = {
+    "id" =  "projects/{{project}}/locations/{{location}}/connections/{{parent_connection}}/repositories/{{name}}",
+    "url" = "https://github.com/{{account/org}}/{{repository_name}}.git"
+  }
+  EOF
   value       = { for k, v in google_cloudbuildv2_repository.repositories : k => { "id" : v.id, "url" : v.remote_uri } }
 }

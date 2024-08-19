@@ -24,10 +24,10 @@ module "gitlab_connection" {
     gitlab_read_authorizer_credential = var.gitlab_read_authorizer_credential
   }
 
-  cloudbuild_repos = {
+  cloud_build_repositories = {
     "test_repo" = {
-      repo_name = var.test_repo_name
-      repo_url  = var.test_repo_url
+      repository_name = var.repository_name
+      repository_url  = var.repository_url
     },
   }
 }

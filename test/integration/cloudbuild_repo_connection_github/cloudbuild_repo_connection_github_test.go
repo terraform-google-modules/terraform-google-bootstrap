@@ -96,10 +96,10 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	repoURL := client.repository.GetCloneURL()
 
 	vars := map[string]interface{}{
-		"github_pat":     githubPAT,
-		"github_app_id":  "47590865",
-		"test_repo_name": repoName,
-		"test_repo_url":  repoURL,
+		"github_pat":      githubPAT,
+		"github_app_id":   "47590865",
+		"repository_name": repoName,
+		"repository_url":  repoURL,
 	}
 
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
@@ -117,14 +117,13 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 		// validate if repository was created using the connection
 		project_id := bpt.GetTFSetupStringOutput("project_id")
 		location := "us-central1"
-		connection_id := bpt.GetStringOutput("cloudbuild_2nd_gen_connection")
+		connection_id := bpt.GetStringOutput("cloud_build_repositories_2nd_gen_connection")
 		connection_slice := strings.Split(connection_id, "/")
 
 		assert.True(len(connection_slice) > 0, "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
 
 		connection_name := connection_slice[len(connection_slice)-1]
-		repository := gcloud.Run(t, fmt.Sprintf("builds repositories describe %s", repoName), gcloud.WithCommonArgs([]string{"--project", project_id, "--region", location, "--connection", connection_name, "--format", "json"}))
-
+		repository := gcloud.Runf(t, "builds repositories describe %s --project %s, --region %s --connection %s", repoName, project_id, location, connection_name)
 		assert.Equal(repoURL, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
 
