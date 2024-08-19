@@ -22,6 +22,6 @@ Users will provide the required secrets through the `credential_config` variable
 | Name | Description |
 |------|-------------|
 | cloud\_build\_repositories\_2nd\_gen\_connection | The unique identifier of the Cloud Build connection created within the specified Google Cloud project.<br>  Example format: projects/{{project}}/locations/{{location}}/connections/{{name}} |
-| cloud\_build\_repositories\_2nd\_gen\_repositories | A map of created repositories associated with the Cloud Build connection.<br>  Each entry contains the repository's unique identifier and its remote URL.<br>  Example format: <br>  "key\_name" = {<br>    "id" =  "projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}",<br>    "url" = "https://github.com/{{account/org}}/{{repository_name}}.git"<br>  } |
+| cloud\_build\_repositories\_2nd\_gen\_repositories | A map of created repositories associated with the Cloud Build connection.<br>Each entry contains the repository's unique identifier and its remote URL.<br>Example format:<br>"key\_name" = {<br>  "id" =  "projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}",<br>  "url" = "https://github.com/{{account/org}}/{{repository_name}}.git"<br>} |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
