@@ -137,7 +137,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		assert.True(len(connection_slice) > 0, "Connection ID should be in format projects/{{project}}/locations/{{location}}/connections/{{name}}")
 
 		connection_name := connection_slice[len(connection_slice)-1]
-		repository := gcloud.Runf(t, "builds repositories describe %s --project %s, --region %s --connection %s", repoName, project_id, location, connection_name)
+		repository := gcloud.Runf(t, "builds repositories describe %s --project %s --region %s --connection %s", repoName, project_id, location, connection_name)
 
 		assert.Equal(client.project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
