@@ -15,7 +15,8 @@
  */
 
 module "github_connection" {
-  source = "../../modules/cloudbuild_repo_connection"
+  source = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
+  version = "~> 9.0"
 
   project_id = var.project_id
   credential_config = {

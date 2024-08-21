@@ -132,7 +132,7 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 
 		// Assert that the resource was created in the specified project and region
 		assert.Equal(projectId, connectionProjectId, "Connection project id should be the same as input project id.")
-		assert.Equal(resourcesLocation, connectionLocation, "Connection location should be 'us-central'.")
+		assert.Equal(resourcesLocation, connectionLocation, fmt.Sprintf("Connection location should be '%s'.", resourcesLocation))
 
 		repository := gcloud.Runf(t, "builds repositories describe %s --project %s --region %s --connection %s", repoName, projectId, resourcesLocation, connectionName)
 
