@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-timeout: 3600s
+timeout: 4200s
 steps:
 - id: swap-module-refs
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
@@ -247,6 +247,44 @@ steps:
       - verify-tfworkspace-gitlab
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestCloudBuildWorkspaceSimpleGitLab --stage teardown --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+
+- id: apply-cloudbuild-connection-github
+  waitFor:
+      - create-all
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGithub --stage apply --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
+- id: verify-cloudbuild-connection-github
+  waitFor:
+      - apply-cloudbuild-connection-github
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGithub --stage verify --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
+- id: teardown-cloudbuild-connection-github
+  waitFor:
+      - verify-cloudbuild-connection-github
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGithub --stage teardown --verbose']
+  secretEnv: ['IM_GITHUB_PAT']
+
+- id: apply-cloudbuild-connection-gitlab
+  waitFor:
+      - create-all
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGitLab --stage apply --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+- id: verify-cloudbuild-connection-gitlab
+  waitFor:
+      - apply-cloudbuild-connection-gitlab
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGitLab --stage verify --verbose']
+  secretEnv: ['IM_GITLAB_PAT']
+- id: teardown-cloudbuild-connection-gitlab
+  waitFor:
+      - verify-cloudbuild-connection-gitlab
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGitLab --stage teardown --verbose']
   secretEnv: ['IM_GITLAB_PAT']
 
 availableSecrets:
