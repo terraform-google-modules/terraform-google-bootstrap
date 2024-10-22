@@ -13,38 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 output "artifact_repo" {
   description = "GAR Repo created to store TF Cloud Builder images"
-  value       = module.cloudbuilder.artifact_repo
+  value       = module.example.artifact_repo
 }
 
 output "workflow_id" {
   description = "Workflow ID for triggering new TF Builder build"
-  value       = module.cloudbuilder.workflow_id
+  value       = module.example.workflow_id
 }
 
 output "scheduler_id" {
   description = "Scheduler ID for periodically triggering TF Builder build Workflow"
-  value       = module.cloudbuilder.scheduler_id
+  value       = module.example.scheduler_id
 }
 
 output "cloudbuild_trigger_id" {
   description = "Trigger used for building new TF Builder"
-  value       = module.cloudbuilder.cloudbuild_trigger_id
+  value       = module.example.cloudbuild_trigger_id
 }
 
 output "repository_id" {
   description = "ID of the Cloud Build repositories (2nd gen) repository"
-  value       = module.github_connection.cloud_build_repositories_2nd_gen_connection
+  value       = module.example.repository_id
 }
 
 output "project_id" {
   description = "The ID of the project in which the resources were provisioned"
-  value       = var.project_id
+  value       = module.example.project_id
 }
 
 output "location" {
   description = "The location in which the resources were provisioned"
-  value       = local.location
+  value       = module.example.location
 }

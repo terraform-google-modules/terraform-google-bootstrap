@@ -33,15 +33,12 @@ resource "random_id" "gitlab_resources_random_id" {
   byte_length = 8
 }
 
-resource "random_uuid" "random_webhook_secret" {
-}
-
 module "cloudbuilder" {
-  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
-  version = "~> 8.0"
+  source = "../../modules/tf_cloudbuild_builder"
+
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_uri         = google_cloudbuildv2_repository.repository_connection.id
+  dockerfile_repo_uri         = module.gitlab_connection.cloud_build_repositories_2nd_gen_connection
   dockerfile_repo_type        = "UNKNOWN" // "GITLAB" is not one of the options available so we need to use "UNKNOWN"
   use_cloudbuildv2_repository = true
   trigger_location            = "us-central1"
@@ -55,98 +52,28 @@ module "cloudbuilder" {
   cb_logs_bucket_force_destroy = true
 }
 
-// Create a secret containing the personal access token and grant permissions to the Service Agent.
-resource "google_secret_manager_secret" "gitlab_api_secret" {
-  project   = var.project_id
-  secret_id = "builder-gl-${local.gl_name}-${random_id.gitlab_resources_random_id.dec}-api-access-token"
 
-  labels = {
-    label = "b-${random_id.gitlab_resources_random_id.dec}"
+module "gitlab_connection" {
+  source = "../../modules/cloudbuild_repo_connection"
+
+  project_id = var.project_id
+  connection_config = {
+    connection_type                             = "GITLABv2"
+    gitlab_authorizer_credential_secret_id      = var.gitlab_authorizer_secret_id
+    gitlab_read_authorizer_credential_secret_id = var.gitlab_read_authorizer_secret_id
+    gitlab_webhook_secret_id                    = var.gitlab_webhook_secret_id
   }
 
-  replication {
-    auto {}
-  }
-}
-
-// Personal access token from VCS.
-resource "google_secret_manager_secret_version" "gitlab_api_secret_version" {
-  secret      = google_secret_manager_secret.gitlab_api_secret.id
-  secret_data = var.gitlab_api_access_token
-}
-
-resource "google_secret_manager_secret" "gitlab_read_api_secret" {
-  project   = var.project_id
-  secret_id = "builder-gl-${local.gl_name}-${random_id.gitlab_resources_random_id.dec}-read-api-access-token"
-  labels = {
-    label = "b-${random_id.gitlab_resources_random_id.dec}"
-  }
-  replication {
-    auto {}
+  cloud_build_repositories = {
+    "test_repo" = {
+      repository_name = local.gl_name
+      repository_url  = var.repository_uri
+    },
   }
 }
 
-resource "google_secret_manager_secret_version" "gitlab_read_api_secret_version" {
-  secret      = google_secret_manager_secret.gitlab_read_api_secret.id
-  secret_data = var.gitlab_read_api_access_token
-}
-
-resource "google_secret_manager_secret" "gitlab_webhook_secret" {
-  project   = var.project_id
-  secret_id = "builder-gl-${local.gl_name}-${random_id.gitlab_resources_random_id.dec}-webhook-secret"
-  labels = {
-    label = "b-${random_id.gitlab_resources_random_id.dec}"
-  }
-  replication {
-    auto {}
-  }
-}
-
-resource "google_secret_manager_secret_version" "gitlab_webhook_secret_version" {
-  secret      = google_secret_manager_secret.gitlab_webhook_secret.id
-  secret_data = random_uuid.random_webhook_secret.result
-}
-
-resource "google_secret_manager_secret_iam_member" "gitlab_token_iam_member" {
-  for_each = {
-    "api"      = google_secret_manager_secret.gitlab_api_secret.id,
-    "read_api" = google_secret_manager_secret.gitlab_read_api_secret.id,
-    "webhook"  = google_secret_manager_secret.gitlab_webhook_secret.id
-  }
-
-  project   = var.project_id
-  secret_id = each.value
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
-
-resource "google_cloudbuildv2_connection" "vcs_connection" {
-  project  = var.project_id
-  name     = "builder-gl-${random_id.gitlab_resources_random_id.dec}-${var.project_id}"
-  location = local.location
-
-  gitlab_config {
-    host_uri = null
-    authorizer_credential {
-      user_token_secret_version = google_secret_manager_secret_version.gitlab_api_secret_version.name
-    }
-    read_authorizer_credential {
-      user_token_secret_version = google_secret_manager_secret_version.gitlab_read_api_secret_version.name
-    }
-    webhook_secret_secret_version = google_secret_manager_secret_version.gitlab_webhook_secret_version.name
-  }
-
-  depends_on = [google_secret_manager_secret_iam_member.gitlab_token_iam_member]
-}
-
-// Create the repository connection.
-resource "google_cloudbuildv2_repository" "repository_connection" {
-  project  = var.project_id
-  name     = local.gl_name
-  location = local.location
-
-  parent_connection = google_cloudbuildv2_connection.vcs_connection.name
-  remote_uri        = local.repoURL
+data "google_secret_manager_secret_version_access" "gitlab_api_access_token" {
+  secret = var.gitlab_authorizer_secret_id
 }
 
 # Bootstrap GitLab with Dockerfile
@@ -156,5 +83,5 @@ module "bootstrap_gitlab_repo" {
   upgrade = false
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
-  create_cmd_body       = "${var.gitlab_api_access_token} ${var.repository_uri} ${path.module}/Dockerfile"
+  create_cmd_body       = "${data.google_secret_manager_secret_version_access.gitlab_api_access_token.secret_data} ${var.repository_uri} ${path.module}/Dockerfile"
 }

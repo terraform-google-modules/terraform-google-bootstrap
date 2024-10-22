@@ -18,10 +18,11 @@ module "gitlab_connection" {
   source = "../../modules/cloudbuild_repo_connection"
 
   project_id = var.project_id
-  credential_config = {
-    credential_type                   = "GITLABv2"
-    gitlab_authorizer_credential      = var.gitlab_authorizer_credential
-    gitlab_read_authorizer_credential = var.gitlab_read_authorizer_credential
+  connection_config = {
+    connection_type                             = "GITLABv2"
+    gitlab_authorizer_credential_secret_id      = var.gitlab_authorizer_secret_id
+    gitlab_read_authorizer_credential_secret_id = var.gitlab_read_authorizer_secret_id
+    gitlab_webhook_secret_id                    = var.gitlab_webhook_secret_id
   }
 
   cloud_build_repositories = {

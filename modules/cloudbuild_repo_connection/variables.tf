@@ -21,13 +21,13 @@ variable "project_id" {
 
 variable "connection_config" {
   description = <<-EOT
-  Credential configuration options:
-    - connection_type: Specifies the type of credential being used. Supported types are 'GITHUBv2' and 'GITLABv2'.
-    - github_secret_id: (Optional) The secret ID for GitHub credentials. Default is "cb-github-pat".
-    - github_app_id: (Optional) The application ID for a GitHub App used for authentication. For app installation, follow this link: https://github.com/apps/google-cloud-build
+  Connection configuration options:
+    - connection_type: Specifies the type of connection being used. Supported types are 'GITHUBv2' and 'GITLABv2'.
+    - github_secret_id: (Optional) The secret ID for GitHub credentials.
+    - github_app_id_secret_id: (Optional) The secret ID for the application ID for a GitHub App used for authentication. For app installation, follow this link: https://github.com/apps/google-cloud-build
     - gitlab_read_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab read authorizer credential.
     - gitlab_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab authorizer credential.
-    - gitlab_webhook_secret_id: (Optional) The secret ID for the GitLab WebHook
+    - gitlab_webhook_secret_id: (Optional) The secret ID for the GitLab WebHook.
   EOT
   type = object({
     connection_type                             = string

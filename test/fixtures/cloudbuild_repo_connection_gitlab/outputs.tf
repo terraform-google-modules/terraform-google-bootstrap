@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-module "github_connection" {
-  # source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
-  # version = "~> 8.0"
-  source = "../../modules/cloudbuild_repo_connection"
+output "cloud_build_repositories_2nd_gen_connection" {
+  description = "Cloudbuild connection created."
+  value       = module.example.cloud_build_repositories_2nd_gen_connection
+}
 
-  project_id = var.project_id
-  connection_config = {
-    connection_type         = "GITHUBv2"
-    github_secret_id        = var.github_pat_secret_id
-    github_app_id_secret_id = var.github_app_id_secret_id
-  }
-
-  cloud_build_repositories = {
-    "test_repo" = {
-      repository_name = var.repository_name
-      repository_url  = var.repository_url
-    },
-  }
+output "cloud_build_repositories_2nd_gen_repositories" {
+  description = "Created repositories."
+  value       = module.example.cloud_build_repositories_2nd_gen_repositories
 }

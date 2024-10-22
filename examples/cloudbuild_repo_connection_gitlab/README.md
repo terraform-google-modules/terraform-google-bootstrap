@@ -15,8 +15,9 @@ For more information on this topic refer to the Cloud Build repositories (2nd ge
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| gitlab\_authorizer\_credential | Credential for GitLab authorizer | `string` | n/a | yes |
-| gitlab\_read\_authorizer\_credential | Credential for GitLab read authorizer | `string` | n/a | yes |
+| gitlab\_authorizer\_secret\_id | The secret ID for the credential for GitLab authorizer | `string` | n/a | yes |
+| gitlab\_read\_authorizer\_secret\_id | The secret ID for the credential for GitLab read authorizer | `string` | n/a | yes |
+| gitlab\_webhook\_secret\_id | The secret ID for the WebHook for GitLab | `string` | n/a | yes |
 | project\_id | The ID of the project in which to provision resources. | `string` | n/a | yes |
 | repository\_name | The name of the test repository. | `string` | n/a | yes |
 | repository\_url | The HTTPS clone URL of the repository, ending with .git. | `string` | n/a | yes |

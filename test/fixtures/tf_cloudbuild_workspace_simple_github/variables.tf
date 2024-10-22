@@ -19,22 +19,17 @@ variable "project_id" {
   type        = string
 }
 
-variable "gitlab_authorizer_secret_id" {
-  description = "The secret ID for the credential for GitLab authorizer"
+variable "github_pat" {
+  description = "The personal access token for authenticating with GitHub."
   type        = string
 }
 
-variable "gitlab_read_authorizer_secret_id" {
-  description = "The secret ID for the credential for GitLab read authorizer"
+variable "github_app_id" {
+  description = "The application ID for the Cloudbuild GitHub app."
   type        = string
 }
 
-variable "gitlab_webhook_secret_id" {
-  description = "The secret ID for the WebHook for GitLab"
-  type        = string
-}
-
-variable "repository_uri" {
-  description = "The URI of the GitLab repository where the Terraform configs are stored."
+variable "repository_url" {
+  description = "The HTTPS clone URL of the repository, ending with .git."
   type        = string
 }

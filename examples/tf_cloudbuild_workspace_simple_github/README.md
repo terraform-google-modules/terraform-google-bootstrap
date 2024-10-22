@@ -15,7 +15,8 @@ For more information on this topic refer to the Cloud Build repositories (2nd ge
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| github\_pat | GitHub personal access token. | `string` | n/a | yes |
+| github\_app\_id\_secret\_id | The secret ID for the application ID for the Cloudbuild GitHub app. | `string` | n/a | yes |
+| github\_pat\_secret\_id | The secret ID for the personal access token for authenticating with GitHub. | `string` | n/a | yes |
 | project\_id | The ID of the project in which to provision resources. | `string` | n/a | yes |
 | repository\_uri | The URI of the GitHub repository where the Terraform configs are stored. | `string` | n/a | yes |
 

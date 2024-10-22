@@ -11,8 +11,9 @@ For more information on this topic refer to the Cloud Build repositories (2nd ge
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| gitlab\_api\_access\_token | GitLab personal access token with api scope. If provided, creates a secret within Secret Manager. | `string` | n/a | yes |
-| gitlab\_read\_api\_access\_token | GitLab personal access token with read\_api scope. If provided, creates a secret within Secret Manager. | `string` | n/a | yes |
+| gitlab\_authorizer\_secret\_id | The secret ID for the credential for GitLab authorizer | `string` | n/a | yes |
+| gitlab\_read\_authorizer\_secret\_id | The secret ID for the credential for GitLab read authorizer | `string` | n/a | yes |
+| gitlab\_webhook\_secret\_id | The secret ID for the WebHook for GitLab | `string` | n/a | yes |
 | project\_id | The ID of the project in which to provision resources. | `string` | n/a | yes |
 | repository\_uri | The URI of the GitLab repository where the Terraform configs are stored. | `string` | n/a | yes |
 

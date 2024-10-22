@@ -38,11 +38,12 @@ resource "random_id" "resources_random_id" {
 }
 
 module "cloudbuilder" {
-  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
-  version = "~> 8.0"
+  # source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
+  # version = "~> 8.0"
+  source = "../../modules/tf_cloudbuild_builder"
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_uri         = google_cloudbuildv2_repository.repository_connection.id
+  dockerfile_repo_uri         = module.github_connection.cloud_build_repositories_2nd_gen_connection
   dockerfile_repo_type        = "GITHUB"
   use_cloudbuildv2_repository = true
   trigger_location            = local.location
@@ -56,55 +57,26 @@ module "cloudbuilder" {
   cb_logs_bucket_force_destroy = true
 }
 
-// Create a secret containing the personal access token and grant permissions to the Service Agent.
-resource "google_secret_manager_secret" "github_token_secret" {
-  project   = var.project_id
-  secret_id = "builder-gh-${random_id.resources_random_id.dec}-${local.gh_name}"
+module "github_connection" {
+  source = "../../modules/cloudbuild_repo_connection"
 
-  labels = {
-    label = "builder-gh-${random_id.resources_random_id.dec}"
+  project_id = var.project_id
+  connection_config = {
+    connection_type         = "GITHUBv2"
+    github_secret_id        = var.github_pat_secret_id
+    github_app_id_secret_id = var.github_app_id_secret_id
   }
 
-  replication {
-    auto {}
-  }
-}
-
-// Personal access token from VCS.
-resource "google_secret_manager_secret_version" "github_token_secret_version" {
-  secret      = google_secret_manager_secret.github_token_secret.id
-  secret_data = var.github_pat
-}
-
-resource "google_secret_manager_secret_iam_member" "github_token_iam_member" {
-  project   = var.project_id
-  secret_id = google_secret_manager_secret.github_token_secret.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
-
-// See https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen
-resource "google_cloudbuildv2_connection" "vcs_connection" {
-  project  = var.project_id
-  name     = "builder-gh-${random_id.resources_random_id.dec}-${var.project_id}"
-  location = local.location
-
-  github_config {
-    app_installation_id = local.github_app_installation_id
-    authorizer_credential {
-      oauth_token_secret_version = google_secret_manager_secret_version.github_token_secret_version.name
-    }
+  cloud_build_repositories = {
+    "test_repo" = {
+      repository_name = local.gh_name
+      repository_url  = var.repository_uri
+    },
   }
 }
 
-// Create the repository connection.
-resource "google_cloudbuildv2_repository" "repository_connection" {
-  project  = var.project_id
-  name     = local.gh_name
-  location = local.location
-
-  parent_connection = google_cloudbuildv2_connection.vcs_connection.name
-  remote_uri        = local.repoURL
+data "google_secret_manager_secret_version_access" "github_pat" {
+  secret = var.github_pat_secret_id
 }
 
 # Bootstrap GitHub with Dockerfile
@@ -114,5 +86,5 @@ module "bootstrap_github_repo" {
   upgrade = false
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
-  create_cmd_body       = "${var.github_pat} ${var.repository_uri} ${path.module}/Dockerfile"
+  create_cmd_body       = "${data.google_secret_manager_secret_version_access.github_pat.secret_data} ${var.repository_uri} ${path.module}/Dockerfile"
 }
