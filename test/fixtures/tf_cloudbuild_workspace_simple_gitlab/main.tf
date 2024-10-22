@@ -69,5 +69,5 @@ module "example" {
   gitlab_authorizer_secret_id      = google_secret_manager_secret.gitlab_api_token.id
   gitlab_read_authorizer_secret_id = google_secret_manager_secret.gitlab_read_api_token.id
   gitlab_webhook_secret_id         = google_secret_manager_secret.gitlab_webhook.id
-  repository_uri                   = var.repository_url
+  repository_uri                   = var.repository_uri
 }

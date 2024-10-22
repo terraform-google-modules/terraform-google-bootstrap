@@ -57,5 +57,5 @@ module "example" {
   project_id              = var.project_id
   github_pat_secret_id    = google_secret_manager_secret.github_token.id
   github_app_id_secret_id = google_secret_manager_secret.github_app_id.id
-  repository_uri          = var.repository_url
+  repository_uri          = var.repository_uri
 }
