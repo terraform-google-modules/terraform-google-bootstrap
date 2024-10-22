@@ -29,7 +29,7 @@ variable "github_app_id" {
   type        = string
 }
 
-variable "repository_url" {
+variable "repository_uri" {
   description = "The HTTPS clone URL of the repository, ending with .git."
   type        = string
 }

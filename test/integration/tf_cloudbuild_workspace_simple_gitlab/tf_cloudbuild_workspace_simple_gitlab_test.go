@@ -114,9 +114,9 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 	}
 
 	vars := map[string]interface{}{
-		"gitlab_api_access_token":      gitlabPAT,
-		"gitlab_read_api_access_token": gitlabPAT,
-		"repository_uri":               client.project.HTTPURLToRepo,
+		"gitlab_authorizer_credential":      gitlabPAT,
+		"gitlab_read_authorizer_credential": gitlabPAT,
+		"repository_uri":                    client.project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
