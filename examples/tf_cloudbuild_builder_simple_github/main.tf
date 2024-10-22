@@ -15,10 +15,6 @@
  */
 
 locals {
-  // Found in the URL of your Cloud Build GitHub app configuration settings
-  // https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen#connecting_a_github_host_programmatically
-  github_app_installation_id = "47590865"
-
   # GitHub repo url of form "github.com/owner/name"
   repoURL              = endswith(var.repository_uri, ".git") ? var.repository_uri : "${var.repository_uri}.git"
   repoURLWithoutSuffix = trimsuffix(local.repoURL, ".git")
@@ -26,15 +22,6 @@ locals {
   gh_name              = local.gh_repo_url_split[length(local.gh_repo_url_split) - 1]
 
   location = "us-central1"
-}
-
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-// Added to various IDs to prevent potential conflicts for deployments targeting the same repository.
-resource "random_id" "resources_random_id" {
-  byte_length = 4
 }
 
 module "cloudbuilder" {

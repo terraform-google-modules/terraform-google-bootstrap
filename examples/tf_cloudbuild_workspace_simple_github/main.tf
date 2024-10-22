@@ -24,15 +24,6 @@ locals {
   location = "us-central1"
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-// Added to various IDs to prevent potential conflicts for deployments targeting the same repository.
-resource "random_id" "resources_random_id" {
-  byte_length = 4
-}
-
 module "tf_workspace" {
   source = "../../modules/tf_cloudbuild_workspace"
 

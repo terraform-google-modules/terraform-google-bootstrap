@@ -24,15 +24,6 @@ locals {
   location = "us-central1"
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-// Added to various IDs to prevent potential conflicts for deployments targeting the same repository.
-resource "random_id" "gitlab_resources_random_id" {
-  byte_length = 8
-}
-
 module "cloudbuilder" {
   source = "../../modules/tf_cloudbuild_builder"
 
@@ -51,7 +42,6 @@ module "cloudbuilder" {
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
 }
-
 
 module "gitlab_connection" {
   source = "../../modules/cloudbuild_repo_connection"
