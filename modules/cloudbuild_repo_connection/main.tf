@@ -34,7 +34,7 @@ resource "random_id" "suffix" {
 }
 
 data "google_secret_manager_secret_version_access" "app_installation_id" {
-  for_each = local.is_github ? [1] : []
+  count = local.is_github ? 1 : 0
 
   secret = var.connection_config.github_app_id_secret_id
 }
