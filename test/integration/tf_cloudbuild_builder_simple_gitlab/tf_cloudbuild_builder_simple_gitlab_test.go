@@ -107,7 +107,7 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 	vars := map[string]interface{}{
 		"gitlab_authorizer_credential":      gitlabPAT,
 		"gitlab_read_authorizer_credential": gitlabPAT,
-		"repository_uri":               client.project.HTTPURLToRepo,
+		"repository_uri":                    client.project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
