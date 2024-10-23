@@ -34,6 +34,8 @@ resource "random_id" "suffix" {
 }
 
 data "google_secret_manager_secret_version_access" "app_installation_id" {
+  for_each = local.is_github ? [1] : []
+
   secret = var.connection_config.github_app_id_secret_id
 }
 
@@ -45,7 +47,7 @@ resource "google_cloudbuildv2_connection" "connection" {
   dynamic "github_config" {
     for_each = local.is_github ? [1] : []
     content {
-      app_installation_id = data.google_secret_manager_secret_version_access.app_installation_id.secret_data
+      app_installation_id = data.google_secret_manager_secret_version_access.app_installation_id[0].secret_data
       authorizer_credential {
         oauth_token_secret_version = "${var.connection_config.github_secret_id}/versions/latest"
       }
