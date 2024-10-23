@@ -33,7 +33,7 @@ locals {
 
 module "cloudbuild_project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 15.0"
+  version = "~> 17.0"
 
   name                        = local.cloudbuild_project_id
   random_project_id           = local.use_random_suffix
@@ -52,7 +52,7 @@ module "cloudbuild_project" {
 // Creating the bucket beforehand make it is possible to define a custom location.
 module "cloudbuild_bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 7.0"
+  version = "~> 8.0"
 
   name          = "${module.cloudbuild_project.project_id}_cloudbuild"
   project_id    = module.cloudbuild_project.project_id
