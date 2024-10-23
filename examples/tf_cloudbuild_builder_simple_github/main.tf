@@ -57,7 +57,7 @@ module "github_connection" {
   cloud_build_repositories = {
     "test_repo" = {
       repository_name = local.gh_name
-      repository_url  = var.repository_uri
+      repository_url  = local.repoURL
     },
   }
 }
