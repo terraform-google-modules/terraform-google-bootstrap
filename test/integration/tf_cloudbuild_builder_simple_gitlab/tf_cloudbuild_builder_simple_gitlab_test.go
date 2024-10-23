@@ -105,8 +105,8 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	// repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
-		"gitlab_api_access_token":      gitlabPAT,
-		"gitlab_read_api_access_token": gitlabPAT,
+		"gitlab_authorizer_credential":      gitlabPAT,
+		"gitlab_read_authorizer_credential": gitlabPAT,
 		"repository_uri":               client.project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
