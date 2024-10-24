@@ -70,6 +70,13 @@ resource "google_project_iam_member" "cb_storage_objects_viewer" {
   member  = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 
+resource "google_project_iam_member" "cb_connection_viewer" {
+  count   = local.create_cloudbuild_sa ? 1 : 0
+  project = var.project_id
+  role    = "roles/cloudbuild.connectionViewer"
+  member  = "serviceAccount:${local.cloudbuild_sa_email}"
+}
+
 resource "google_service_account" "im_sa" {
   count                        = local.create_infra_manager_sa ? 1 : 0
   project                      = var.project_id
