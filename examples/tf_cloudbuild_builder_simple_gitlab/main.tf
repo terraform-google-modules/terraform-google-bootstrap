@@ -48,7 +48,7 @@ module "cloudbuilder" {
 resource "time_sleep" "propagation" {
   create_duration = "30s"
 
-  depends_on = [module.github_connection]
+  depends_on = [module.gitlab_connection]
 }
 
 module "gitlab_connection" {
