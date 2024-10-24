@@ -58,9 +58,21 @@ module "tf_workspace" {
   }
   cloudbuild_env_vars = ["TF_VAR_project_id=${var.project_id}"]
 
-  depends_on = [module.enabled_google_apis]
+  depends_on = [
+    module.enabled_google_apis,
+    time_sleep.wait_propagation,
+  ]
 }
 
+
+resource "time_sleep" "wait_propagation" {
+  create_duration = "30s"
+
+  depends_on = [
+    google_cloudbuildv2_repository.repository_connection,
+    google_cloudbuildv2_connection.vcs_connection,
+  ]
+}
 
 // Create a secret containing the personal access token and grant permissions to the Service Agent.
 resource "google_secret_manager_secret" "github_token_secret" {

@@ -21,7 +21,7 @@ terraform {
     google = {
       source = "hashicorp/google"
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
-      version = ">= 4.17, != 4.31.0, < 6"
+      version = ">= 4.17, != 4.31.0, < 7"
     }
 
     time = {
@@ -37,7 +37,7 @@ terraform {
     google-beta = {
       source = "hashicorp/google-beta"
       # Exclude 4.31.0 for https://github.com/hashicorp/terraform-provider-google/issues/12226
-      version = ">= 4.17, != 4.31.0, < 6"
+      version = ">= 4.17, != 4.31.0, < 7"
     }
   }
 }
