@@ -19,50 +19,47 @@ variable "project_id" {
   type        = string
 }
 
-variable "credential_config" {
+variable "connection_config" {
   description = <<-EOT
-  Credential configuration options:
-    - credential_type: Specifies the type of credential being used. Supported types are 'GITHUBv2' and 'GITLABv2'.
-    - github_secret_id: (Optional) The secret ID for GitHub credentials. Default is "cb-github-pat".
-    - github_pat: (Optional) The personal access token for GitHub authentication.
-    - github_app_id: (Optional) The application ID for a GitHub App used for authentication. For app installation, follow this link: https://github.com/apps/google-cloud-build
-    - gitlab_read_authorizer_credential: (Optional) The read authorizer credential for GitLab access.
-    - gitlab_read_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab read authorizer credential. Default is "cb-gitlab-read-api-credential".
-    - gitlab_authorizer_credential: (Optional) The authorizer credential for GitLab access.
-    - gitlab_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab authorizer credential. Default is "cb-gitlab-api-credential".
+  Connection configuration options:
+    - connection_type: Specifies the type of connection being used. Supported types are 'GITHUBv2' and 'GITLABv2'.
+    - github_secret_id: (Optional) The secret ID for GitHub credentials.
+    - github_app_id_secret_id: (Optional) The secret ID for the application ID for a GitHub App used for authentication. For app installation, follow this link: https://github.com/apps/google-cloud-build
+    - gitlab_read_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab read authorizer credential.
+    - gitlab_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab authorizer credential.
+    - gitlab_webhook_secret_id: (Optional) The secret ID for the GitLab WebHook.
   EOT
   type = object({
-    credential_type                             = string
-    github_secret_id                            = optional(string, "cb-github-pat")
-    github_pat                                  = optional(string)
-    github_app_id                               = optional(string)
-    gitlab_read_authorizer_credential           = optional(string)
-    gitlab_read_authorizer_credential_secret_id = optional(string, "cb-gitlab-read-api-credential")
-    gitlab_authorizer_credential                = optional(string)
-    gitlab_authorizer_credential_secret_id      = optional(string, "cb-gitlab-api-credential")
+    connection_type                             = string
+    github_secret_id                            = optional(string)
+    github_app_id_secret_id                     = optional(string)
+    gitlab_read_authorizer_credential_secret_id = optional(string)
+    gitlab_authorizer_credential_secret_id      = optional(string)
+    gitlab_webhook_secret_id                    = optional(string)
   })
 
   validation {
-    condition     = var.credential_config.credential_type == "GITLABv2" || var.credential_config.credential_type == "GITHUBv2"
-    error_message = "Specify one of the valid credential_types: 'GITLABv2' or 'GITHUBv2'."
+    condition     = var.connection_config.connection_type == "GITLABv2" || var.connection_config.connection_type == "GITHUBv2"
+    error_message = "Specify one of the valid connection_types: 'GITLABv2' or 'GITHUBv2'."
   }
 
   validation {
-    condition = var.credential_config.credential_type == "GITLABv2" ? (
-      var.credential_config.gitlab_read_authorizer_credential != null &&
-      var.credential_config.gitlab_authorizer_credential != null
+    condition = var.connection_config.connection_type == "GITLABv2" ? (
+      var.connection_config.gitlab_read_authorizer_credential_secret_id != null &&
+      var.connection_config.gitlab_authorizer_credential_secret_id != null &&
+      var.connection_config.gitlab_webhook_secret_id != null
     ) : true
 
-    error_message = "For 'GITLABv2', 'gitlab_read_authorizer_credential' and 'gitlab_authorizer_credential' must be defined."
+    error_message = "For 'GITLABv2', 'gitlab_read_authorizer_credential_secret_id', 'gitlab_authorizer_credential_secret_id', and 'gitlab_webhook_secret_id' must be defined."
   }
 
   validation {
-    condition = var.credential_config.credential_type == "GITHUBv2" ? (
-      var.credential_config.github_pat != null &&
-      var.credential_config.github_app_id != null
+    condition = var.connection_config.connection_type == "GITHUBv2" ? (
+      var.connection_config.github_secret_id != null &&
+      var.connection_config.github_app_id_secret_id != null
     ) : true
 
-    error_message = "For 'GITHUBv2', 'github_pat' and 'github_app_id' must be defined."
+    error_message = "For 'GITHUBv2', 'github_secret_id' and 'github_app_id_secret_id' must be defined."
   }
 }
 

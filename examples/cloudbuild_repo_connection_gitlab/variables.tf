@@ -29,13 +29,17 @@ variable "repository_name" {
   type        = string
 }
 
-variable "gitlab_authorizer_credential" {
-  description = "Credential for GitLab authorizer"
+variable "gitlab_authorizer_secret_id" {
+  description = "The secret ID for the credential for GitLab authorizer"
   type        = string
 }
 
-variable "gitlab_read_authorizer_credential" {
-  description = "Credential for GitLab read authorizer"
+variable "gitlab_read_authorizer_secret_id" {
+  description = "The secret ID for the credential for GitLab read authorizer"
   type        = string
 }
 
+variable "gitlab_webhook_secret_id" {
+  description = "The secret ID for the WebHook for GitLab"
+  type        = string
+}

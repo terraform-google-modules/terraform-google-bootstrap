@@ -19,16 +19,19 @@ variable "project_id" {
   type        = string
 }
 
-variable "gitlab_api_access_token" {
-  description = "GitLab personal access token with api scope. If provided, creates a secret within Secret Manager."
+variable "gitlab_authorizer_secret_id" {
+  description = "The secret ID for the credential for GitLab authorizer"
   type        = string
-  sensitive   = true
 }
 
-variable "gitlab_read_api_access_token" {
-  description = "GitLab personal access token with read_api scope. If provided, creates a secret within Secret Manager."
+variable "gitlab_read_authorizer_secret_id" {
+  description = "The secret ID for the credential for GitLab read authorizer"
   type        = string
-  sensitive   = true
+}
+
+variable "gitlab_webhook_secret_id" {
+  description = "The secret ID for the WebHook for GitLab"
+  type        = string
 }
 
 variable "repository_uri" {
