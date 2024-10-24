@@ -30,7 +30,7 @@ module "cloudbuilder" {
   source = "../../modules/tf_cloudbuild_builder"
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_uri         = module.github_connection.cloud_build_repositories_2nd_gen_connection
+  dockerfile_repo_uri         = module.github_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
   dockerfile_repo_type        = "GITHUB"
   use_cloudbuildv2_repository = true
   trigger_location            = local.location
@@ -42,6 +42,14 @@ module "cloudbuilder" {
 
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
+
+  depends_on = [time_sleep.propagation]
+}
+
+resource "time_sleep" "propagation" {
+  create_duration = "30s"
+
+  depends_on = [module.github_connection]
 }
 
 module "github_connection" {
@@ -70,7 +78,9 @@ data "google_secret_manager_secret_version_access" "github_pat" {
 module "bootstrap_github_repo" {
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 3.1"
-  upgrade = false
+
+  upgrade           = false
+  module_depends_on = [module.cloudbuilder]
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
   create_cmd_body       = "${data.google_secret_manager_secret_version_access.github_pat.secret_data} ${var.repository_uri} ${path.module}/Dockerfile"

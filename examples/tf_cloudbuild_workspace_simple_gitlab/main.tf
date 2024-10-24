@@ -29,7 +29,7 @@ module "tf_workspace" {
 
   project_id               = module.enabled_google_apis.project_id
   tf_repo_type             = "CLOUDBUILD_V2_REPOSITORY"
-  tf_repo_uri              = module.gitlab_connection.cloud_build_repositories_2nd_gen_connection
+  tf_repo_uri              = module.github_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
   location                 = "us-central1"
   trigger_location         = "us-central1"
   artifacts_bucket_name    = "tf-configs-build-artifacts-${var.project_id}-gl"
@@ -45,7 +45,16 @@ module "tf_workspace" {
   }
   cloudbuild_env_vars = ["TF_VAR_project_id=${var.project_id}"]
 
-  depends_on = [module.enabled_google_apis]
+  depends_on = [
+    module.enabled_google_apis,
+    time_sleep.propagation,
+  ]
+}
+
+resource "time_sleep" "propagation" {
+  create_duration = "30s"
+
+  depends_on = [module.github_connection]
 }
 
 module "gitlab_connection" {
@@ -74,7 +83,9 @@ data "google_secret_manager_secret_version_access" "gitlab_api_access_token" {
 module "bootstrap_github_repo" {
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 3.1"
-  upgrade = false
+
+  upgrade           = false
+  module_depends_on = [module.tf_workspace]
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
   create_cmd_body       = "${data.google_secret_manager_secret_version_access.gitlab_api_access_token.secret_data} ${var.repository_uri} ${path.module}/files"
