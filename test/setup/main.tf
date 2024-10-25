@@ -45,7 +45,6 @@ module "project" {
       roles = [
         "roles/cloudbuild.builds.builder",
         "roles/cloudbuild.connectionAdmin",
-        "roles/cloudbuild.serviceAgent",
       ]
     },
     {
