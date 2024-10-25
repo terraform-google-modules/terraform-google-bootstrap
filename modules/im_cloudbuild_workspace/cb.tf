@@ -139,5 +139,6 @@ resource "time_sleep" "iam_propagation" {
     google_project_iam_member.cb_logWriter_role,
     google_project_iam_member.cb_serviceAccountUser_role,
     google_project_iam_member.cb_storage_objects_viewer,
+    google_project_iam_member.cb_service_agent_role,
   ]
 }
