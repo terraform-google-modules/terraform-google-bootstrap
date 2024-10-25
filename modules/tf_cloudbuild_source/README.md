@@ -38,6 +38,7 @@ This module creates:
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | location | Location for build artifacts bucket | `string` | `"us-central1"` | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
+| project\_deletion\_policy | The deletion policy for the project created. | `string` | `"PREVENT"` | no |
 | project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
