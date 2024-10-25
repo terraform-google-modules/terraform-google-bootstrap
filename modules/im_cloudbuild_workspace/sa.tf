@@ -55,12 +55,6 @@ resource "google_project_iam_member" "cb_logWriter_role" {
   member  = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 
-resource "google_project_iam_member" "cb_service_agent_role" {
-  project = var.project_id
-  role    = "roles/cloudbuild.serviceAgent"
-  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
-
 # Allows the Cloud Build service account to act as the Infra Manger service account
 resource "google_project_iam_member" "cb_serviceAccountUser_role" {
   count   = local.create_cloudbuild_sa ? 1 : 0
@@ -73,13 +67,6 @@ resource "google_project_iam_member" "cb_storage_objects_viewer" {
   count   = local.create_cloudbuild_sa ? 1 : 0
   project = var.project_id
   role    = "roles/storage.objectViewer"
-  member  = "serviceAccount:${local.cloudbuild_sa_email}"
-}
-
-resource "google_project_iam_member" "cb_connection_admin" {
-  count   = local.create_cloudbuild_sa ? 1 : 0
-  project = var.project_id
-  role    = "roles/cloudbuild.connectionAdmin"
   member  = "serviceAccount:${local.cloudbuild_sa_email}"
 }
 

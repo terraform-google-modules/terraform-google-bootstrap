@@ -123,22 +123,5 @@ resource "google_cloudbuild_trigger" "triggers" {
   included_files  = var.cloudbuild_included_files
   ignored_files   = var.cloudbuild_ignored_files
 
-  depends_on = [
-    google_project_iam_member.im_sa_roles,
-    time_sleep.iam_propagation,
-  ]
-}
-
-resource "time_sleep" "iam_propagation" {
-  create_duration = "30s"
-
-  depends_on = [
-    google_project_iam_member.im_sa_roles,
-    google_project_iam_member.cb_config_admin_role,
-    google_project_iam_member.cb_config_agent_role,
-    google_project_iam_member.cb_logWriter_role,
-    google_project_iam_member.cb_serviceAccountUser_role,
-    google_project_iam_member.cb_storage_objects_viewer,
-    google_project_iam_member.cb_service_agent_role,
-  ]
+  depends_on = [google_project_iam_member.im_sa_roles]
 }
