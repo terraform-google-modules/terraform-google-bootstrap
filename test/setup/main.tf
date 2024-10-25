@@ -41,8 +41,11 @@ module "project" {
 
   activate_api_identities = [
     {
-      api   = "cloudbuild.googleapis.com",
-      roles = ["roles/cloudbuild.builds.builder"]
+      api = "cloudbuild.googleapis.com",
+      roles = [
+        "roles/cloudbuild.builds.builder",
+        "roles/cloudbuild.connectionAdmin",
+      ]
     },
     {
       api   = "config.googleapis.com",
