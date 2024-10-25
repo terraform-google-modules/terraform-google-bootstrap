@@ -14,6 +14,7 @@ This example demonstrates the simplest usage of the GCP organization bootstrap m
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | `list(string)` | `[]` | no |
 | parent | GCP parent folder id of form folders/{id} | `string` | n/a | yes |
+| project\_deletion\_policy | The deletion policy for the project created. | `string` | `"PREVENT"` | no |
 | project\_prefix | Name prefix to use for projects created. | `string` | `"cft"` | no |
 
 ## Outputs
