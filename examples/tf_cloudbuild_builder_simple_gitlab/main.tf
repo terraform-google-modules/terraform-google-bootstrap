@@ -29,7 +29,7 @@ module "cloudbuilder" {
 
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_uri         = module.github_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
+  dockerfile_repo_uri         = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
   dockerfile_repo_type        = "UNKNOWN" // "GITLAB" is not one of the options available so we need to use "UNKNOWN"
   use_cloudbuildv2_repository = true
   trigger_location            = "us-central1"
@@ -48,10 +48,10 @@ module "cloudbuilder" {
 resource "time_sleep" "propagation" {
   create_duration = "30s"
 
-  depends_on = [module.gitlab_connection]
+  depends_on = [module.git_repo_connection]
 }
 
-module "gitlab_connection" {
+module "git_repo_connection" {
   source = "../../modules/cloudbuild_repo_connection"
 
   project_id = var.project_id

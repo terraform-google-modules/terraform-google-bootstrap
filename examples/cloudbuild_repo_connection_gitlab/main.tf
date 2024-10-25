@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module "gitlab_connection" {
+module "git_repo_connection" {
   source = "../../modules/cloudbuild_repo_connection"
 
   project_id = var.project_id

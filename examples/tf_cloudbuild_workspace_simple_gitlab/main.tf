@@ -29,7 +29,7 @@ module "tf_workspace" {
 
   project_id               = module.enabled_google_apis.project_id
   tf_repo_type             = "CLOUDBUILD_V2_REPOSITORY"
-  tf_repo_uri              = module.github_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
+  tf_repo_uri              = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
   location                 = "us-central1"
   trigger_location         = "us-central1"
   artifacts_bucket_name    = "tf-configs-build-artifacts-${var.project_id}-gl"
@@ -54,10 +54,10 @@ module "tf_workspace" {
 resource "time_sleep" "propagation" {
   create_duration = "30s"
 
-  depends_on = [module.gitlab_connection]
+  depends_on = [module.git_repo_connection]
 }
 
-module "gitlab_connection" {
+module "git_repo_connection" {
   source = "../../modules/cloudbuild_repo_connection"
 
   project_id = var.project_id

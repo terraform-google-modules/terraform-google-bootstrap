@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module "github_connection" {
+module "git_repo_connection" {
   source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
   version = "~> 9.0"
 

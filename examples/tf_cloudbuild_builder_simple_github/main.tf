@@ -30,7 +30,7 @@ module "cloudbuilder" {
   source = "../../modules/tf_cloudbuild_builder"
 
   project_id                  = module.enabled_google_apis.project_id
-  dockerfile_repo_uri         = module.github_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
+  dockerfile_repo_uri         = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
   dockerfile_repo_type        = "GITHUB"
   use_cloudbuildv2_repository = true
   trigger_location            = local.location
@@ -49,10 +49,10 @@ module "cloudbuilder" {
 resource "time_sleep" "propagation" {
   create_duration = "30s"
 
-  depends_on = [module.github_connection]
+  depends_on = [module.git_repo_connection]
 }
 
-module "github_connection" {
+module "git_repo_connection" {
   source = "../../modules/cloudbuild_repo_connection"
 
   project_id = var.project_id
