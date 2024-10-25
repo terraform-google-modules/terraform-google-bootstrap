@@ -31,6 +31,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "project_deletion_policy" {
+  description = "The deletion policy for the project created."
+  type        = string
+  default     = "PREVENT"
+}
+
 variable "project_labels" {
   description = "Labels to apply to the project."
   type        = map(string)

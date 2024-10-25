@@ -70,6 +70,7 @@ module "seed_project" {
   create_project_sa           = false
   labels                      = var.project_labels
   lien                        = true
+  deletion_policy             = var.project_deletion_policy
 }
 
 module "enable_cross_project_service_account_usage" {

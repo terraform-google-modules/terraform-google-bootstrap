@@ -43,6 +43,7 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
+  deletion_policy             = var.project_deletion_policy
 }
 
 // On the first run of cloud build submit, a bucket is automaticaly created with name "[PROJECT_ID]_cloudbuild"
