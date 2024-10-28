@@ -49,6 +49,10 @@ module "project" {
       ]
     },
     {
+      api   = "workflows.googleapis.com",
+      roles = ["roles/workflows.serviceAgent"]
+    },
+    {
       api   = "config.googleapis.com",
       roles = ["roles/cloudconfig.serviceAgent"]
     }
