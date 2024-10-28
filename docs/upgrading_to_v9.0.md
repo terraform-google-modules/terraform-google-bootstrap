@@ -40,3 +40,43 @@ The endpoint that is used to trigger a build was replaced with a new one that al
 ```
  # module.cloudbuilder.google_workflows_workflow.builder will be updated in-place
 ```
+
+## Google Cloud Provider Project deletion_policy
+
+The `deletion_policy` for [project-factory](https://github.com/terraform-google-modules/terraform-google-project-factory) module now defaults to `"PREVENT"` rather than `"DELETE"`.
+This aligns with the behavior in Google Cloud Platform Provider v6+.
+To maintain the old behavior in the projects created within the modules you can set the new variable `project_deletion_policy = "DELETE"`.
+
+### Bootstrap main module
+
+```diff
+module "bootstrap" {
+  source  = "terraform-google-modules/bootstrap/google"
+- version = "~> 8.0"
++ version = "~> 9.0"
+
++ project_deletion_policy = "DELETE"
+```
+
+### Cloud Build sub module
+
+```diff
+module "cloudbuild" {
+  source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild"
+- version = "~> 8.0"
++ version = "~> 9.0"
+
++ project_deletion_policy = "DELETE"
+```
+
+
+### Cloud Build Source sub module
+
+```diff
+module "tf_cloudbuild_source" {
+  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_source"
+- version = "~> 8.0"
++ version = "~> 9.0"
+
++ project_deletion_policy = "DELETE"
+```
