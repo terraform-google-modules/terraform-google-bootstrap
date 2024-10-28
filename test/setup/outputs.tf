@@ -59,3 +59,7 @@ output "random_testing_string" {
   description = "Access the random ID created in setup for labeling other resources."
   value       = random_id.suffix.hex
 }
+
+output "project_deletion_policy" {
+  value = "DELETE"
+}

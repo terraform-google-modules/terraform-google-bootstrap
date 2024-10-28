@@ -16,13 +16,14 @@
 
 module "project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 15.0"
+  version = "~> 17.0"
 
   name              = "ci-bootstrap"
   random_project_id = true
   org_id            = var.org_id
   folder_id         = var.folder_id
   billing_account   = var.billing_account
+  deletion_policy   = "DELETE"
 
   activate_apis = [
     "cloudresourcemanager.googleapis.com",
@@ -41,8 +42,15 @@ module "project" {
 
   activate_api_identities = [
     {
-      api   = "cloudbuild.googleapis.com",
-      roles = ["roles/cloudbuild.builds.builder"]
+      api = "cloudbuild.googleapis.com",
+      roles = [
+        "roles/cloudbuild.builds.builder",
+        "roles/cloudbuild.connectionAdmin",
+      ]
+    },
+    {
+      api   = "workflows.googleapis.com",
+      roles = ["roles/workflows.serviceAgent"]
     },
     {
       api   = "config.googleapis.com",

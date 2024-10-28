@@ -42,7 +42,10 @@ module "cloudbuilder" {
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
 
-  depends_on = [time_sleep.propagation]
+  depends_on = [
+    time_sleep.propagation,
+    module.enabled_google_apis,
+  ]
 }
 
 resource "time_sleep" "propagation" {
