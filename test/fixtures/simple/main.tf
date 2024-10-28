@@ -17,10 +17,11 @@
 module "simple" {
   source = "../../../examples/simple"
 
-  org_id               = var.org_id
-  billing_account      = var.billing_account
-  group_org_admins     = var.group_org_admins
-  group_billing_admins = var.group_billing_admins
-  default_region       = var.default_region
-  project_prefix       = "cft-test"
+  org_id                  = var.org_id
+  billing_account         = var.billing_account
+  group_org_admins        = var.group_org_admins
+  group_billing_admins    = var.group_billing_admins
+  default_region          = var.default_region
+  project_prefix          = "cft-test"
+  project_deletion_policy = var.project_deletion_policy
 }

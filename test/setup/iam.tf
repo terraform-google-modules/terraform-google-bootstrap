@@ -56,3 +56,11 @@ resource "google_project_iam_member" "int_test" {
 resource "google_service_account_key" "int_test" {
   service_account_id = google_service_account.int_test.id
 }
+
+resource "google_project_iam_member" "cb_service_agent_role" {
+  project = module.project.project_id
+  role    = "roles/cloudbuild.serviceAgent"
+  member  = "serviceAccount:service-${module.project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+
+  depends_on = [module.project]
+}

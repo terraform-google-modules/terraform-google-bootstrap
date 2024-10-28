@@ -53,6 +53,8 @@ module "cloudbuilder" {
 
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
+
+  depends_on = [module.enabled_google_apis]
 }
 
 // Create a secret containing the personal access token and grant permissions to the Service Agent.

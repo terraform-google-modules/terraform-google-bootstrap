@@ -34,3 +34,9 @@ variable "group_org_admins" {
   description = "Google Group for GCP Organization Administrators"
   type        = string
 }
+
+variable "project_deletion_policy" {
+  description = "The deletion policy for the project created."
+  type        = string
+  default     = "PREVENT"
+}

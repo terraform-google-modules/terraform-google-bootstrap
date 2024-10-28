@@ -36,7 +36,7 @@ resource "random_id" "suffix" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 15.0"
+  version                     = "~> 17.0"
   name                        = local.cloudbuild_project_id
   random_project_id           = var.random_suffix
   disable_services_on_destroy = false
@@ -45,6 +45,7 @@ module "cloudbuild_project" {
   billing_account             = var.billing_account
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
+  deletion_policy             = var.project_deletion_policy
 }
 
 /******************************************
