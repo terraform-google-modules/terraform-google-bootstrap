@@ -26,7 +26,7 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/git"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
-	"github.com/google/go-github/v63/github"
+	"github.com/google/go-github/v66/github"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
@@ -97,7 +97,7 @@ func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
-		"github_pat":  githubPAT,
+		"github_pat":     githubPAT,
 		"repository_uri": repoURL,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
