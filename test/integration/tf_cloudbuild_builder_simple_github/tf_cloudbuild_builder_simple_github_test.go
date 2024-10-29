@@ -193,6 +193,7 @@ func TestTFCloudBuildBuilderGitHub(t *testing.T) {
 				}
 				if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 					t.Logf("%v", build[0])
+					utils.PrintLogErrors(t, "TestTFCloudBuildBuilderGitHub", projectID)
 					t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
 				}
 				return true, nil
