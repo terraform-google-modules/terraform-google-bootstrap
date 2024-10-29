@@ -71,10 +71,18 @@ module "git_repo_connection" {
       repository_url  = var.repository_uri
     },
   }
+
+  depends_on = [time_sleep.propagation_secret_version]
+}
+
+resource "time_sleep" "propagation_secret_version" {
+  create_duration = "30s"
 }
 
 data "google_secret_manager_secret_version_access" "gitlab_api_access_token" {
   secret = var.gitlab_authorizer_secret_id
+
+  depends_on = [time_sleep.propagation_secret_version]
 }
 
 # Bootstrap GitLab with Dockerfile
