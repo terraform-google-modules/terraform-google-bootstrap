@@ -272,7 +272,7 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 						t.Logf("%v", build[0])
-						utils.PrintLogErrors(t, "TestIMCloudBuildWorkspaceGitLab", projectID)
+						utils.PrintLog(t, "TestIMCloudBuildWorkspaceGitLab", projectID)
 						t.Fatalf("workflow %s failed with status %s", build[0].Get("id"), latestWorkflowRunStatus)
 						return false, nil
 					}
