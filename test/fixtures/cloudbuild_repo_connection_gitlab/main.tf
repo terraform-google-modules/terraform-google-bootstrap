@@ -62,6 +62,16 @@ resource "google_secret_manager_secret_version" "gitlab_webhook" {
   secret_data = random_uuid.random_webhook_secret.result
 }
 
+resource "time_sleep" "propagation" {
+  create_duration = "30s"
+
+  depends_on = [
+    google_secret_manager_secret_version.gitlab_api_token,
+    google_secret_manager_secret_version.gitlab_read_api_token,
+    google_secret_manager_secret_version.gitlab_webhook,
+  ]
+}
+
 module "example" {
   source = "../../../examples/cloudbuild_repo_connection_gitlab"
 
@@ -71,4 +81,6 @@ module "example" {
   gitlab_webhook_secret_id         = google_secret_manager_secret.gitlab_webhook.id
   repository_name                  = var.repository_name
   repository_url                   = var.repository_url
+
+  depends_on = [time_sleep.propagation]
 }

@@ -51,6 +51,15 @@ resource "google_secret_manager_secret_version" "github_app_id" {
   secret_data = var.github_app_id
 }
 
+resource "time_sleep" "propagation" {
+  create_duration = "30s"
+
+  depends_on = [
+    google_secret_manager_secret_version.github_app_id,
+    google_secret_manager_secret_version.github_token
+  ]
+}
+
 module "example" {
   source = "../../../examples/cloudbuild_repo_connection_github"
 
@@ -59,4 +68,6 @@ module "example" {
   github_app_id_secret_id = google_secret_manager_secret.github_app_id.id
   repository_name         = var.repository_name
   repository_url          = var.repository_url
+
+  depends_on = [time_sleep.propagation]
 }
