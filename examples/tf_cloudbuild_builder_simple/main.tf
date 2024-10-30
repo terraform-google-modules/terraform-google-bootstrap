@@ -36,7 +36,9 @@ resource "google_sourcerepo_repository" "builder_dockerfile_repo" {
 module "bootstrap_csr_repo" {
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 3.1"
-  upgrade = false
+
+  upgrade           = false
+  module_depends_on = [module.cloudbuilder]
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
   create_cmd_body       = "${module.enabled_google_apis.project_id} ${split("/", google_sourcerepo_repository.builder_dockerfile_repo.id)[3]} ${path.module}/Dockerfile"

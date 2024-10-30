@@ -49,7 +49,7 @@ func LastElement(str, sep string) string {
 
 // PrintLogErrors print the logs of severity ERROR to the test output.
 func PrintLog(t *testing.T, tag, projectID string) {
-	logsCmd := fmt.Sprintf("logging read --project=%s", projectID)
+	logsCmd := fmt.Sprintf("logging read --project=%s --order=asc", projectID)
 	logs := gcloud.Runf(t, logsCmd).Array()
 	for _, log := range logs {
 		t.Logf("%s build-log: %s", tag, log.Get("textPayload").String())
