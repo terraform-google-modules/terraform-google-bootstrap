@@ -109,6 +109,16 @@ resource "time_sleep" "impersonate_propagation" {
 }
 
 /******************************************
+  Cloudbuild Service Agent Role
+******************************************/
+
+resource "google_project_iam_member" "cb_service_agent_role" {
+  project = module.cloudbuild_project.project_id
+  role    = "roles/cloudbuild.serviceAgent"
+  member  = "serviceAccount:service-${module.cloudbuild_project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+/******************************************
   Cloudbuild IAM for admins
 *******************************************/
 
