@@ -35,6 +35,7 @@ module "cloudbuilder" {
   use_cloudbuildv2_repository = true
   trigger_location            = local.location
   gar_repo_location           = local.location
+  build_timeout               = "1200s"
   bucket_name                 = "tf-cloudbuilder-build-logs-${var.project_id}-gh"
   gar_repo_name               = "tf-runners-gh"
   workflow_name               = "terraform-runner-workflow-gh"
