@@ -116,12 +116,14 @@ steps:
 - id: teardown-tfbuilder
   waitFor:
       - verify-tfbuilder
+      - verify-tfbuilder-github
+      - verify-tfbuilder-gitlab
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilder --stage teardown --verbose']
 
 - id: apply-tfbuilder-github
   waitFor:
-      - teardown-tfbuilder
+      - create-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilderGitHub --stage apply --verbose']
   secretEnv: ['IM_GITHUB_PAT']
@@ -133,14 +135,16 @@ steps:
   secretEnv: ['IM_GITHUB_PAT']
 - id: teardown-tfbuilder-github
   waitFor:
+      - verify-tfbuilder
       - verify-tfbuilder-github
+      - verify-tfbuilder-gitlab
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilderGitHub --stage teardown --verbose']
   secretEnv: ['IM_GITHUB_PAT']
 
 - id: apply-tfbuilder-gitlab
   waitFor:
-      - teardown-tfbuilder-github
+      - create-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilderGitLab --stage apply --verbose']
   secretEnv: ['IM_GITLAB_PAT']
@@ -152,6 +156,8 @@ steps:
   secretEnv: ['IM_GITLAB_PAT']
 - id: teardown-tfbuilder-gitlab
   waitFor:
+      - verify-tfbuilder
+      - verify-tfbuilder-github
       - verify-tfbuilder-gitlab
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cft test run TestTFCloudBuildBuilderGitLab --stage teardown --verbose']
