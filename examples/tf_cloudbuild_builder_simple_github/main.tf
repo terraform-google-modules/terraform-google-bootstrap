@@ -24,13 +24,6 @@ locals {
   location = "us-central1"
 }
 
-resource "google_service_account" "cb_sa" {
-  project                      = module.enabled_google_apis.project_id
-  account_id                   = "tf-cb-builder-sa-gh"
-  display_name                 = "SA for Terraform builder build trigger. Managed by Terraform."
-  create_ignore_already_exists = true
-}
-
 module "cloudbuilder" {
   # source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
   # version = "~> 8.0"
@@ -40,7 +33,6 @@ module "cloudbuilder" {
   dockerfile_repo_uri         = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
   dockerfile_repo_type        = "GITHUB"
   use_cloudbuildv2_repository = true
-  cloudbuild_sa               = google_service_account.cb_sa.id
   trigger_location            = local.location
   gar_repo_location           = local.location
   build_timeout               = "1200s"

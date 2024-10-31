@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-resource "google_service_account" "cb_sa" {
-  project                      = module.enabled_google_apis.project_id
-  account_id                   = "tf-cb-builder-sa-s"
-  display_name                 = "SA for Terraform builder build trigger. Managed by Terraform."
-  create_ignore_already_exists = true
-}
-
 module "cloudbuilder" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
   version = "~> 8.0"
 
   project_id          = module.enabled_google_apis.project_id
   dockerfile_repo_uri = google_sourcerepo_repository.builder_dockerfile_repo.url
-  cloudbuild_sa       = google_service_account.cb_sa.id
   trigger_location    = "us-central1"
   gar_repo_location   = "us-central1"
   build_timeout       = "1200s"
