@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 output "artifact_repo" {
   description = "GAR Repo created to store TF Cloud Builder images"
   value       = module.example.artifact_repo

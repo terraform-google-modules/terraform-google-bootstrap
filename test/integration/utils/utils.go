@@ -15,12 +15,10 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
 
-	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 )
 
@@ -45,13 +43,4 @@ func GetFileContents(t *testing.T, path string) []byte {
 // Typically used to grab a resource ID from a full resource name.
 func LastElement(str, sep string) string {
 	return strings.Split(str, sep)[len(strings.Split(str, sep))-1]
-}
-
-// PrintLogErrors print the logs of severity ERROR to the test output.
-func PrintLog(t *testing.T, tag, projectID string) {
-	logsCmd := fmt.Sprintf("logging read --project=%s --order=asc", projectID)
-	logs := gcloud.Runf(t, logsCmd).Array()
-	for _, log := range logs {
-		t.Logf("%s build-log: %s", tag, log.Get("textPayload").String())
-	}
 }
