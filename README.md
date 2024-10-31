@@ -63,6 +63,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | org\_id | GCP Organization ID | `string` | n/a | yes |
 | org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | `list(string)` | `[]` | no |
 | parent\_folder | GCP parent folder ID in the form folders/{id} | `string` | `""` | no |
+| project\_auto\_create\_network | Create the default network for the project created. | `bool` | `false` | no |
 | project\_deletion\_policy | The deletion policy for the project created. | `string` | `"PREVENT"` | no |
 | project\_id | Custom project ID to use for project created. If not supplied, the default id is {project\_prefix}-seed-{random suffix}. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |

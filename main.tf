@@ -71,6 +71,7 @@ module "seed_project" {
   labels                      = var.project_labels
   lien                        = true
   deletion_policy             = var.project_deletion_policy
+  auto_create_network         = var.project_auto_create_network
 }
 
 module "enable_cross_project_service_account_usage" {

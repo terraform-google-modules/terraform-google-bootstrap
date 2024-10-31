@@ -37,6 +37,12 @@ variable "project_deletion_policy" {
   default     = "PREVENT"
 }
 
+variable "project_auto_create_network" {
+  description = "Create the default network for the project created."
+  type        = bool
+  default     = false
+}
+
 variable "project_labels" {
   description = "Labels to apply to the project."
   type        = map(string)

@@ -65,6 +65,7 @@ Functional examples and sample Cloud Build definitions are included in the [exam
 | group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
 | impersonate\_service\_account | The service account to impersonate while running the gcloud builds submit command. | `string` | `""` | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
+| project\_auto\_create\_network | Create the default network for the project created. | `bool` | `false` | no |
 | project\_deletion\_policy | The deletion policy for the project created. | `string` | `"PREVENT"` | no |
 | project\_id | Custom project ID to use for project created. | `string` | `""` | no |
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
