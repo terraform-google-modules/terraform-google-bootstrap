@@ -25,8 +25,8 @@ locals {
 }
 
 module "cloudbuilder" {
-  source = "../../modules/tf_cloudbuild_builder"
-
+  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
+  version = "~> 8.0"
 
   project_id                  = module.enabled_google_apis.project_id
   dockerfile_repo_uri         = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
@@ -56,7 +56,8 @@ resource "time_sleep" "propagation" {
 }
 
 module "git_repo_connection" {
-  source = "../../modules/cloudbuild_repo_connection"
+  source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
+  version = "~> 8.0"
 
   project_id = var.project_id
   connection_config = {
