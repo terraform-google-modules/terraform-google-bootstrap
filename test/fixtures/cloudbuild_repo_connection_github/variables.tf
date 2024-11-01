@@ -22,11 +22,13 @@ variable "project_id" {
 variable "github_pat" {
   description = "The personal access token for authenticating with GitHub."
   type        = string
+  sensitive   = true
 }
 
 variable "github_app_id" {
   description = "The application ID for the Cloudbuild GitHub app."
   type        = string
+  sensitive   = true
 }
 
 variable "repository_url" {

@@ -32,9 +32,11 @@ variable "repository_name" {
 variable "gitlab_authorizer_credential" {
   description = "Credential for GitLab authorizer"
   type        = string
+  sensitive   = true
 }
 
 variable "gitlab_read_authorizer_credential" {
   description = "Credential for GitLab read authorizer"
   type        = string
+  sensitive   = true
 }
