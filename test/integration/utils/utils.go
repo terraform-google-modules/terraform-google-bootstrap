@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
+	"github.com/xanzy/go-gitlab"
 )
 
 // GetRandomStringFromSetup gets a random string output variable setup.
@@ -43,4 +44,9 @@ func GetFileContents(t *testing.T, path string) []byte {
 // Typically used to grab a resource ID from a full resource name.
 func LastElement(str, sep string) string {
 	return strings.Split(str, sep)[len(strings.Split(str, sep))-1]
+}
+
+// GetDeleteProjectOptions returns default DeleteProjectOptions
+func GetDeleteProjectOptions() *gitlab.DeleteProjectOptions {
+	return &gitlab.DeleteProjectOptions{}
 }
