@@ -19,13 +19,13 @@ variable "project_id" {
   type        = string
 }
 
-variable "github_pat" {
-  description = "The personal access token for authenticating with GitHub."
+variable "github_pat_secret_id" {
+  description = "The secret ID for the personal access token for authenticating with GitHub."
   type        = string
 }
 
-variable "github_app_id" {
-  description = "The application ID for the Cloudbuild GitHub app."
+variable "github_app_id_secret_id" {
+  description = "The secret ID for the application ID for the Cloudbuild GitHub app."
   type        = string
 }
 
@@ -38,4 +38,3 @@ variable "repository_name" {
   description = "The name of the test repository."
   type        = string
 }
-

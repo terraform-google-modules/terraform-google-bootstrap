@@ -83,6 +83,12 @@ variable "project_deletion_policy" {
   default     = "PREVENT"
 }
 
+variable "project_auto_create_network" {
+  description = "Create the default network for the project created."
+  type        = bool
+  default     = false
+}
+
 variable "activate_apis" {
   description = "List of APIs to enable in the Cloudbuild project."
   type        = list(string)

@@ -15,10 +15,6 @@
  */
 
 locals {
-  // Found in the URL of your Cloud Build GitHub app configuration settings
-  // https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen#connecting_a_github_host_programmatically
-  github_app_installation_id = "47590865"
-
   # GitHub repo url of form "github.com/owner/name"
   repoURL              = endswith(var.repository_uri, ".git") ? var.repository_uri : "${var.repository_uri}.git"
   repoURLWithoutSuffix = trimsuffix(local.repoURL, ".git")
@@ -28,26 +24,19 @@ locals {
   location = "us-central1"
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-// Added to various IDs to prevent potential conflicts for deployments targeting the same repository.
-resource "random_id" "resources_random_id" {
-  byte_length = 4
-}
-
 module "tf_workspace" {
-  source = "../../modules/tf_cloudbuild_workspace"
+  source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_workspace"
+  version = "~> 8.0"
 
-  project_id               = module.enabled_google_apis.project_id
-  tf_repo_type             = "CLOUDBUILD_V2_REPOSITORY"
-  tf_repo_uri              = google_cloudbuildv2_repository.repository_connection.id
-  location                 = "us-central1"
-  trigger_location         = "us-central1"
-  artifacts_bucket_name    = "tf-configs-build-artifacts-${var.project_id}-gh"
-  log_bucket_name          = "tf-configs-build-logs-${var.project_id}-gh"
-  create_state_bucket_name = "tf-configs-build-state-${var.project_id}-gh"
+  project_id                = module.enabled_google_apis.project_id
+  tf_repo_type              = "CLOUDBUILD_V2_REPOSITORY"
+  tf_repo_uri               = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
+  location                  = "us-central1"
+  trigger_location          = "us-central1"
+  create_cloudbuild_sa_name = "tf-gh-${lower(local.gh_name)}"
+  artifacts_bucket_name     = "tf-configs-build-artifacts-${var.project_id}-gh"
+  log_bucket_name           = "tf-configs-build-logs-${var.project_id}-gh"
+  create_state_bucket_name  = "tf-configs-build-state-${var.project_id}-gh"
 
   # allow log/state buckets to be destroyed
   buckets_force_destroy = true
@@ -58,65 +47,56 @@ module "tf_workspace" {
   }
   cloudbuild_env_vars = ["TF_VAR_project_id=${var.project_id}"]
 
-  depends_on = [module.enabled_google_apis]
+  depends_on = [
+    module.enabled_google_apis,
+    time_sleep.propagation,
+  ]
 }
 
-// Create a secret containing the personal access token and grant permissions to the Service Agent.
-resource "google_secret_manager_secret" "github_token_secret" {
-  project   = var.project_id
-  secret_id = "cb-github-${random_id.resources_random_id.dec}-${local.gh_name}"
+resource "time_sleep" "propagation" {
+  create_duration = "30s"
 
-  labels = {
-    label = "cb-${random_id.resources_random_id.dec}"
+  depends_on = [module.git_repo_connection]
+}
+
+module "git_repo_connection" {
+  source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
+  version = "~> 8.0"
+
+  project_id = var.project_id
+  connection_config = {
+    connection_type         = "GITHUBv2"
+    github_secret_id        = var.github_pat_secret_id
+    github_app_id_secret_id = var.github_app_id_secret_id
   }
 
-  replication {
-    auto {}
+  cloud_build_repositories = {
+    "test_repo" = {
+      repository_name = local.gh_name
+      repository_url  = local.repoURL
+    },
   }
+
+  depends_on = [time_sleep.propagation_secret_version]
 }
 
-// Personal access token from VCS.
-resource "google_secret_manager_secret_version" "github_token_secret_version" {
-  secret      = google_secret_manager_secret.github_token_secret.id
-  secret_data = var.github_pat
+resource "time_sleep" "propagation_secret_version" {
+  create_duration = "30s"
 }
 
-resource "google_secret_manager_secret_iam_member" "github_token_iam_member" {
-  project   = var.project_id
-  secret_id = google_secret_manager_secret.github_token_secret.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
+data "google_secret_manager_secret_version_access" "github_pat" {
+  secret = var.github_pat_secret_id
 
-// See https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen
-resource "google_cloudbuildv2_connection" "vcs_connection" {
-  project  = var.project_id
-  name     = "cb-${random_id.resources_random_id.dec}-${var.project_id}"
-  location = local.location
-
-  github_config {
-    app_installation_id = local.github_app_installation_id
-    authorizer_credential {
-      oauth_token_secret_version = google_secret_manager_secret_version.github_token_secret_version.name
-    }
-  }
-}
-
-// Create the repository connection.
-resource "google_cloudbuildv2_repository" "repository_connection" {
-  project  = var.project_id
-  name     = local.gh_name
-  location = local.location
-
-  parent_connection = google_cloudbuildv2_connection.vcs_connection.name
-  remote_uri        = local.repoURL
+  depends_on = [time_sleep.propagation_secret_version]
 }
 
 module "bootstrap_github_repo" {
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 3.1"
-  upgrade = false
+
+  upgrade           = false
+  module_depends_on = [module.tf_workspace]
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
-  create_cmd_body       = "${var.github_pat} ${var.repository_uri} ${path.module}/files"
+  create_cmd_body       = "${data.google_secret_manager_secret_version_access.github_pat.secret_data} ${var.repository_uri} ${path.module}/files"
 }

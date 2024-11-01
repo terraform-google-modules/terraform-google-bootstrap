@@ -22,6 +22,7 @@ module "cloudbuilder" {
   dockerfile_repo_uri = google_sourcerepo_repository.builder_dockerfile_repo.url
   trigger_location    = "us-central1"
   gar_repo_location   = "us-central1"
+  build_timeout       = "1200s"
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
 }
@@ -36,7 +37,9 @@ resource "google_sourcerepo_repository" "builder_dockerfile_repo" {
 module "bootstrap_csr_repo" {
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 3.1"
-  upgrade = false
+
+  upgrade           = false
+  module_depends_on = [module.cloudbuilder]
 
   create_cmd_entrypoint = "${path.module}/scripts/push-to-repo.sh"
   create_cmd_body       = "${module.enabled_google_apis.project_id} ${split("/", google_sourcerepo_repository.builder_dockerfile_repo.id)[3]} ${path.module}/Dockerfile"

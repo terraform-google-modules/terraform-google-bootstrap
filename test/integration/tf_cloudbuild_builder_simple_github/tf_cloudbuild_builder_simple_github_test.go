@@ -96,8 +96,9 @@ func TestTFCloudBuildBuilderGitHub(t *testing.T) {
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
-		"github_pat":     githubPAT,
-		"repository_uri": repoURL,
+		"github_pat":      githubPAT,
+		"repository_uri":  repoURL,
+		"github_app_id":   "47590865", // Found in the URL of your Cloud Build GitHub app configuration settings
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 

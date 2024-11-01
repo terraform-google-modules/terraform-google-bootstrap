@@ -99,6 +99,7 @@ func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 	vars := map[string]interface{}{
 		"github_pat":     githubPAT,
 		"repository_uri": repoURL,
+		"github_app_id":  "47590865", // Found in the URL of your Cloud Build GitHub app configuration settings
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
@@ -121,7 +122,7 @@ func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 			triggerOP := utils.LastElement(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
 			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --region %s --project %s", triggerOP, location, projectID)
 			assert.Equal(fmt.Sprintf("%s-%s", repoName, trigger), cloudBuildOP.Get("name").String(), "should have the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-%s@%s.iam.gserviceaccount.com", projectID, repoName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-gh-%s@%s.iam.gserviceaccount.com", projectID, repoName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
 		// artifacts, state and log buckets
@@ -187,9 +188,6 @@ func TestCloudBuildWorkspaceSimpleGitHub(t *testing.T) {
 					}
 					if latestWorkflowRunStatus == "TIMEOUT" || latestWorkflowRunStatus == "FAILURE" {
 						t.Logf("%v", build[0])
-						logs, err := gcloud.RunCmdE(t, fmt.Sprintf("builds log %s --region %s", build[0].Get("id"), location))
-						t.Logf("err %v", err)
-						t.Logf("logs %s", logs)
 						t.Fatalf("workflow %s failed with failureInfo %s", build[0].Get("id"), build[0].Get("failureInfo"))
 					}
 					return true, nil

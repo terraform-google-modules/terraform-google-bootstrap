@@ -44,6 +44,7 @@ module "cloudbuild_project" {
   activate_apis               = local.activate_apis
   labels                      = var.project_labels
   deletion_policy             = var.project_deletion_policy
+  auto_create_network         = var.project_auto_create_network
 }
 
 // On the first run of cloud build submit, a bucket is automaticaly created with name "[PROJECT_ID]_cloudbuild"
@@ -88,6 +89,7 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
   member  = "group:${var.group_org_admins}"
 }
 
+//Cloudbuild Service Account
 resource "google_storage_bucket_iam_member" "cloudbuild_iam" {
   bucket = module.cloudbuild_bucket.bucket.name
   role   = "roles/storage.admin"

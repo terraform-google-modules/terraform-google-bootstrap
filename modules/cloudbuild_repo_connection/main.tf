@@ -14,110 +14,71 @@
  * limitations under the License.
  */
 
-data "google_project" "project_id" {
-  project_id = var.project_id
-}
-
 locals {
-  is_github = var.credential_config.credential_type == "GITHUBv2"
-  is_gitlab = var.credential_config.credential_type == "GITLABv2"
+  is_github = var.connection_config.connection_type == "GITHUBv2"
+  is_gitlab = var.connection_config.connection_type == "GITLABv2"
 
   gitlab_secrets_iterator = local.is_gitlab ? {
-    "api"      = google_secret_manager_secret.gitlab_api_token[0].id,
-    "read_api" = google_secret_manager_secret.gitlab_read_api_token[0].id,
-    "webhook"  = google_secret_manager_secret.gitlab_webhook[0].id
+    "api"      = var.connection_config.gitlab_authorizer_credential_secret_id,
+    "read_api" = var.connection_config.gitlab_read_authorizer_credential_secret_id,
+    "webhook"  = var.connection_config.gitlab_webhook_secret_id
   } : {}
+}
+
+data "google_project" "project_id" {
+  project_id = var.project_id
 }
 
 resource "random_id" "suffix" {
   byte_length = 4
 }
 
-# Github Secret
-resource "google_secret_manager_secret" "github_token" {
+data "google_secret_manager_secret_version_access" "app_installation_id" {
   count = local.is_github ? 1 : 0
 
-  project   = var.project_id
-  secret_id = "${var.credential_config.github_secret_id}-${random_id.suffix.dec}"
-
-  replication {
-    auto {
-
-    }
-  }
+  secret = var.connection_config.github_app_id_secret_id
 }
 
-resource "google_secret_manager_secret_version" "github_token" {
-  count = local.is_github ? 1 : 0
+resource "google_cloudbuildv2_connection" "connection" {
+  project  = var.project_id
+  location = var.location
+  name     = "${var.cloudbuild_connection_name}-${random_id.suffix.dec}"
 
-  secret      = google_secret_manager_secret.github_token[0].id
-  secret_data = var.credential_config.github_pat
+  dynamic "github_config" {
+    for_each = local.is_github ? [1] : []
+    content {
+      app_installation_id = data.google_secret_manager_secret_version_access.app_installation_id[0].secret_data
+      authorizer_credential {
+        oauth_token_secret_version = "${var.connection_config.github_secret_id}/versions/latest"
+      }
+    }
+  }
+
+  dynamic "gitlab_config" {
+    for_each = local.is_gitlab ? [1] : []
+    content {
+      host_uri = null
+      authorizer_credential {
+        user_token_secret_version = "${var.connection_config.gitlab_authorizer_credential_secret_id}/versions/latest"
+      }
+      read_authorizer_credential {
+        user_token_secret_version = "${var.connection_config.gitlab_read_authorizer_credential_secret_id}/versions/latest"
+      }
+      webhook_secret_secret_version = "${var.connection_config.gitlab_webhook_secret_id}/versions/latest"
+    }
+  }
+
+  depends_on = [time_sleep.secret_iam_permission_propagation]
 }
 
 resource "google_secret_manager_secret_iam_member" "github_accessor" {
   count = local.is_github ? 1 : 0
 
-  secret_id = google_secret_manager_secret.github_token[0].id
+  secret_id = var.connection_config.github_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project_id.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }
 
-# Gitlab secret
-resource "google_secret_manager_secret" "gitlab_api_token" {
-  count = local.is_gitlab ? 1 : 0
-
-  project   = var.project_id
-  secret_id = "${var.credential_config.gitlab_authorizer_credential_secret_id}-${random_id.suffix.dec}"
-
-  replication {
-    auto {}
-  }
-}
-
-resource "google_secret_manager_secret_version" "gitlab_api_token" {
-  count = local.is_gitlab ? 1 : 0
-
-  secret      = google_secret_manager_secret.gitlab_api_token[0].id
-  secret_data = var.credential_config.gitlab_authorizer_credential
-}
-
-resource "google_secret_manager_secret" "gitlab_read_api_token" {
-  count = local.is_gitlab ? 1 : 0
-
-  project   = var.project_id
-  secret_id = "${var.credential_config.gitlab_read_authorizer_credential_secret_id}-${random_id.suffix.dec}"
-  replication {
-    auto {}
-  }
-}
-
-resource "google_secret_manager_secret_version" "gitlab_read_api_token" {
-  count = local.is_gitlab ? 1 : 0
-
-  secret      = google_secret_manager_secret.gitlab_read_api_token[0].id
-  secret_data = var.credential_config.gitlab_read_authorizer_credential
-}
-
-resource "google_secret_manager_secret" "gitlab_webhook" {
-  count = local.is_gitlab ? 1 : 0
-
-  project   = var.project_id
-  secret_id = "cb-gitlab-webhook-${random_id.suffix.dec}"
-  replication {
-    auto {}
-  }
-}
-
-resource "random_uuid" "random_webhook_secret" {
-  count = local.is_gitlab ? 1 : 0
-}
-
-resource "google_secret_manager_secret_version" "gitlab_webhook" {
-  count = local.is_gitlab ? 1 : 0
-
-  secret      = google_secret_manager_secret.gitlab_webhook[0].id
-  secret_data = random_uuid.random_webhook_secret[0].result
-}
 
 resource "google_secret_manager_secret_iam_member" "gitlab_token_accessor" {
   for_each = local.gitlab_secrets_iterator
@@ -126,4 +87,23 @@ resource "google_secret_manager_secret_iam_member" "gitlab_token_accessor" {
   secret_id = each.value
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project_id.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+resource "time_sleep" "secret_iam_permission_propagation" {
+  create_duration = "30s"
+
+  depends_on = [
+    google_secret_manager_secret_iam_member.github_accessor,
+    google_secret_manager_secret_iam_member.gitlab_token_accessor
+  ]
+}
+
+resource "google_cloudbuildv2_repository" "repositories" {
+  for_each = var.cloud_build_repositories
+
+  project           = var.project_id
+  location          = var.location
+  name              = each.value.repository_name
+  remote_uri        = each.value.repository_url
+  parent_connection = google_cloudbuildv2_connection.connection.name
 }

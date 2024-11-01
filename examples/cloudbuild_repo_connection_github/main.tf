@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-module "github_connection" {
+module "git_repo_connection" {
   source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
-  version = "~> 9.0"
+  version = "~> 8.0"
 
   project_id = var.project_id
-  credential_config = {
-    credential_type = "GITHUBv2"
-    github_pat      = var.github_pat
-    github_app_id   = var.github_app_id
+  connection_config = {
+    connection_type         = "GITHUBv2"
+    github_secret_id        = var.github_pat_secret_id
+    github_app_id_secret_id = var.github_app_id_secret_id
   }
 
   cloud_build_repositories = {
