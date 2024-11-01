@@ -93,7 +93,7 @@ func (gl *GitLabClient) AddFileToProject(file []byte) {
 }
 
 func (gl *GitLabClient) DeleteProject() {
-	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName())
+	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName(), utils.GetDeleteProjectOptions())
 	if resp.StatusCode != 404 && err != nil {
 		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
 	}
