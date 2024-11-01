@@ -89,13 +89,6 @@ resource "google_project_iam_member" "org_admins_source_repo_admin" {
   member  = "group:${var.group_org_admins}"
 }
 
-//Cloudbuild Service Agent
-resource "google_project_iam_member" "cb_service_agent_role" {
-  project = module.cloudbuild_project.project_id
-  role    = "roles/cloudbuild.serviceAgent"
-  member  = "serviceAccount:service-${module.cloudbuild_project.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-}
-
 //Cloudbuild Service Account
 resource "google_storage_bucket_iam_member" "cloudbuild_iam" {
   bucket = module.cloudbuild_bucket.bucket.name
