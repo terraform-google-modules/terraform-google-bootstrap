@@ -7,6 +7,28 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v8.0.0...v9.0.0) (2024-11-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Update Terraform Google Provider to v6 ([#320](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/320))
+* **modules:** enable cloudbuildv2 repository support on tf_cloudbuild_builder and tf_cloudbuild_workspace ([#299](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/299))
+
+### Features
+
+* **deps:** Update Terraform Google Provider to v6 ([#320](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/320)) ([b4ae113](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/b4ae113473592272e3acbb753cc16f45e250cf30))
+* **deps:** Update Terraform Google Provider to v6 (major) ([#314](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/314)) ([cbb731d](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/cbb731d182607161813bd8ee0a47bc1351e2f6b0))
+* **module:** add cloudbuild connection module ([#312](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/312)) ([f79bbc5](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f79bbc53f0593882e552ee0e1ca4019a4db88ac7))
+* **modules:** enable cloudbuildv2 repository support on tf_cloudbuild_builder and tf_cloudbuild_workspace ([#299](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/299)) ([62f5f7d](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/62f5f7d28596b74ceac9a55179f6ee29dbcab740))
+
+
+### Bug Fixes
+
+* Added new force_destroy variable to cloudbuild module. ([#304](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/304)) ([1cdce21](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/1cdce217a98c64001348ff87bc59cfc65e7bac28))
+* Do not create secret versions when using Cloud Build repositores second gen ([#324](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/324)) ([a6072e0](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/a6072e0db92d976f1535dab767ad6b4331bcb4ef))
+* Include cloudkms.googleapis.com API to activate when encrypt_gcs_bucket_tfstate set to true ([#302](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/302)) ([1121fa2](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/1121fa28b63673c993aee2a53e9199a440e4eefa))
+
 ## [8.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v7.2.0...v8.0.0) (2024-05-20)
 
 
