@@ -43,6 +43,12 @@ variable "workflow_sa" {
   default     = ""
 }
 
+variable "workflow_deletion_protection" {
+  description = "Whether Terraform will be prevented from destroying the workflow. When the field is set to true or unset in Terraform state, a `terraform apply` or `terraform destroy` that would delete the workflow will fail. When the field is set to false, deleting the workflow is allowed."
+  type        = bool
+  default     = true
+}
+
 variable "cloudbuild_sa" {
   description = "Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty."
   type        = string

@@ -36,12 +36,13 @@ resource "google_service_account" "workflow_sa" {
 }
 
 resource "google_workflows_workflow" "builder" {
-  project         = var.project_id
-  name            = var.workflow_name
-  region          = var.workflow_region
-  description     = "Workflow for triggering TF Runner builds. Managed by Terraform."
-  service_account = local.workflow_sa
-  source_contents = local.rendered_workflow_config
+  project             = var.project_id
+  name                = var.workflow_name
+  region              = var.workflow_region
+  description         = "Workflow for triggering TF Runner builds. Managed by Terraform."
+  service_account     = local.workflow_sa
+  source_contents     = local.rendered_workflow_config
+  deletion_protection = var.workflow_deletion_protection
 }
 
 # Allow Workflow SA to trigger workflow via scheduler
