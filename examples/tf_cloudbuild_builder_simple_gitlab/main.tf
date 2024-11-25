@@ -42,6 +42,8 @@ module "cloudbuilder" {
 
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
+  # allow workflow to be destroyed
+  workflow_deletion_protection = false
 
   depends_on = [
     time_sleep.propagation,

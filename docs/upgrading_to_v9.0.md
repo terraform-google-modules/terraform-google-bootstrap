@@ -19,7 +19,7 @@ module "tf_workspace" {
 + trigger_location = "global"
 ```
 
-## Default value for variables `trigger_location` and `gar_repo_location` in module `tf_cloudbuild_builde` were removed
+## Default value for variables `trigger_location` and `gar_repo_location` in module `tf_cloudbuild_builder` were removed
 
 To preserve the resources created before, include the inputs `trigger_location` and `gar_repo_location` with the previous default values in the module call
 

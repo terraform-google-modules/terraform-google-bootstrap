@@ -25,6 +25,8 @@ module "cloudbuilder" {
   build_timeout       = "1200s"
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
+  # allow workflow to be destroyed
+  workflow_deletion_protection = false
 }
 
 # CSR for storing Dockerfile
