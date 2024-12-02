@@ -26,7 +26,7 @@ locals {
 
 module "tf_workspace" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_workspace"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   project_id                = module.enabled_google_apis.project_id
   tf_repo_type              = "CLOUDBUILD_V2_REPOSITORY"
@@ -61,7 +61,7 @@ resource "time_sleep" "propagation" {
 
 module "git_repo_connection" {
   source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   project_id = var.project_id
   connection_config = {

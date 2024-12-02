@@ -26,7 +26,7 @@ locals {
 
 module "cloudbuilder" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   project_id                  = module.enabled_google_apis.project_id
   dockerfile_repo_uri         = module.git_repo_connection.cloud_build_repositories_2nd_gen_repositories["test_repo"].id
@@ -42,6 +42,8 @@ module "cloudbuilder" {
 
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
+  # allow workflow to be destroyed
+  workflow_deletion_protection = false
 
   depends_on = [
     time_sleep.propagation,
@@ -57,7 +59,7 @@ resource "time_sleep" "propagation" {
 
 module "git_repo_connection" {
   source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild_repo_connection"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   project_id = var.project_id
   connection_config = {

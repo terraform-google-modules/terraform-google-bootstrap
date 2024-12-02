@@ -16,7 +16,7 @@
 
 module "cloudbuilder" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   project_id          = module.enabled_google_apis.project_id
   dockerfile_repo_uri = google_sourcerepo_repository.builder_dockerfile_repo.url
@@ -25,6 +25,8 @@ module "cloudbuilder" {
   build_timeout       = "1200s"
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true
+  # allow workflow to be destroyed
+  workflow_deletion_protection = false
 }
 
 # CSR for storing Dockerfile
