@@ -28,6 +28,9 @@ variable "connection_config" {
     - gitlab_read_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab read authorizer credential.
     - gitlab_authorizer_credential_secret_id: (Optional) The secret ID for the GitLab authorizer credential.
     - gitlab_webhook_secret_id: (Optional) The secret ID for the GitLab WebHook.
+    - gitlab_enterprise_host_uri: (Optional) The URI of the GitLab Enterprise host this connection is for. If not specified, the default value is https://gitlab.com.
+    - gitlab_enterprise_service_directory: (Optional) Configuration for using Service Directory to privately connect to a GitLab Enterprise server. This should only be set if the GitLab Enterprise server is hosted on-premises and not reachable by public internet. If this field is left empty, calls to the GitLab Enterprise server will be made over the public internet. Format: projects/{project}/locations/{location}/namespaces/{namespace}/services/{service}.
+    - gitlab_enterprise_ca_certificate: (Optional) SSL certificate to use for requests to GitLab Enterprise.
   EOT
   type = object({
     connection_type                             = string
@@ -36,6 +39,9 @@ variable "connection_config" {
     gitlab_read_authorizer_credential_secret_id = optional(string)
     gitlab_authorizer_credential_secret_id      = optional(string)
     gitlab_webhook_secret_id                    = optional(string)
+    gitlab_enterprise_host_uri                  = optional(string)
+    gitlab_enterprise_service_directory         = optional(string)
+    gitlab_enterprise_ca_certificate            = optional(string)
   })
 
   validation {

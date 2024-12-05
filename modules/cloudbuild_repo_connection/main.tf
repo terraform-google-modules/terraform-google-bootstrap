@@ -57,7 +57,14 @@ resource "google_cloudbuildv2_connection" "connection" {
   dynamic "gitlab_config" {
     for_each = local.is_gitlab ? [1] : []
     content {
-      host_uri = null
+      host_uri = var.connection_config.gitlab_enterprise_host_uri
+      ssl_ca   = var.connection_config.gitlab_enterprise_ca_certificate
+      dynamic "service_directory_config" {
+        for_each = var.connection_config.gitlab_enterprise_service_directory == null ? [] : [1]
+        content {
+          service = var.connection_config.gitlab_enterprise_service_directory
+        }
+      }
       authorizer_credential {
         user_token_secret_version = "${var.connection_config.gitlab_authorizer_credential_secret_id}/versions/latest"
       }
