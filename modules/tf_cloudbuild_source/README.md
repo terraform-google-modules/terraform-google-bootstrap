@@ -7,7 +7,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "tf-cloudbuild-core" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_source"
-  version = "~> 9.0"
+  version = "~> 10.0"
 
   org_id           = var.org_id
   billing_account  = var.billing_account

@@ -7,6 +7,18 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v9.0.0...v10.0.0) (2024-12-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* add workflow deletion protection to cloud build builder module ([#329](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/329))
+
+### Features
+
+* add support for custom host in gitlab ([#328](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/328)) ([62eb9ae](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/62eb9aefb17c4896e766075c05bba6a67db72cf3))
+* add workflow deletion protection to cloud build builder module ([#329](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/329)) ([9678d8c](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/9678d8c3f8a30f40611e03bf563cc66e9751334f))
+
 ## [9.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v8.0.0...v9.0.0) (2024-11-01)
 
 
