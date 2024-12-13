@@ -16,7 +16,7 @@
 
 module "im_workspace" {
   source  = "terraform-google-modules/bootstrap/google//modules/im_cloudbuild_workspace"
-  version = "~> 9.0"
+  version = "~> 10.0"
 
   project_id    = var.project_id
   deployment_id = "im-example-gitlab-deployment"
