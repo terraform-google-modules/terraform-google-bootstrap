@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v10.0.0...v10.0.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* bump default gcloud version ([#337](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/337)) ([c2acf0f](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/c2acf0fa5ab10b6730daf21a6ee577254dfe68ef))
+
 ## [10.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v9.0.0...v10.0.0) (2024-12-05)
 
 
