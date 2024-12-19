@@ -90,7 +90,6 @@ resource "google_secret_manager_secret_iam_member" "github_accessor" {
 resource "google_secret_manager_secret_iam_member" "gitlab_token_accessor" {
   for_each = local.gitlab_secrets_iterator
 
-  project   = var.project_id
   secret_id = each.value
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project_id.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
