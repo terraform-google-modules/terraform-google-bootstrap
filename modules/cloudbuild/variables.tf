@@ -158,7 +158,7 @@ variable "terraform_version" {
 variable "gcloud_version" {
   description = "Default gcloud image version."
   type        = string
-  default     = "388.0.0-slim"
+  default     = "504.0.0-slim"
 }
 
 variable "terraform_version_sha256sum" {
