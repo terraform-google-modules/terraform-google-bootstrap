@@ -100,7 +100,7 @@ for actuating resources.
 
 ### Software
 
--   [Terraform](https://www.terraform.io/downloads.html) ~> 1.2.3
+-   [Terraform](https://www.terraform.io/downloads.html) >= 1.3
 -   [terraform-provider-google] plugin >= 3.50.x
 
 ### Permissions
