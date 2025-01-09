@@ -92,7 +92,7 @@ This module creates:
 
 ### Software
 
--   [Terraform](https://www.terraform.io/downloads.html) >= 0.13.0
+-   [Terraform](https://www.terraform.io/downloads.html) >= 1.3
 -   [terraform-provider-google] plugin >= 3.50.x
 
 ### Permissions
