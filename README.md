@@ -92,7 +92,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 ### Software
 
 -   [gcloud sdk](https://cloud.google.com/sdk/install) >= 206.0.0
--   [Terraform](https://www.terraform.io/downloads.html) >= 0.13.0
+-   [Terraform](https://www.terraform.io/downloads.html) >= 1.3
 -   [terraform-provider-google] plugin 3.50.x
 
 ### Permissions
