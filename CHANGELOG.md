@@ -7,6 +7,25 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [11.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v10.0.0...v11.0.0) (2025-01-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Update Terraform terraform-google-modules/project-factory/google to v18 ([#344](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/344))
+* **deps:** Update Terraform terraform-google-modules/org-policy/google to v6 ([#345](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/345))
+* **TF>=1.3:** bump terraform ([#333](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/333))
+* **deps:** Update Terraform terraform-google-modules/cloud-storage/google to v9 ([#339](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/339))
+
+### Bug Fixes
+
+* bump default gcloud version ([#337](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/337)) ([c2acf0f](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/c2acf0fa5ab10b6730daf21a6ee577254dfe68ef))
+* **deps:** Update Terraform terraform-google-modules/cloud-storage/google to v9 ([#339](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/339)) ([798aed3](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/798aed32e5a0e60395afce1eb5e0542d2eed90e0))
+* **deps:** Update Terraform terraform-google-modules/org-policy/google to v6 ([#345](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/345)) ([a846e97](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/a846e97d347ed88c43102d6d00187c1a0dea0c7a))
+* **deps:** Update Terraform terraform-google-modules/project-factory/google to v18 ([#344](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/344)) ([faded1f](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/faded1f8f02a39da5c95f0204a204e5173790701))
+* remove optional project id from gitlab secret accessor permission assignment ([#335](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/335)) ([c1799d3](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/c1799d3733b4d216e7e104afa8e3ba6790272db1))
+* **TF>=1.3:** bump terraform ([#333](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/333)) ([f70a38b](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f70a38b07015094a6dcf4a75a37f3138a1ba9b37))
+
 ## [10.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v9.0.0...v10.0.0) (2024-12-05)
 
 
