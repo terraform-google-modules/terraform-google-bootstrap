@@ -36,7 +36,7 @@ resource "random_id" "suffix" {
 
 module "cloudbuild_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 17.0"
+  version                     = "~> 18.0"
   name                        = local.cloudbuild_project_id
   random_project_id           = var.random_suffix
   disable_services_on_destroy = false
