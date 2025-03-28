@@ -130,6 +130,11 @@ module "kms" {
     "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
   ]
   prevent_destroy = var.kms_prevent_destroy
+
+  depends_on = [
+    # To avoid a race-condition on google service API activation (which sets up the google storage project service-account), depend on the seed project.
+    module.seed_project,
+  ]
 }
 
 resource "google_storage_bucket" "org_terraform_state" {
