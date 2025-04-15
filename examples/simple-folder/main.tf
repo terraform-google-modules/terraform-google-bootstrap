@@ -20,7 +20,7 @@
 
 module "seed_bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
-  version = "~> 10.0"
+  version = "~> 11.0"
 
   org_id                  = var.org_id
   parent_folder           = var.parent
