@@ -61,6 +61,8 @@ module "cloudbuild_bucket" {
   location      = var.location
   labels        = var.storage_bucket_labels
   force_destroy = var.buckets_force_destroy
+
+  depends_on = [module.cloudbuild_project]
 }
 
 resource "google_sourcerepo_repository" "gcp_repo" {
