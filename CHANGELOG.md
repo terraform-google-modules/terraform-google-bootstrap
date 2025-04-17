@@ -7,6 +7,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [11.0.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v11.0.0...v11.0.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* add depends_on for cloudbuild_project module on cloudbuild_bucket module ([#356](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/356)) ([f14e5eb](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f14e5ebde6ab2d34cddf1535c91217fcf65a7410))
+
 ## [11.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v10.0.0...v11.0.0) (2025-01-10)
 
 
