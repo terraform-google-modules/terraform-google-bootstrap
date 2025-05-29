@@ -31,6 +31,11 @@ import (
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
+const (
+	githubOwner = "im-goose"
+	githubRepo  = "im-cloudbuild-workspace-github"
+)
+
 type GitHubClient struct {
 	t          *testing.T
 	client     *github.Client
@@ -104,49 +109,12 @@ func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
 	return repo
 }
 
-func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
-	newRepo := &github.Repository{
-		Name:       github.String(repoName),
-		AutoInit:   github.Bool(true),
-		Visibility: github.String("private"),
-	}
-	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	gh.repository = repo
-	return repo
-}
-
-func (gh *GitHubClient) AddFileToRepository(ctx context.Context, file []byte) {
-	opts := &github.RepositoryContentFileOptions{
-		Content: file,
-		Message: github.String("Setup commit"),
-	}
-	_, _, err := gh.client.Repositories.CreateFile(ctx, gh.owner, gh.repoName, "main.tf", opts)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-}
-
-func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
-	_, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-}
-
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT, "im-goose", fmt.Sprintf("im-blueprint-test-%s", utils.GetRandomStringFromSetup(t)))
-
-	repo := client.GetRepository(ctx)
-	if repo == nil {
-		client.CreateRepository(ctx, client.owner, client.repoName)
-		client.AddFileToRepository(ctx, utils.GetFileContents(t, "files/main.tf"))
-	}
+	client := NewGitHubClient(t, githubPAT, githubOwner, githubRepo)
+	client.GetRepository(ctx)
 
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
@@ -164,10 +132,6 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 			pr := client.GetOpenPullRequest(ctx, "preview")
 			if pr != nil {
 				client.ClosePullRequest(ctx, pr)
-			}
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteRepository(ctx)
 			}
 		})
 
@@ -260,7 +224,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 					return true, nil
 				}
 			}
-			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 10*time.Second)
+			cftutils.Poll(t, pollCloudBuild(buildListCmd), 40, 10*time.Second)
 			build := gcloud.Run(t, buildListCmd, gcloud.WithLogger(logger.Discard)).Array()[0]
 
 			switch branch {
@@ -275,7 +239,6 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteRepository(ctx)
 			bpt.DefaultTeardown(assert)
 		})
 		projectID := bpt.GetStringOutput("project_id")
