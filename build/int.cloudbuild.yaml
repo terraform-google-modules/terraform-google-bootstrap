@@ -279,7 +279,18 @@ steps:
   waitFor:
       - create-all
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cft test run TestCloudBuildRepoConnectionGitLab --stage apply --verbose']
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      cft test run TestValidateStartupScript --stage verify --verbose
+      gcloud storage cp gs://$(terraform -chdir=/workspace/test/setup output -raw gitlab_secret_project)-ssl-cert/gitlab.crt /usr/local/share/ca-certificates
+      update-ca-certificates
+      if (ls /etc/ssl/certs | grep gitlab.pem); then
+          cft test run TestCloudBuildRepoConnectionGitLab --stage apply --verbose || exit 1
+      else
+          echo ERROR: Was not able to download certificate and update system bundle. && exit 1
+      fi
   secretEnv: ['IM_GITLAB_PAT']
 - id: verify-cloudbuild-connection-gitlab
   waitFor:

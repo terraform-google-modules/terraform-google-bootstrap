@@ -16,14 +16,15 @@ package cloudbuild_repo_connection_gitlab
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
-	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/enterprise-application/test/integration/testutils"
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 	"github.com/xanzy/go-gitlab"
 )
@@ -101,8 +102,28 @@ func (gl *GitLabClient) DeleteProject() {
 }
 
 func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
+	setup := tft.NewTFBlueprintTest(t,
+		tft.WithTFDir("../../setup"),
+	)
+
+	gitlabSecretProject := setup.GetStringOutput("gitlab_secret_project")
+	external_url := setup.GetStringOutput("gitlab_url")
+	url := "https://gitlab.example.com"
+	serviceDirectory := setup.GetStringOutput("gitlab_service_directory")
+	gitlabPersonalTokenSecretName := setup.GetStringOutput("gitlab_pat_secret_name")
+	// get token secret
+	token, err := testutils.GetSecretFromSecretManager(t, gitlabPersonalTokenSecretName, gitlabSecretProject)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// read crt from file
+	caCert, err := os.ReadFile("/usr/local/share/ca-certificates/gitlab.crt")
+
+	if err != nil {
+		t.Fatalf("Failed to read CA certificate: %v", err)
+	}
 	repoName := fmt.Sprintf("conn-gl-%s", utils.GetRandomStringFromSetup(t))
-	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
+	gitlabPAT := token
 	owner := "infrastructure-manager"
 
 	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
@@ -113,10 +134,13 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 
 	resourcesLocation := "us-central1"
 	vars := map[string]interface{}{
-		"gitlab_read_authorizer_credential": gitlabPAT,
-		"gitlab_authorizer_credential":      gitlabPAT,
-		"repository_name":                   repoName,
-		"repository_url":                    client.project.HTTPURLToRepo,
+		"gitlab_read_authorizer_credential":   gitlabPAT,
+		"gitlab_authorizer_credential":        gitlabPAT,
+		"repository_name":                     repoName,
+		"repository_url":                      client.project.HTTPURLToRepo,
+		"gitlab_enterprise_host_uri":          external_url,
+		"gitlab_enterprise_service_directory": serviceDirectory,
+		"gitlab_enterprise_ca_certificate":    string(caCert),
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
