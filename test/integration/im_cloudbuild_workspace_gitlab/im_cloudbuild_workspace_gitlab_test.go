@@ -30,6 +30,12 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
+const (
+	gitlabGroup       = "infrastructure-manager"
+	gitlabGroupID     = 84326276
+	gitlabProjectName = "im-cloudbuild-workspace-gitlab"
+)
+
 type GitLabClient struct {
 	t         *testing.T
 	client    *gitlab.Client
@@ -39,7 +45,7 @@ type GitLabClient struct {
 	project   *gitlab.Project
 }
 
-func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
+func NewGitLabClient(t *testing.T, token string) *GitLabClient {
 	t.Helper()
 	client, err := gitlab.NewClient(token)
 	if err != nil {
@@ -48,9 +54,9 @@ func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
 	return &GitLabClient{
 		t:         t,
 		client:    client,
-		group:     "infrastructure-manager",
-		namespace: 84326276,
-		repo:      repo,
+		group:     gitlabGroup,
+		namespace: gitlabGroupID,
+		repo:      gitlabProjectName,
 	}
 }
 
@@ -65,41 +71,6 @@ func (gl *GitLabClient) GetProject() *gitlab.Project {
 	}
 	gl.project = proj
 	return proj
-}
-
-func (gl *GitLabClient) CreateProject() {
-	opts := &gitlab.CreateProjectOptions{
-		Name: gitlab.Ptr(gl.repo),
-		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
-		NamespaceID: gitlab.Ptr(84326276),
-		// Required otherwise Cloud Build errors on creating the connection
-		InitializeWithReadme: gitlab.Ptr(true),
-	}
-	proj, _, err := gl.client.Projects.CreateProject(opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	gl.project = proj
-}
-
-func (gl *GitLabClient) AddFileToProject(file []byte) {
-	opts := &gitlab.CreateFileOptions{
-		Branch:        gitlab.Ptr("main"),
-		CommitMessage: gitlab.Ptr("Initial config commit"),
-		Content:       gitlab.Ptr(string(file)),
-	}
-	_, _, err := gl.client.RepositoryFiles.CreateFile(gl.ProjectName(), "main.tf", opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-}
-
-func (gl *GitLabClient) DeleteProject() {
-	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName(), utils.GetDeleteProjectOptions())
-	if err != nil {
-		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
-	}
-	gl.project = nil
 }
 
 // GetOpenMergeRequest gets the last opened merge request for a given branch if it exists.
@@ -154,13 +125,8 @@ func (gl *GitLabClient) AcceptMergeRequest(mr *gitlab.MergeRequest, commitMessag
 
 func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-	client := NewGitLabClient(t, gitlabPAT, "infrastructure-manager", fmt.Sprintf("blueprint-test-%s", utils.GetRandomStringFromSetup(t)))
-
-	proj := client.GetProject()
-	if proj == nil {
-		client.CreateProject()
-		client.AddFileToProject(utils.GetFileContents(t, "files/main.tf"))
-	}
+	client := NewGitLabClient(t, gitlabPAT)
+	client.GetProject()
 
 	vars := map[string]interface{}{
 		"im_gitlab_pat":  gitlabPAT,
@@ -176,10 +142,6 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 			mr := client.GetOpenMergeRequest("preview")
 			if mr != nil {
 				client.CloseMergeRequest(mr)
-			}
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteProject()
 			}
 		})
 
@@ -278,7 +240,7 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 					return true, nil
 				}
 			}
-			cftutils.Poll(t, pollCloudBuild(buildListCmd), 20, 15*time.Second)
+			cftutils.Poll(t, pollCloudBuild(buildListCmd), 40, 15*time.Second)
 			build := gcloud.Run(t, buildListCmd, gcloud.WithLogger(logger.Discard)).Array()[0]
 
 			switch branch {
@@ -293,7 +255,6 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteProject()
 			bpt.DefaultTeardown(assert)
 		})
 		projectID := bpt.GetStringOutput("project_id")
