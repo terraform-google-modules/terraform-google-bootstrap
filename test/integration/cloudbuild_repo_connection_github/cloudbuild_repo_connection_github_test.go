@@ -26,7 +26,12 @@ import (
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/google/go-github/v71/github"
 	"github.com/stretchr/testify/assert"
-	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
+)
+
+const (
+	repoName    = "cb-repo-conn-gh"
+	owner       = "im-goose"
+	githubAppID = "47590865"
 )
 
 type GitHubClient struct {
@@ -37,14 +42,14 @@ type GitHubClient struct {
 	repository *github.Repository
 }
 
-func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
+func NewGitHubClient(t *testing.T, token string) *GitHubClient {
 	t.Helper()
 	client := github.NewClient(nil).WithAuthToken(token)
 	return &GitHubClient{
 		t:        t,
 		client:   client,
 		owner:    owner,
-		repoName: repo,
+		repoName: repoName,
 	}
 }
 
@@ -57,49 +62,18 @@ func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
 	return repo
 }
 
-func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
-	newRepo := &github.Repository{
-		Name:       github.String(repoName),
-		AutoInit:   github.Bool(true),
-		Private:    github.Bool(true),
-		Visibility: github.String("private"),
-	}
-	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	gh.repository = repo
-	return repo
-}
-
-func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
-	resp, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
-	if resp.StatusCode != 404 && err != nil {
-		gh.t.Fatal(err.Error())
-	}
-}
-
 func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	ctx := context.Background()
-
-	repoName := fmt.Sprintf("conn-gh-%s", utils.GetRandomStringFromSetup(t))
-
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
+	client := NewGitHubClient(t, githubPAT)
 
-	owner := "im-goose"
-	client := NewGitHubClient(t, githubPAT, owner, repoName)
-
-	repo := client.GetRepository(ctx)
-	if repo == nil {
-		client.CreateRepository(ctx, client.owner, client.repoName)
-	}
-
+	client.GetRepository(ctx)
 	repoURL := client.repository.GetCloneURL()
 
 	resourcesLocation := "us-central1"
 	vars := map[string]interface{}{
 		"github_pat":      githubPAT,
-		"github_app_id":   "47590865",
+		"github_app_id":   githubAppID,
 		"repository_name": repoName,
 		"repository_url":  repoURL,
 	}
@@ -108,13 +82,6 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
-
-		t.Cleanup(func() {
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteRepository(ctx)
-			}
-		})
 
 		// validate if repository was created using the connection
 		projectId := bpt.GetTFSetupStringOutput("project_id")
@@ -142,7 +109,6 @@ func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteRepository(ctx)
 			bpt.DefaultTeardown(assert)
 		})
 	})
