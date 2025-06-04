@@ -27,99 +27,28 @@ import (
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
-	"github.com/xanzy/go-gitlab"
 )
 
-type GitLabClient struct {
-	t         *testing.T
-	client    *gitlab.Client
-	group     string
-	namespace int
-	repo      string
-	project   *gitlab.Project
-}
-
-func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
-	t.Helper()
-	client, err := gitlab.NewClient(token)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return &GitLabClient{
-		t:         t,
-		client:    client,
-		group:     "infrastructure-manager",
-		namespace: 84326276,
-		repo:      repo,
-	}
-}
-
-func (gl *GitLabClient) ProjectName() string {
-	return fmt.Sprintf("%s/%s", gl.group, gl.repo)
-}
-
-func (gl *GitLabClient) GetProject() *gitlab.Project {
-	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
-	}
-	gl.project = proj
-	return proj
-}
-
-func (gl *GitLabClient) CreateProject() {
-	opts := &gitlab.CreateProjectOptions{
-		Name: gitlab.Ptr(gl.repo),
-		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
-		NamespaceID: gitlab.Ptr(gl.namespace),
-		// Required otherwise Cloud Build errors on creating the connection
-		InitializeWithReadme: gitlab.Ptr(true),
-	}
-	proj, _, err := gl.client.Projects.CreateProject(opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	gl.project = proj
-}
-
-func (gl *GitLabClient) DeleteProject() {
-	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName(), utils.GetDeleteProjectOptions())
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
-	}
-	gl.project = nil
-}
+const (
+	gitlabProjectName = "b-gl-test"
+)
 
 func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-	owner := "im-goose"
-	repoName := fmt.Sprintf("b-gl-test-%s", utils.GetRandomStringFromSetup(t))
-
-	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
-
-	proj := client.GetProject()
-	if proj == nil {
-		client.CreateProject()
-	}
+	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
+	client.GetProject()
 
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	// repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
 		"gitlab_authorizer_credential":      gitlabPAT,
 		"gitlab_read_authorizer_credential": gitlabPAT,
-		"repository_uri":                    client.project.HTTPURLToRepo,
+		"repository_uri":                    client.Project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
-
-		t.Cleanup(func() {
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteProject()
-			}
-		})
 
 		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
@@ -219,7 +148,6 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteProject()
 			bpt.DefaultTeardown(assert)
 		})
 	})
