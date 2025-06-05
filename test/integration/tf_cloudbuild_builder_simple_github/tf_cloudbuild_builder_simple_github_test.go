@@ -28,7 +28,12 @@ import (
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/google/go-github/v71/github"
 	"github.com/stretchr/testify/assert"
-	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
+)
+
+const (
+	githubOwner = "im-goose"
+	githubRepo  = "b-gh-test"
+	githubAppID = "47590865" // Found in the URL of your Cloud Build GitHub app configuration settings
 )
 
 type GitHubClient struct {
@@ -39,14 +44,14 @@ type GitHubClient struct {
 	repository *github.Repository
 }
 
-func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
+func NewGitHubClient(t *testing.T, token string) *GitHubClient {
 	t.Helper()
 	client := github.NewClient(nil).WithAuthToken(token)
 	return &GitHubClient{
 		t:        t,
 		client:   client,
-		owner:    owner,
-		repoName: repo,
+		owner:    githubOwner,
+		repoName: githubRepo,
 	}
 }
 
@@ -59,58 +64,24 @@ func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
 	return repo
 }
 
-func (gh *GitHubClient) CreateRepository(ctx context.Context, org, repoName string) *github.Repository {
-	newRepo := &github.Repository{
-		Name:       github.String(repoName),
-		AutoInit:   github.Bool(true),
-		Private:    github.Bool(true),
-		Visibility: github.String("private"),
-	}
-	repo, _, err := gh.client.Repositories.Create(ctx, org, newRepo)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	gh.repository = repo
-	return repo
-}
-
-func (gh *GitHubClient) DeleteRepository(ctx context.Context) {
-	resp, err := gh.client.Repositories.Delete(ctx, gh.owner, *gh.repository.Name)
-	if resp.StatusCode != 404 && err != nil {
-		gh.t.Fatal(err.Error())
-	}
-}
-
 func TestTFCloudBuildBuilderGitHub(t *testing.T) {
 	ctx := context.Background()
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
-	owner := "im-goose"
-	repoName := fmt.Sprintf("b-gh-test-%s", utils.GetRandomStringFromSetup(t))
-	client := NewGitHubClient(t, githubPAT, owner, repoName)
+	client := NewGitHubClient(t, githubPAT)
 
-	repo := client.GetRepository(ctx)
-	if repo == nil {
-		client.CreateRepository(ctx, client.owner, client.repoName)
-	}
+	client.GetRepository(ctx)
 
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
 		"github_pat":     githubPAT,
 		"repository_uri": repoURL,
-		"github_app_id":  "47590865", // Found in the URL of your Cloud Build GitHub app configuration settings
+		"github_app_id":  githubAppID,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
-
-		t.Cleanup(func() {
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteRepository(ctx)
-			}
-		})
 
 		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
@@ -210,7 +181,6 @@ func TestTFCloudBuildBuilderGitHub(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteRepository(ctx)
 			bpt.DefaultTeardown(assert)
 		})
 	})
