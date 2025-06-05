@@ -24,8 +24,13 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
-	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 	"github.com/xanzy/go-gitlab"
+)
+
+const (
+	gitlabProjectName = "cb-repo-conn-gl"
+	gitlabGroup       = "infrastructure-manager"
+	gitlabGroupID     = 84326276
 )
 
 type GitLabClient struct {
@@ -37,7 +42,7 @@ type GitLabClient struct {
 	project   *gitlab.Project
 }
 
-func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
+func NewGitLabClient(t *testing.T, token string) *GitLabClient {
 	t.Helper()
 	client, err := gitlab.NewClient(token)
 	if err != nil {
@@ -46,9 +51,9 @@ func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
 	return &GitLabClient{
 		t:         t,
 		client:    client,
-		group:     "infrastructure-manager",
-		namespace: 84326276,
-		repo:      repo,
+		group:     gitlabGroup,
+		namespace: gitlabGroupID,
+		repo:      gitlabProjectName,
 	}
 }
 
@@ -65,70 +70,22 @@ func (gl *GitLabClient) GetProject() *gitlab.Project {
 	return proj
 }
 
-func (gl *GitLabClient) CreateProject() {
-	opts := &gitlab.CreateProjectOptions{
-		Name: gitlab.Ptr(gl.repo),
-		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
-		NamespaceID: gitlab.Ptr(gl.namespace),
-		// Required otherwise Cloud Build errors on creating the connection
-		InitializeWithReadme: gitlab.Ptr(true),
-	}
-	proj, _, err := gl.client.Projects.CreateProject(opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	gl.project = proj
-}
-
-func (gl *GitLabClient) AddFileToProject(file []byte) {
-	opts := &gitlab.CreateFileOptions{
-		Branch:        gitlab.Ptr("main"),
-		CommitMessage: gitlab.Ptr("Initial config commit"),
-		Content:       gitlab.Ptr(string(file)),
-	}
-	_, _, err := gl.client.RepositoryFiles.CreateFile(gl.ProjectName(), "main.tf", opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-}
-
-func (gl *GitLabClient) DeleteProject() {
-	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName(), utils.GetDeleteProjectOptions())
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
-	}
-	gl.project = nil
-}
-
 func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
-	repoName := fmt.Sprintf("conn-gl-%s", utils.GetRandomStringFromSetup(t))
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-	owner := "infrastructure-manager"
-
-	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
-	proj := client.GetProject()
-	if proj == nil {
-		client.CreateProject()
-	}
+	client := NewGitLabClient(t, gitlabPAT)
+	client.GetProject()
 
 	resourcesLocation := "us-central1"
 	vars := map[string]interface{}{
 		"gitlab_read_authorizer_credential": gitlabPAT,
 		"gitlab_authorizer_credential":      gitlabPAT,
-		"repository_name":                   repoName,
+		"repository_name":                   gitlabProjectName,
 		"repository_url":                    client.project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
-
-		t.Cleanup(func() {
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteProject()
-			}
-		})
 
 		// validate if repository was created using the connection
 		projectId := bpt.GetTFSetupStringOutput("project_id")
@@ -148,7 +105,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		assert.Equal(projectId, connectionProjectId, "Connection project id should be the same as input project id.")
 		assert.Equal(resourcesLocation, connectionLocation, fmt.Sprintf("Connection location should be '%s'.", resourcesLocation))
 
-		repository := gcloud.Runf(t, "builds repositories describe %s --project %s --region %s --connection %s", repoName, projectId, resourcesLocation, connectionName)
+		repository := gcloud.Runf(t, "builds repositories describe %s --project %s --region %s --connection %s", gitlabProjectName, projectId, resourcesLocation, connectionName)
 
 		assert.Equal(client.project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
@@ -156,7 +113,6 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteProject()
 			bpt.DefaultTeardown(assert)
 		})
 	})
