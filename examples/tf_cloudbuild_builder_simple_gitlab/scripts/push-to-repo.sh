@@ -43,5 +43,14 @@ git config user.email "terraform-robot@example.com"
 git config user.name "TF Robot"
 git checkout main || git checkout -b main
 git add Dockerfile
-git commit -m "init tf dockerfile"
-git push origin main -f
+
+# The '-z' flag checks if the following string is empty.
+if [ -z "$(git status --porcelain)" ]; then
+    # If the output is empty, the working directory is clean.
+    echo "No changes to commit. Nothing to do."
+else
+  # If there is output, changes exist, so we commit.
+    echo "Changes detected. Attempting to commit..."
+  git commit -m "init tf dockerfile"
+  git push origin main -f
+fi
