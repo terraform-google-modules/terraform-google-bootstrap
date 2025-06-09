@@ -24,55 +24,16 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
 	"github.com/stretchr/testify/assert"
-	"github.com/xanzy/go-gitlab"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 const (
 	gitlabProjectName = "cb-repo-conn-gl"
-	gitlabGroup       = "infrastructure-manager"
-	gitlabGroupID     = 84326276
 )
-
-type GitLabClient struct {
-	t         *testing.T
-	client    *gitlab.Client
-	group     string
-	namespace int
-	repo      string
-	project   *gitlab.Project
-}
-
-func NewGitLabClient(t *testing.T, token string) *GitLabClient {
-	t.Helper()
-	client, err := gitlab.NewClient(token)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return &GitLabClient{
-		t:         t,
-		client:    client,
-		group:     gitlabGroup,
-		namespace: gitlabGroupID,
-		repo:      gitlabProjectName,
-	}
-}
-
-func (gl *GitLabClient) ProjectName() string {
-	return fmt.Sprintf("%s/%s", gl.group, gl.repo)
-}
-
-func (gl *GitLabClient) GetProject() *gitlab.Project {
-	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
-	}
-	gl.project = proj
-	return proj
-}
 
 func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-	client := NewGitLabClient(t, gitlabPAT)
+	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
 	client.GetProject()
 
 	resourcesLocation := "us-central1"
@@ -80,7 +41,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 		"gitlab_read_authorizer_credential": gitlabPAT,
 		"gitlab_authorizer_credential":      gitlabPAT,
 		"repository_name":                   gitlabProjectName,
-		"repository_url":                    client.project.HTTPURLToRepo,
+		"repository_url":                    client.Project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
@@ -107,7 +68,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 
 		repository := gcloud.Runf(t, "builds repositories describe %s --project %s --region %s --connection %s", gitlabProjectName, projectId, resourcesLocation, connectionName)
 
-		assert.Equal(client.project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
+		assert.Equal(client.Project.HTTPURLToRepo, repository.Get("remoteUri").String(), "Git clone URL must be the same on the created resource.")
 	})
 
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
