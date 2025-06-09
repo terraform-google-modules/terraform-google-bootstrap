@@ -32,92 +32,18 @@ import (
 )
 
 const (
-	githubOwner = "im-goose"
-	githubRepo  = "im-cloudbuild-workspace-github"
+	githubRepo = "im-cloudbuild-workspace-github"
 )
-
-type GitHubClient struct {
-	t          *testing.T
-	client     *github.Client
-	owner      string
-	repoName   string
-	repository *github.Repository
-}
-
-func NewGitHubClient(t *testing.T, token, owner, repo string) *GitHubClient {
-	t.Helper()
-	client := github.NewClient(nil).WithAuthToken(token)
-	return &GitHubClient{
-		t:        t,
-		client:   client,
-		owner:    owner,
-		repoName: repo,
-	}
-}
-
-// GetOpenPullRequest gets an open pull request for a given branch if it exists.
-func (gh *GitHubClient) GetOpenPullRequest(ctx context.Context, branch string) *github.PullRequest {
-	opts := &github.PullRequestListOptions{
-		State: "open",
-		Head:  branch,
-	}
-	prs, resp, err := gh.client.PullRequests.List(ctx, gh.owner, gh.repoName, opts)
-	if resp.StatusCode != 422 && err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	if len(prs) == 0 {
-		return nil
-	}
-	return prs[0]
-}
-
-func (gh *GitHubClient) CreatePullRequest(ctx context.Context, title, branch, base string) *github.PullRequest {
-	newPR := &github.NewPullRequest{
-		Title: github.String(title),
-		Head:  github.String(branch),
-		Base:  github.String(base),
-	}
-	pr, _, err := gh.client.PullRequests.Create(ctx, gh.owner, gh.repoName, newPR)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	return pr
-}
-
-func (gh *GitHubClient) MergePullRequest(ctx context.Context, pr *github.PullRequest, commitTitle, commitMessage string) *github.PullRequestMergeResult {
-	result, _, err := gh.client.PullRequests.Merge(ctx, gh.owner, gh.repoName, *pr.Number, commitMessage, nil)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	return result
-}
-
-func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullRequest) {
-	pr.State = github.String("closed")
-	_, _, err := gh.client.PullRequests.Edit(ctx, gh.owner, gh.repoName, *pr.Number, pr)
-	if err != nil {
-		gh.t.Fatal(err.Error())
-	}
-}
-
-func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
-	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
-	if resp.StatusCode != 404 && err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	gh.repository = repo
-	return repo
-}
 
 func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 	ctx := context.Background()
 
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT, githubOwner, githubRepo)
+	client := utils.NewGitHubClient(t, githubPAT, githubRepo)
 	client.GetRepository(ctx)
 
 	// Testing the module's feature of appending the ".git" suffix if it's missing
-	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
+	repoURL := strings.TrimSuffix(client.Repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
 		"im_github_pat":  githubPAT,
 		"repository_url": repoURL,
@@ -138,7 +64,7 @@ func TestIMCloudBuildWorkspaceGitHub(t *testing.T) {
 		projectID := bpt.GetStringOutput("project_id")
 		secretID := bpt.GetStringOutput("github_secret_id")
 		triggerLocation := "us-central1"
-		repoURLSplit := strings.Split(client.repository.GetCloneURL(), "/")
+		repoURLSplit := strings.Split(client.Repository.GetCloneURL(), "/")
 
 		// CB P4SA IAM
 		projectNum := gcloud.Runf(t, "projects describe %s --format='value(projectNumber)'", projectID).Get("projectNumber")
