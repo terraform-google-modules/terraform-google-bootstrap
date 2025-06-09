@@ -27,108 +27,26 @@ import (
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
-	"github.com/xanzy/go-gitlab"
 )
 
-type GitLabClient struct {
-	t         *testing.T
-	client    *gitlab.Client
-	group     string
-	namespace int
-	repo      string
-	project   *gitlab.Project
-}
-
-func NewGitLabClient(t *testing.T, token, owner, repo string) *GitLabClient {
-	t.Helper()
-	client, err := gitlab.NewClient(token)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return &GitLabClient{
-		t:         t,
-		client:    client,
-		group:     "infrastructure-manager",
-		namespace: 84326276,
-		repo:      repo,
-	}
-}
-
-func (gl *GitLabClient) ProjectName() string {
-	return fmt.Sprintf("%s/%s", gl.group, gl.repo)
-}
-
-func (gl *GitLabClient) GetProject() *gitlab.Project {
-	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
-	}
-	gl.project = proj
-	return proj
-}
-
-func (gl *GitLabClient) CreateProject() {
-	opts := &gitlab.CreateProjectOptions{
-		Name: gitlab.Ptr(gl.repo),
-		// ID of the the Infrastructure Manager group (gitlab.com/infrastructure-manager)
-		NamespaceID: gitlab.Ptr(gl.namespace),
-		// Required otherwise Cloud Build errors on creating the connection
-		InitializeWithReadme: gitlab.Ptr(true),
-	}
-	proj, _, err := gl.client.Projects.CreateProject(opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	gl.project = proj
-}
-
-func (gl *GitLabClient) AddFileToProject(file []byte) {
-	opts := &gitlab.CreateFileOptions{
-		Branch:        gitlab.Ptr("main"),
-		CommitMessage: gitlab.Ptr("Initial config commit"),
-		Content:       gitlab.Ptr(string(file)),
-	}
-	_, _, err := gl.client.RepositoryFiles.CreateFile(gl.ProjectName(), "main.tf", opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-}
-
-func (gl *GitLabClient) DeleteProject() {
-	resp, err := gl.client.Projects.DeleteProject(gl.ProjectName(), utils.GetDeleteProjectOptions())
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Errorf("error deleting project with status %s and error %s", resp.Status, err.Error())
-	}
-	gl.project = nil
-}
+const (
+	gitlabProjectName = "cb-bp-gl"
+)
 
 func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
-	repoName := fmt.Sprintf("cb-bp-gl-%s", utils.GetRandomStringFromSetup(t))
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-	owner := "infrastructure-manager"
-
-	client := NewGitLabClient(t, gitlabPAT, owner, repoName)
-	proj := client.GetProject()
-	if proj == nil {
-		client.CreateProject()
-	}
+	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
+	client.GetProject()
 
 	vars := map[string]interface{}{
 		"gitlab_authorizer_credential":      gitlabPAT,
 		"gitlab_read_authorizer_credential": gitlabPAT,
-		"repository_uri":                    client.project.HTTPURLToRepo,
+		"repository_uri":                    client.Project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
 	bpt.DefineVerify(func(assert *assert.Assertions) {
 		bpt.DefaultVerify(assert)
-
-		t.Cleanup(func() {
-			// Delete the repository if we hit a failed state
-			if t.Failed() {
-				client.DeleteProject()
-			}
-		})
 
 		location := bpt.GetStringOutput("location")
 		projectID := bpt.GetStringOutput("project_id")
@@ -138,8 +56,8 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 		for _, trigger := range triggers {
 			triggerOP := utils.LastElement(bpt.GetStringOutput(fmt.Sprintf("cloudbuild_%s_trigger_id", trigger)), "/")
 			cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --region %s --project %s", triggerOP, location, projectID)
-			assert.Equal(fmt.Sprintf("%s-%s", repoName, trigger), cloudBuildOP.Get("name").String(), "should have the correct name")
-			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-%s@%s.iam.gserviceaccount.com", projectID, repoName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+			assert.Equal(fmt.Sprintf("%s-%s", gitlabProjectName, trigger), cloudBuildOP.Get("name").String(), "should have the correct name")
+			assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-%s@%s.iam.gserviceaccount.com", projectID, gitlabProjectName, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		}
 
 		// artifacts, state and log buckets
@@ -174,7 +92,7 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 			}
 		}
 
-		gitRun("clone", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s", gitlabPAT, owner, repoName), tmpDir)
+		gitRun("clone", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s", gitlabPAT, utils.GitlabGroup, gitlabProjectName), tmpDir)
 		gitRun("config", "user.email", "tf-robot@example.com")
 		gitRun("config", "user.name", "TF Robot")
 
@@ -188,7 +106,7 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 				git.RunCmdE("checkout", "-b", branch)
 			}
 			git.CommitWithMsg(fmt.Sprintf("%s commit", branch), []string{"--allow-empty"})
-			gitRun("push", "-u", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s.git", gitlabPAT, owner, repoName), branch, "-f")
+			gitRun("push", "-u", fmt.Sprintf("https://gitlab-bot:%s@gitlab.com/%s/%s.git", gitlabPAT, utils.GitlabGroup, gitlabProjectName), branch, "-f")
 			lastCommit := git.GetLatestCommit()
 			// filter builds triggered based on pushed commit sha
 			buildListCmd := fmt.Sprintf("builds list --filter substitutions.COMMIT_SHA='%s' --project %s --region %s --limit 1 --sort-by ~createTime", lastCommit, projectID, location)
@@ -229,7 +147,6 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 	bpt.DefineTeardown(func(assert *assert.Assertions) {
 		// Guarantee clean up even if the normal gcloud/teardown run into errors
 		t.Cleanup(func() {
-			client.DeleteProject()
 			bpt.DefaultTeardown(assert)
 		})
 	})
