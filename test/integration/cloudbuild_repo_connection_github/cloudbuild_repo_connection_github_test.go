@@ -24,56 +24,26 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
-	"github.com/google/go-github/v72/github"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 const (
-	repoName    = "cb-repo-conn-gh"
-	owner       = "im-goose"
-	githubAppID = "47590865"
+	repoName = "cb-repo-conn-gh"
 )
-
-type GitHubClient struct {
-	t          *testing.T
-	client     *github.Client
-	owner      string
-	repoName   string
-	repository *github.Repository
-}
-
-func NewGitHubClient(t *testing.T, token string) *GitHubClient {
-	t.Helper()
-	client := github.NewClient(nil).WithAuthToken(token)
-	return &GitHubClient{
-		t:        t,
-		client:   client,
-		owner:    owner,
-		repoName: repoName,
-	}
-}
-
-func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
-	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
-	if resp.StatusCode != 404 && err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	gh.repository = repo
-	return repo
-}
 
 func TestCloudBuildRepoConnectionGithub(t *testing.T) {
 	ctx := context.Background()
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT)
+	client := utils.NewGitHubClient(t, githubPAT, repoName)
 
 	client.GetRepository(ctx)
-	repoURL := client.repository.GetCloneURL()
+	repoURL := client.Repository.GetCloneURL()
 
 	resourcesLocation := "us-central1"
 	vars := map[string]interface{}{
 		"github_pat":      githubPAT,
-		"github_app_id":   githubAppID,
+		"github_app_id":   utils.GitHubAppID,
 		"repository_name": repoName,
 		"repository_url":  repoURL,
 	}
