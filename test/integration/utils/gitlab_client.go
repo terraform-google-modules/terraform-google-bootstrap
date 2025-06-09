@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	gitlabGroup   = "infrastructure-manager"
+	GitlabGroup   = "infrastructure-manager"
 	gitlabGroupID = 84326276
 )
 
@@ -44,7 +44,7 @@ func NewGitLabClient(t *testing.T, token, projectName string) *GitLabClient {
 	return &GitLabClient{
 		t:         t,
 		client:    client,
-		group:     gitlabGroup,
+		group:     GitlabGroup,
 		namespace: gitlabGroupID,
 		repo:      projectName,
 	}
