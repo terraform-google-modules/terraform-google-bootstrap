@@ -40,8 +40,18 @@ git config user.email "terraform-robot@example.com"
 git config user.name "TF Robot"
 git checkout plan || git checkout -b plan
 git add -A
-git commit -m "init tf configs"
-git push origin plan -f
+
+# The '-z' flag checks if the following string is empty.
+if [ -z "$(git status --porcelain)" ]; then
+    # If the output is empty, the working directory is clean.
+    echo "No changes to commit. Nothing to do."
+else
+  # If there is output, changes exist, so we commit.
+    echo "Changes detected. Attempting to commit..."
+  git commit -m "init tf configs"
+  git push origin plan -f
+fi
+
 sleep 60
 git checkout main || git checkout -b main
 git merge plan
