@@ -26,57 +26,27 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
 	cftutils "github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/utils"
-	"github.com/google/go-github/v72/github"
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-google-modules/terraform-google-bootstrap/test/integration/utils"
 )
 
 const (
-	githubOwner = "im-goose"
-	githubRepo  = "b-gh-test"
-	githubAppID = "47590865" // Found in the URL of your Cloud Build GitHub app configuration settings
+	githubRepo = "b-gh-test"
 )
-
-type GitHubClient struct {
-	t          *testing.T
-	client     *github.Client
-	owner      string
-	repoName   string
-	repository *github.Repository
-}
-
-func NewGitHubClient(t *testing.T, token string) *GitHubClient {
-	t.Helper()
-	client := github.NewClient(nil).WithAuthToken(token)
-	return &GitHubClient{
-		t:        t,
-		client:   client,
-		owner:    githubOwner,
-		repoName: githubRepo,
-	}
-}
-
-func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
-	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
-	if resp.StatusCode != 404 && err != nil {
-		gh.t.Fatal(err.Error())
-	}
-	gh.repository = repo
-	return repo
-}
 
 func TestTFCloudBuildBuilderGitHub(t *testing.T) {
 	ctx := context.Background()
 	githubPAT := cftutils.ValFromEnv(t, "IM_GITHUB_PAT")
-	client := NewGitHubClient(t, githubPAT)
+	client := utils.NewGitHubClient(t, githubPAT, githubRepo)
 
 	client.GetRepository(ctx)
 
 	// Testing the module's feature of appending the ".git" suffix if it's missing
-	repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
+	repoURL := strings.TrimSuffix(client.Repository.GetCloneURL(), ".git")
 	vars := map[string]interface{}{
 		"github_pat":     githubPAT,
 		"repository_uri": repoURL,
-		"github_app_id":  githubAppID,
+		"github_app_id":  utils.GitHubAppID,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
