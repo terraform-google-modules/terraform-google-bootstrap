@@ -31,106 +31,17 @@ import (
 )
 
 const (
-	gitlabGroup       = "infrastructure-manager"
-	gitlabGroupID     = 84326276
 	gitlabProjectName = "im-cloudbuild-workspace-gitlab"
 )
 
-type GitLabClient struct {
-	t         *testing.T
-	client    *gitlab.Client
-	group     string
-	namespace int
-	repo      string
-	project   *gitlab.Project
-}
-
-func NewGitLabClient(t *testing.T, token string) *GitLabClient {
-	t.Helper()
-	client, err := gitlab.NewClient(token)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return &GitLabClient{
-		t:         t,
-		client:    client,
-		group:     gitlabGroup,
-		namespace: gitlabGroupID,
-		repo:      gitlabProjectName,
-	}
-}
-
-func (gl *GitLabClient) ProjectName() string {
-	return fmt.Sprintf("%s/%s", gl.group, gl.repo)
-}
-
-func (gl *GitLabClient) GetProject() *gitlab.Project {
-	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
-	}
-	gl.project = proj
-	return proj
-}
-
-// GetOpenMergeRequest gets the last opened merge request for a given branch if it exists.
-func (gl *GitLabClient) GetOpenMergeRequest(branch string) *gitlab.MergeRequest {
-	opts := gitlab.ListProjectMergeRequestsOptions{
-		State:        gitlab.Ptr("opened"),
-		SourceBranch: gitlab.Ptr(branch),
-	}
-	mergeRequests, _, err := gl.client.MergeRequests.ListProjectMergeRequests(gl.ProjectName(), &opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	if len(mergeRequests) == 0 {
-		return nil
-	}
-	return mergeRequests[len(mergeRequests)-1]
-}
-
-func (gl *GitLabClient) CreateMergeRequest(title, branch, base string) *gitlab.MergeRequest {
-	opts := gitlab.CreateMergeRequestOptions{
-		Title:        gitlab.Ptr(title),
-		SourceBranch: gitlab.Ptr(branch),
-		TargetBranch: gitlab.Ptr(base),
-	}
-	mergeRequest, _, err := gl.client.MergeRequests.CreateMergeRequest(gl.ProjectName(), &opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	return mergeRequest
-}
-
-func (gl *GitLabClient) CloseMergeRequest(mr *gitlab.MergeRequest) {
-	_, err := gl.client.MergeRequests.DeleteMergeRequest(gl.ProjectName(), mr.IID)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-}
-
-func (gl *GitLabClient) AcceptMergeRequest(mr *gitlab.MergeRequest, commitMessage string) *gitlab.MergeRequest {
-	opts := gitlab.AcceptMergeRequestOptions{
-		ShouldRemoveSourceBranch: gitlab.Ptr(true),
-	}
-	merged, resp, err := gl.client.MergeRequests.AcceptMergeRequest(gl.ProjectName(), mr.IID, &opts)
-	if err != nil {
-		gl.t.Fatal(err.Error())
-	}
-	if resp.StatusCode != 200 {
-		gl.t.Fatalf("failed to accept merge request %v", resp)
-	}
-	return merged
-}
-
 func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
-	client := NewGitLabClient(t, gitlabPAT)
+	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
 	client.GetProject()
 
 	vars := map[string]interface{}{
 		"im_gitlab_pat":  gitlabPAT,
-		"repository_url": client.project.HTTPURLToRepo,
+		"repository_url": client.Project.HTTPURLToRepo,
 	}
 	bpt := tft.NewTFBlueprintTest(t, tft.WithVars(vars))
 
@@ -149,7 +60,7 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 		apiSecretID := bpt.GetStringOutput("gitlab_api_secret_id")
 		readApiSecretID := bpt.GetStringOutput("gitlab_read_api_secret_id")
 		triggerLocation := "us-central1"
-		repoURLSplit := strings.Split(client.project.HTTPURLToRepo, "/")
+		repoURLSplit := strings.Split(client.Project.HTTPURLToRepo, "/")
 
 		// CB P4SA IAM for the two secrets
 		projectNum := gcloud.Runf(t, "projects describe %s --format='value(projectNumber)'", projectID).Get("projectNumber")
