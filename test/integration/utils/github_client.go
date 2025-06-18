@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	GitHubOwner = "im-goose"
-	GitHubAppID = "47590865" // Found in the URL of your Cloud Build GitHub app configuration settings
+	GitHubOwner = "infra-manager-bootstrap-module"
+	GitHubAppID = "68754904" // Found in the URL of your Cloud Build GitHub app configuration settings
 )
 
 type GitHubClient struct {
