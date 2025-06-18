@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	GitlabGroup   = "infrastructure-manager"
-	gitlabGroupID = 84326276
+	GitlabGroup   = "terraform-google-bootstrap"
+	gitlabGroupID = 108396266
 )
 
 type GitLabClient struct {
