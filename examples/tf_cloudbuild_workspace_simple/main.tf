@@ -41,7 +41,7 @@ resource "google_sourcerepo_repository" "tf_config_repo" {
 # # Bootstrap CSR with TF configs
 module "bootstrap_csr_repo" {
   source  = "terraform-google-modules/gcloud/google"
-  version = "~> 3.1"
+  version = "~> 4.0"
 
   upgrade = false
 
