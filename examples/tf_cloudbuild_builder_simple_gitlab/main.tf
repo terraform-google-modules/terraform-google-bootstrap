@@ -92,7 +92,7 @@ data "google_secret_manager_secret_version_access" "gitlab_api_access_token" {
 # Bootstrap GitLab with Dockerfile
 module "bootstrap_gitlab_repo" {
   source  = "terraform-google-modules/gcloud/google"
-  version = "~> 3.1"
+  version = "~> 4.0"
 
   upgrade           = false
   module_depends_on = [module.cloudbuilder]
