@@ -113,7 +113,7 @@ data "google_storage_project_service_account" "gcs_account" {
 module "kms" {
   count   = var.encrypt_gcs_bucket_tfstate ? 1 : 0
   source  = "terraform-google-modules/kms/google"
-  version = "~> 3.2"
+  version = "~> 4.0"
 
   project_id           = module.seed_project.project_id
   location             = var.default_region
