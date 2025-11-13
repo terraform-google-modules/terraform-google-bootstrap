@@ -76,7 +76,7 @@ module "seed_project" {
 
 module "enable_cross_project_service_account_usage" {
   source  = "terraform-google-modules/org-policy/google"
-  version = "~> 6.0"
+  version = "~> 7.0"
 
   project_id  = module.seed_project.project_id
   policy_for  = "project"
