@@ -49,6 +49,16 @@ variable "default_region" {
   type        = string
   default     = "us-central1"
 }
+variable "gcs_default_region" {
+  description = "Default region to create GCS resources where applicable."
+  type        = string
+  default     = "us-central1"
+}
+variable "kms_default_region" {
+  description = "Default region to create KMS resources where applicable."
+  type        = string
+  default     = "us-central1"
+}
 
 /******************************************
   Optional variables

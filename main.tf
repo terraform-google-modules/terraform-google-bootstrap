@@ -27,6 +27,8 @@ locals {
   is_organization            = var.parent_folder == "" ? true : false
   parent_id                  = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
   seed_org_depends_on        = try(google_folder_iam_member.tmp_project_creator[0].etag, "") != "" ? var.org_id : google_organization_iam_member.tmp_project_creator[0].org_id
+  kms_location               = var.kms_default_location == null ? var.default_region : var.kms_default_location
+  gcs_location               = var.gcs_default_location == null ? var.default_region : var.gcs_default_location
 }
 
 resource "random_id" "suffix" {
@@ -116,7 +118,7 @@ module "kms" {
   version = "~> 3.2"
 
   project_id           = module.seed_project.project_id
-  location             = var.default_region
+  location             = local.kms_location
   keyring              = "${var.project_prefix}-keyring"
   keys                 = ["${var.project_prefix}-key"]
   key_rotation_period  = var.key_rotation_period
@@ -135,7 +137,7 @@ module "kms" {
 resource "google_storage_bucket" "org_terraform_state" {
   project                     = module.seed_project.project_id
   name                        = local.state_bucket_name
-  location                    = var.default_region
+  location                    = local.gcs_location
   labels                      = var.storage_bucket_labels
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = true
