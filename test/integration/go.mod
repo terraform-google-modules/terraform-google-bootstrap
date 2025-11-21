@@ -1,12 +1,12 @@
 module github.com/terraform-google-modules/terraform-google-bootstrap/test/integration
 
-go 1.23.0
+go 1.24.0
 
-toolchain go1.24.4
+toolchain go1.24.10
 
 require (
 	github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.17.7
-	github.com/google/go-github/v72 v72.0.0
+	github.com/google/go-github/v79 v79.0.0
 	github.com/gruntwork-io/terratest v0.50.0
 	github.com/stretchr/testify v1.10.0
 	github.com/xanzy/go-gitlab v0.115.0
