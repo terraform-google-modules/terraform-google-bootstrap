@@ -47,8 +47,12 @@ jobs:
             REGISTRY=$(grep "REGISTRY_URL := " $MAKEFILE | cut -d\  -f3)
             echo dev-tools=${REGISTRY}/${IMAGE}:${VERSION} >> "$GITHUB_OUTPUT"
           fi
-      - run: docker run --rm -v ${{ github.workspace }}:/workspace ${{ steps.variables.outputs.dev-tools }} module-swapper
-      - run: docker run --rm -v ${{ github.workspace }}:/workspace ${{ steps.variables.outputs.dev-tools }} /usr/local/bin/test_lint.sh
+      - run: docker run --rm -v ${{ github.workspace }}:/workspace ${STEPS_VARIABLES_OUTPUTS_DEV_TOOLS} module-swapper
+        env:
+          STEPS_VARIABLES_OUTPUTS_DEV_TOOLS: ${{ steps.variables.outputs.dev-tools }}
+      - run: docker run --rm -v ${{ github.workspace }}:/workspace ${STEPS_VARIABLES_OUTPUTS_DEV_TOOLS} /usr/local/bin/test_lint.sh
+        env:
+          STEPS_VARIABLES_OUTPUTS_DEV_TOOLS: ${{ steps.variables.outputs.dev-tools }}
   commitlint:
     runs-on: ubuntu-latest
     steps:
