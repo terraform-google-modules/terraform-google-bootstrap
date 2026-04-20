@@ -23,3 +23,8 @@ output "cloud_build_repositories_2nd_gen_repositories" {
   description = "Created repositories."
   value       = module.example.cloud_build_repositories_2nd_gen_repositories
 }
+
+output "webhook_key" {
+  description = "The random UUID used as webhook key"
+  value       = random_uuid.random_webhook_secret.result
+}

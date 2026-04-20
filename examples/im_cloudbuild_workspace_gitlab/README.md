@@ -22,5 +22,6 @@ This example demonstrates the simplest usage of the [im_cloudbuild_workspace](..
 | gitlab\_read\_api\_secret\_id | The secret ID for the secret containing the GitLab read api access token. |
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
 | project\_id | n/a |
+| webhook\_key | The random UUID used as webhook key |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

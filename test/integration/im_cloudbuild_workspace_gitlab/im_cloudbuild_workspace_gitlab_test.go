@@ -168,6 +168,10 @@ func TestIMCloudBuildWorkspaceGitLab(t *testing.T) {
 		t.Cleanup(func() {
 			bpt.DefaultTeardown(assert)
 		})
+		webhookKey := bpt.GetStringOutput("webhook_key")
+		t.Cleanup(func() {
+			client.DeleteWebhookByKey(webhookKey)
+		})
 		projectID := bpt.GetStringOutput("project_id")
 		gcloud.Runf(t, "infra-manager deployments delete projects/%s/locations/us-central1/deployments/im-example-gitlab-deployment --project %s --quiet", projectID, projectID)
 	})

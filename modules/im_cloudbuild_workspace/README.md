@@ -93,6 +93,7 @@ for actuating resources.
 | infra\_manager\_sa | Service account used by Infrastructure Manager |
 | repo\_connection\_id | The Cloud Build repository connection ID |
 | vcs\_connection\_id | The Cloud Build VCS host connection ID |
+| webhook\_key | The random UUID used as webhook key |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

@@ -16,6 +16,7 @@ package utils
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/xanzy/go-gitlab"
@@ -111,4 +112,39 @@ func (gl *GitLabClient) AcceptMergeRequest(mr *gitlab.MergeRequest, commitMessag
 		gl.t.Fatalf("failed to accept merge request %v", resp)
 	}
 	return merged
+}
+
+// DeleteWebhookByKey deletes webhooks for the project that contain the given key in their URL.
+func (gl *GitLabClient) DeleteWebhookByKey(webhookKey string) {
+	if webhookKey == "" {
+		gl.t.Log("Webhook key is empty, skipping deletion.")
+		return
+	}
+
+	opts := &gitlab.ListProjectHooksOptions{
+		PerPage: 100,
+		Page:    1,
+	}
+
+	for {
+		hooks, resp, err := gl.client.Projects.ListProjectHooks(gl.ProjectName(), opts)
+		if err != nil {
+			gl.t.Fatal(err.Error())
+		}
+
+		for _, hook := range hooks {
+			if strings.Contains(hook.URL, webhookKey) {
+				_, err := gl.client.Projects.DeleteProjectHook(gl.ProjectName(), hook.ID)
+				if err != nil {
+					gl.t.Fatal(err.Error())
+				}
+				gl.t.Logf("Deleted GitLab webhook with ID %d and URL %s", hook.ID, hook.URL)
+			}
+		}
+
+		if resp.NextPage == 0 {
+			break
+		}
+		opts.Page = resp.NextPage
+	}
 }

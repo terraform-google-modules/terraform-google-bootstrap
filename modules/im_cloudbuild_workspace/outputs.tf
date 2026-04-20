@@ -61,3 +61,8 @@ output "gitlab_read_api_secret_id" {
   value       = local.read_api_secret_id
   sensitive   = true
 }
+
+output "webhook_key" {
+  description = "The random UUID used as webhook key"
+  value       = local.is_gl_repo ? random_uuid.random_webhook_secret[0].result : ""
+}
