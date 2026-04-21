@@ -150,6 +150,10 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 		t.Cleanup(func() {
 			bpt.DefaultTeardown(assert)
 		})
+		webhookKey := bpt.GetStringOutput("webhook_key")
+		t.Cleanup(func() {
+			client.DeleteWebhookByKey(webhookKey)
+		})
 	})
 
 	bpt.Test()

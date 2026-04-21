@@ -49,3 +49,8 @@ output "gitlab_read_api_secret_id" {
   value       = module.im_workspace.gitlab_read_api_secret_id
   sensitive   = true
 }
+
+output "webhook_key" {
+  description = "The random UUID used as webhook key"
+  value       = module.im_workspace.webhook_key
+}

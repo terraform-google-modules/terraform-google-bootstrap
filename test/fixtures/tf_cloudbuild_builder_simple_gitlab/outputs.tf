@@ -48,3 +48,8 @@ output "location" {
   description = "The location in which the resources were provisioned"
   value       = module.example.location
 }
+
+output "webhook_key" {
+  description = "The random UUID used as webhook key"
+  value       = random_uuid.random_webhook_secret.result
+}
