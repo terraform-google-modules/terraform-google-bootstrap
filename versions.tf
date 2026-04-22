@@ -29,6 +29,6 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "blueprints/terraform/terraform-google-bootstrap/v11.0.1"
+    module_name = "blueprints/terraform/terraform-google-bootstrap/v12.0.0"
   }
 }

@@ -7,6 +7,23 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [12.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v11.0.1...v12.0.0) (2026-04-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Update Terraform terraform-google-modules/cloud-storage/google to v12 ([#388](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/388))
+* **deps:** Update Terraform terraform-google-modules/org-policy/google to v7 ([#348](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/348))
+* **deps:** Update Terraform terraform-google-modules/kms/google to v4 ([#350](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/350))
+
+### Bug Fixes
+
+* bump google provider constraints to v7 ([#389](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/389)) ([7ff1b0d](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/7ff1b0d9f448a5dd30faae9c92564f85afed616e))
+* Clean up webhooks after GitLab tests ([#399](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/399)) ([2af943c](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/2af943cd440fabfb876767134ffc11651cddbae2))
+* **deps:** Update Terraform terraform-google-modules/cloud-storage/google to v12 ([#388](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/388)) ([2eadfac](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/2eadfac9f347575b0ded8363914d07defb6795f1))
+* **deps:** Update Terraform terraform-google-modules/kms/google to v4 ([#350](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/350)) ([be5658a](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/be5658a5172e2adfa9b28e50b7ae26e86147d180))
+* **deps:** Update Terraform terraform-google-modules/org-policy/google to v7 ([#348](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/348)) ([8a47ce4](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/8a47ce4c2ad2ba7473e7b21d954b4e8069a4b76f))
+
 ## [11.0.1](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v11.0.0...v11.0.1) (2025-08-22)
 
 
