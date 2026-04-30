@@ -31,8 +31,8 @@ locals {
     { id = "git_setup", name = "gcr.io/cloud-builders/git", args = ["config", "--global", "init.defaultBranch", "main"] },
     { id = "create_preview", name = "gcr.io/cloud-builders/gcloud", script = local.default_create_preview_script },
     { id = "download_preview", name = "gcr.io/cloud-builders/gcloud", args = ["infra-manager", "previews", "export", "projects/${var.project_id}/locations/${var.location}/previews/preview-$SHORT_SHA", "--file", "plan"] },
-    { id = "terraform_init", name = local.tf_cloudbuilder_image, args = ["init", "-no-color"] },
-    { id = "terraform_show", name = local.tf_cloudbuilder_image, args = ["show", "/workspace/plan.tfplan", "-no-color"] },
+    { id = "terraform_init", name = local.tf_cloudbuilder_image, args = ["init", "-no-color"] , dir = var.im_deployment_repo_dir },
+    { id = "terraform_show", name = local.tf_cloudbuilder_image, args = ["show", "/workspace/plan.tfplan", "-no-color"] , dir = var.im_deployment_repo_dir },
   ]
 
   default_apply_steps = [
@@ -107,6 +107,7 @@ resource "google_cloudbuild_trigger" "triggers" {
           entrypoint = try(step.value.entrypoint, null)
           args       = try(step.value.args, null)
           script     = try(step.value.script, null)
+          dir        = try(step.value.dir, null)
           env = [
             "SHORT_SHA=$SHORT_SHA"
           ]
