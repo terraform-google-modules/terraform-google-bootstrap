@@ -35,12 +35,12 @@ variable "billing_account" {
 }
 
 variable "group_org_admins" {
-  description = "Google Group for GCP Organization Administrators"
+  description = "Google Group or principalSet URI (e.g., 'principalSet://...') for GCP Organization Administrators"
   type        = string
 }
 
 variable "group_billing_admins" {
-  description = "Google Group for GCP Billing Administrators"
+  description = "Google Group or principalSet URI (e.g., 'principalSet://...') for GCP Billing Administrators"
   type        = string
 }
 
@@ -70,6 +70,17 @@ variable "project_id" {
   description = "Custom project ID to use for project created. If not supplied, the default id is {project_prefix}-seed-{random suffix}."
   default     = ""
   type        = string
+}
+
+variable "universe_prefix" {
+  description = "The universe short name prefix to prepend to the project ID (e.g., 'eu0'). A colon (:) is automatically appended to the project ID."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.universe_prefix == "" || can(regex("^[a-z0-9]+$", var.universe_prefix))
+    error_message = "The universe_prefix variable must be empty or contain only lowercase alphanumeric characters."
+  }
 }
 
 variable "project_deletion_policy" {
@@ -172,7 +183,7 @@ variable "folder_id" {
 }
 
 variable "org_project_creators" {
-  description = "Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required."
+  description = "Additional list of members to have project creator role across the organization. Prefix of group: user: serviceAccount: or principalSet:// is required."
   type        = list(string)
   default     = []
 }

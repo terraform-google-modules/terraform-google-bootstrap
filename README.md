@@ -54,14 +54,14 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | folder\_id | The ID of a folder to host this project | `string` | `""` | no |
 | force\_destroy | If supplied, the state bucket will be deleted even while containing objects. | `bool` | `false` | no |
 | grant\_billing\_user | Grant roles/billing.user role to CFT service account | `bool` | `true` | no |
-| group\_billing\_admins | Google Group for GCP Billing Administrators | `string` | n/a | yes |
-| group\_org\_admins | Google Group for GCP Organization Administrators | `string` | n/a | yes |
+| group\_billing\_admins | Google Group or principalSet URI (e.g., 'principalSet://...') for GCP Billing Administrators | `string` | n/a | yes |
+| group\_org\_admins | Google Group or principalSet URI (e.g., 'principalSet://...') for GCP Organization Administrators | `string` | n/a | yes |
 | key\_protection\_level | The protection level to use when creating a version based on this template. Default value: "SOFTWARE" Possible values: ["SOFTWARE", "HSM"] | `string` | `"SOFTWARE"` | no |
 | key\_rotation\_period | The rotation period of the key. | `string` | `null` | no |
 | kms\_prevent\_destroy | Set the prevent\_destroy lifecycle attribute on keys. | `bool` | `true` | no |
 | org\_admins\_org\_iam\_permissions | List of permissions granted to the group supplied in group\_org\_admins variable across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/resourcemanager.organizationAdmin"<br>]</pre> | no |
 | org\_id | GCP Organization ID | `string` | n/a | yes |
-| org\_project\_creators | Additional list of members to have project creator role accross the organization. Prefix of group: user: or serviceAccount: is required. | `list(string)` | `[]` | no |
+| org\_project\_creators | Additional list of members to have project creator role across the organization. Prefix of group: user: serviceAccount: or principalSet:// is required. | `list(string)` | `[]` | no |
 | parent\_folder | GCP parent folder ID in the form folders/{id} | `string` | `""` | no |
 | project\_auto\_create\_network | Create the default network for the project created. | `bool` | `false` | no |
 | project\_deletion\_policy | The deletion policy for the project created. | `string` | `"PREVENT"` | no |
@@ -75,6 +75,7 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 | tf\_service\_account\_id | ID of service account for terraform in seed project | `string` | `"org-terraform"` | no |
 | tf\_service\_account\_name | Display name of service account for terraform in seed project | `string` | `"CFT Organization Terraform Account"` | no |
+| universe\_prefix | The universe short name prefix to prepend to the project ID (e.g., 'eu0'). A colon (:) is automatically appended to the project ID. | `string` | `""` | no |
 
 ## Outputs
 
