@@ -132,10 +132,25 @@ variable "create_terraform_sa" {
   default     = true
 }
 
+variable "state_bucket_lifecycle_rules" {
+  description = "List of optional lifecycle rules for the state bucket."
+  default     = []
+  type = list(object({
+    action    = any
+    condition = any
+  }))
+}
+
 variable "state_bucket_name" {
   description = "Custom state bucket name. If not supplied, the default name is {project_prefix}-tfstate-{random suffix}."
   default     = ""
   type        = string
+}
+
+variable "state_bucket_versioning_enabled" {
+  description = "Boolean to indicate if the object versioning should be enabled for the state bucket."
+  default     = true
+  type        = bool
 }
 
 variable "grant_billing_user" {

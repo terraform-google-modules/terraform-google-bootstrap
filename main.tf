@@ -139,8 +139,26 @@ resource "google_storage_bucket" "org_terraform_state" {
   labels                      = var.storage_bucket_labels
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = true
+
   versioning {
-    enabled = true
+    enabled = var.state_bucket_versioning_enabled
+  }
+
+  dynamic "lifecycle_rule" {
+    for_each = var.state_bucket_lifecycle_rules
+    content {
+      action {
+        type          = lifecycle_rule.value.action.type
+        storage_class = try(lifecycle_rule.value.action.storage_class, null)
+      }
+      condition {
+        age                   = try(lifecycle_rule.value.condition.age, null)
+        created_before        = try(lifecycle_rule.value.condition.created_before, null)
+        with_state            = try(lifecycle_rule.value.condition.with_state, null)
+        matches_storage_class = try(lifecycle_rule.value.condition.matches_storage_class, null)
+        num_newer_versions    = try(lifecycle_rule.value.condition.num_newer_versions, null)
+      }
+    }
   }
 
   dynamic "encryption" {
