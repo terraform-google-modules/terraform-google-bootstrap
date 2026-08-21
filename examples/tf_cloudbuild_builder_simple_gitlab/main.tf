@@ -38,7 +38,9 @@ module "cloudbuilder" {
   bucket_name                 = "tf-cloudbuilder-build-logs-${var.project_id}-gl"
   gar_repo_name               = "tf-runners-gl"
   workflow_name               = "terraform-runner-workflow-gl"
+  workflow_sa_name            = "tf-workflow-sa-gl"
   trigger_name                = "tf-cloud-builder-build-gl"
+  cloudbuild_sa_name          = "tf-cb-builder-sa-gl"
 
   # allow logs bucket to be destroyed
   cb_logs_bucket_force_destroy = true

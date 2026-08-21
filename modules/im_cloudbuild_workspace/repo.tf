@@ -65,6 +65,11 @@ resource "google_cloudbuildv2_connection" "vcs_connection" {
       webhook_secret_secret_version = google_secret_manager_secret_version.gitlab_webhook_secret_version[0].name
     }
   }
+
+  depends_on = [
+    google_secret_manager_secret_iam_member.github_token_iam_member,
+    google_secret_manager_secret_iam_member.gitlab_secret_members,
+  ]
 }
 
 // Create the repository connection.

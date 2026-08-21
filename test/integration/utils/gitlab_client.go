@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/xanzy/go-gitlab"
 )
@@ -57,8 +58,12 @@ func (gl *GitLabClient) ProjectName() string {
 
 func (gl *GitLabClient) GetProject() *gitlab.Project {
 	proj, resp, err := gl.client.Projects.GetProject(gl.ProjectName(), nil)
-	if resp.StatusCode != 404 && err != nil {
-		gl.t.Fatalf("got status code %d, error %s", resp.StatusCode, err.Error())
+	if err != nil {
+		status := 0
+		if resp != nil {
+			status = resp.StatusCode
+		}
+		gl.t.Fatalf("failed to retrieve GitLab project %s (status code %d): %v", gl.ProjectName(), status, err)
 	}
 	gl.Project = proj
 	return proj
@@ -148,3 +153,43 @@ func (gl *GitLabClient) DeleteWebhookByKey(webhookKey string) {
 		opts.Page = resp.NextPage
 	}
 }
+
+// CleanStaleWebhooks removes Cloud Build webhooks older than maxAge (e.g. 1 hour)
+// to prevent hook limit exhaustion while preserving active webhooks from concurrent test runs.
+func (gl *GitLabClient) CleanStaleWebhooks(maxAge time.Duration) {
+	opts := &gitlab.ListProjectHooksOptions{
+		PerPage: 100,
+		Page:    1,
+	}
+
+	for {
+		hooks, resp, err := gl.client.Projects.ListProjectHooks(gl.ProjectName(), opts)
+		if err != nil {
+			gl.t.Logf("Warning: could not list GitLab webhooks for %s: %v", gl.ProjectName(), err)
+			return
+		}
+
+		gl.t.Logf("GitLab project %s currently has %d/100 webhooks registered", gl.ProjectName(), len(hooks))
+
+		for _, hook := range hooks {
+			if strings.Contains(hook.URL, "cloudbuild.googleapis.com") {
+				if hook.CreatedAt != nil && time.Since(*hook.CreatedAt) > maxAge {
+					_, err := gl.client.Projects.DeleteProjectHook(gl.ProjectName(), hook.ID)
+					if err != nil {
+						gl.t.Logf("Warning: failed to delete stale webhook ID %d: %v", hook.ID, err)
+					} else {
+						gl.t.Logf("Cleaned up stale GitLab webhook ID %d (age: %v, URL: %s)", hook.ID, time.Since(*hook.CreatedAt).Round(time.Minute), hook.URL)
+					}
+				} else if hook.CreatedAt != nil {
+					gl.t.Logf("Preserving active/recent webhook ID %d (age: %v)", hook.ID, time.Since(*hook.CreatedAt).Round(time.Second))
+				}
+			}
+		}
+
+		if resp.NextPage == 0 {
+			break
+		}
+		opts.Page = resp.NextPage
+	}
+}
+
