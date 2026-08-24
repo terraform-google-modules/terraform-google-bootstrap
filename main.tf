@@ -27,14 +27,8 @@ locals {
   is_organization            = var.parent_folder == "" ? true : false
   parent_id                  = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
   seed_org_depends_on        = try(google_folder_iam_member.tmp_project_creator[0].etag, "") != "" ? var.org_id : google_organization_iam_member.tmp_project_creator[0].org_id
-
-  group_billing_admins_id = var.group_billing_admins != "" ? (
-    startswith(var.group_billing_admins, "principalSet://") || startswith(var.group_billing_admins, "group:") ? var.group_billing_admins : "group:${var.group_billing_admins}"
-  ) : ""
-
-  group_org_admins_id = var.group_org_admins != "" ? (
-    startswith(var.group_org_admins, "principalSet://") || startswith(var.group_org_admins, "group:") ? var.group_org_admins : "group:${var.group_org_admins}"
-  ) : ""
+  group_billing_admins_id    = startswith(var.group_billing_admins, "principalSet://") || startswith(var.group_billing_admins, "group:") ? var.group_billing_admins : "group:${var.group_billing_admins}"
+  group_org_admins_id        = startswith(var.group_org_admins, "principalSet://") || startswith(var.group_org_admins, "group:") ? var.group_org_admins : "group:${var.group_org_admins}"
 }
 
 resource "random_id" "suffix" {
@@ -67,7 +61,7 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 
 module "seed_project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 18.0"
+  version = "~> 18.3"
 
   name                        = local.seed_project_id
   random_project_id           = var.random_suffix
