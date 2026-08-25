@@ -19,6 +19,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/gcloud"
 	"github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test/pkg/tft"
@@ -35,6 +36,7 @@ func TestCloudBuildRepoConnectionGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
 	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
 	client.GetProject()
+	client.CleanStaleWebhooks(1 * time.Hour)
 
 	resourcesLocation := "us-central1"
 	vars := map[string]interface{}{

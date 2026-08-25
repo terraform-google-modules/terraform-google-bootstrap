@@ -16,9 +16,6 @@
 echo "Checking if deployment ${deployment_id} already exists"
 DEPLOYMENT_EXISTS=$(gcloud infra-manager deployments list --location ${location} --filter ${deployment_id} | tail -n +2 | wc -l)
 
-echo "Deleting previous preview if it already exists"
-gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet
-
 CREATE_PREVIEW_CMD="gcloud infra-manager previews create projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA \
   --service-account=${service_account} \
   --git-source-repo=${source_repo} \
@@ -36,11 +33,11 @@ if [[ $DEPLOYMENT_EXISTS -eq 1 ]]; then
   CREATE_PREVIEW_CMD+=" --deployment projects/${project_id}/locations/${location}/deployments/${deployment_id}"
 fi
 
-$CREATE_PREVIEW_CMD
+for i in {1..12}; do
+  gcloud infra-manager previews delete projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA --quiet || true
+  $CREATE_PREVIEW_CMD && exit 0
+  sleep 10
+done
 
-if [[ $(echo $?) -ne 0 ]]; then
-  gcloud infra-manager previews describe projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA
-  exit 1
-else
-  exit 0
-fi
+gcloud infra-manager previews describe projects/${project_id}/locations/${location}/previews/preview-$SHORT_SHA
+exit 1

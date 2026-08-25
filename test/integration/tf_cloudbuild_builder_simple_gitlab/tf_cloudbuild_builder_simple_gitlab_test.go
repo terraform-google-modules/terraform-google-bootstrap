@@ -37,6 +37,7 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
 	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
 	client.GetProject()
+	client.CleanStaleWebhooks(1 * time.Hour)
 
 	// Testing the module's feature of appending the ".git" suffix if it's missing
 	// repoURL := strings.TrimSuffix(client.repository.GetCloneURL(), ".git")
@@ -67,12 +68,12 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 
 		workflowOP := gcloud.Runf(t, "workflows describe %s", workflowID)
 		assert.Contains(workflowOP.Get("name").String(), "terraform-runner-workflow-gl", "has the correct name")
-		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/terraform-runner-workflow-sa@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
+		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-workflow-sa-gl@%s.iam.gserviceaccount.com", projectID, projectID), workflowOP.Get("serviceAccount").String(), "uses expected SA")
 
 		cloudBuildOP := gcloud.Runf(t, "beta builds triggers describe %s --project %s --region %s", triggerId, projectID, location)
 		log.Print(cloudBuildOP)
 		assert.Equal("tf-cloud-builder-build-gl", cloudBuildOP.Get("name").String(), "has the correct name")
-		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
+		assert.Equal(fmt.Sprintf("projects/%s/serviceAccounts/tf-cb-builder-sa-gl@%s.iam.gserviceaccount.com", projectID, projectID), cloudBuildOP.Get("serviceAccount").String(), "uses expected SA")
 		assert.Equal(repositoryID, cloudBuildOP.Get("sourceToBuild.repository").String(), "is connected to expected repo")
 		expectedSubsts := []string{"_TERRAFORM_FULL_VERSION", "_TERRAFORM_MAJOR_VERSION", "_TERRAFORM_MINOR_VERSION"}
 		gotSubsts := cloudBuildOP.Get("substitutions").Map()
@@ -139,7 +140,7 @@ func TestTFCloudBuildBuilderGitLab(t *testing.T) {
 		cftutils.Poll(t, pollCloudBuild(buildListCmd), 100, 10*time.Second)
 
 		// Check if the images where created
-		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags", artifactRepoDockerRegistry).Array()
+		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags --filter='TAGS:*'", artifactRepoDockerRegistry).Array()
 		assert.Equal(1, len(images), "only one image is in registry")
 		imageTags := strings.Split(images[0].Get("tags").String(), ",")
 		assert.Equal(3, len(imageTags), "image has three tags")
