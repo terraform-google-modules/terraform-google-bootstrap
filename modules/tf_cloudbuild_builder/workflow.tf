@@ -30,7 +30,7 @@ locals {
 resource "google_service_account" "workflow_sa" {
   count                        = var.workflow_sa == "" ? 1 : 0
   project                      = var.project_id
-  account_id                   = "terraform-runner-workflow-sa"
+  account_id                   = var.workflow_sa_name
   display_name                 = "SA for TF Builder Workflow. Managed by Terraform."
   create_ignore_already_exists = true
 }
@@ -81,4 +81,11 @@ resource "google_cloud_scheduler_job" "trigger_workflow" {
       service_account_email = local.workflow_sa
     }
   }
+
+  depends_on = [
+    google_project_iam_member.invoke_workflow_scheduler,
+    google_project_iam_member.trigger_builds,
+    google_service_account_iam_member.use_cb_sa,
+    google_artifact_registry_repository_iam_member.workflow_list,
+  ]
 }

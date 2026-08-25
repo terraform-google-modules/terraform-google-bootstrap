@@ -43,6 +43,12 @@ variable "workflow_sa" {
   default     = ""
 }
 
+variable "workflow_sa_name" {
+  description = "Custom account_id for the Workflow service account when created. Defaults to 'terraform-runner-workflow-sa'."
+  type        = string
+  default     = "terraform-runner-workflow-sa"
+}
+
 variable "workflow_deletion_protection" {
   description = "Whether Terraform will be prevented from destroying the workflow. When the field is set to true or unset in Terraform state, a `terraform apply` or `terraform destroy` that would delete the workflow will fail. When the field is set to false, deleting the workflow is allowed."
   type        = bool
@@ -53,6 +59,12 @@ variable "cloudbuild_sa" {
   description = "Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty."
   type        = string
   default     = ""
+}
+
+variable "cloudbuild_sa_name" {
+  description = "Custom account_id for the Cloud Build service account when created. Defaults to 'tf-cb-builder-sa'."
+  type        = string
+  default     = "tf-cb-builder-sa"
 }
 
 variable "build_timeout" {

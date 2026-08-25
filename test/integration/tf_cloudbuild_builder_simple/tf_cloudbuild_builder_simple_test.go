@@ -122,7 +122,7 @@ func TestTFCloudBuildBuilder(t *testing.T) {
 		}
 		utils.Poll(t, pollCloudBuild(buildListCmd), 100, 10*time.Second)
 
-		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags", artifactRepoDockerRegistry).Array()
+		images := gcloud.Runf(t, "artifacts docker images list %s --include-tags --filter='TAGS:*'", artifactRepoDockerRegistry).Array()
 		assert.Equal(1, len(images), "only one image is in registry")
 		imageTags := strings.Split(images[0].Get("tags").String(), ",")
 		assert.Equal(3, len(imageTags), "image has three tags")

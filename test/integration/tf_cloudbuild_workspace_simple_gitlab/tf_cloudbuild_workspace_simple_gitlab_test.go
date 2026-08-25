@@ -37,6 +37,7 @@ func TestCloudBuildWorkspaceSimpleGitLab(t *testing.T) {
 	gitlabPAT := cftutils.ValFromEnv(t, "IM_GITLAB_PAT")
 	client := utils.NewGitLabClient(t, gitlabPAT, gitlabProjectName)
 	client.GetProject()
+	client.CleanStaleWebhooks(1 * time.Hour)
 
 	vars := map[string]interface{}{
 		"gitlab_authorizer_credential":      gitlabPAT,

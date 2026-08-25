@@ -102,14 +102,16 @@ resource "google_cloudbuild_trigger" "build_trigger" {
 
   depends_on = [
     google_artifact_registry_repository_iam_member.push_images,
-    google_project_iam_member.logs_writer
+    google_project_iam_member.logs_writer,
+    google_storage_bucket_iam_member.member,
+    google_sourcerepo_repository_iam_member.member,
   ]
 }
 
 resource "google_service_account" "cb_sa" {
   count                        = var.cloudbuild_sa == "" ? 1 : 0
   project                      = var.project_id
-  account_id                   = "tf-cb-builder-sa"
+  account_id                   = var.cloudbuild_sa_name
   display_name                 = "SA for Terraform builder build trigger. Managed by Terraform."
   create_ignore_already_exists = true
 }

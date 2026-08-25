@@ -92,8 +92,12 @@ func (gh *GitHubClient) ClosePullRequest(ctx context.Context, pr *github.PullReq
 
 func (gh *GitHubClient) GetRepository(ctx context.Context) *github.Repository {
 	repo, resp, err := gh.client.Repositories.Get(ctx, gh.owner, gh.repoName)
-	if resp.StatusCode != 404 && err != nil {
-		gh.t.Fatal(err.Error())
+	if err != nil {
+		status := 0
+		if resp != nil {
+			status = resp.StatusCode
+		}
+		gh.t.Fatalf("failed to retrieve GitHub repository %s/%s (status code %d): %v", gh.owner, gh.repoName, status, err)
 	}
 	gh.Repository = repo
 	return repo

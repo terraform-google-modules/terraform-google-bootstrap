@@ -25,3 +25,13 @@ Users will provide the required secrets through the `connection_config` variable
 | cloud\_build\_repositories\_2nd\_gen\_repositories | A map of created repositories associated with the Cloud Build connection.<br>Each entry contains the repository's unique identifier and its remote URL.<br>Example format:<br>"key\_name" = {<br>  "id" =  "projects/{{project}}/locations/{{location}}/connections/{{parent\_connection}}/repositories/{{name}}",<br>  "url" = "https://github.com/{{account/org}}/{{repository_name}}.git"<br>} |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Troubleshooting
+
+### GitLab Webhook Registration Errors (HTTP 422)
+When creating a `google_cloudbuildv2_repository` resource connected to GitLab, Cloud Build automatically registers a webhook on the target GitLab repository (format: `https://cloudbuild.googleapis.com/v2/.../connections:processWebhook?webhook_key=...`).
+
+If repository creation fails with `generic::failed_precondition: 422: {"error":"Invalid url given"}` or hook limit errors:
+1. **Outbound Request Filtering (SSRF)**: Ensure outbound webhook requests to Google Cloud APIs are permitted under GitLab's **Settings > Network > Outbound requests**.
+2. **DNS & Network Reachability**: Verify that the GitLab server can resolve and contact `cloudbuild.googleapis.com`.
+3. **Hook Limits**: GitLab projects have a limit of 100 webhooks. Stale or orphaned webhooks should be cleaned up under **Project > Settings > Webhooks**.

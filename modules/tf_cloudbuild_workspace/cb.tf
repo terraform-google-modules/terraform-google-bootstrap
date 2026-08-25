@@ -167,6 +167,13 @@ resource "google_cloudbuild_trigger" "triggers" {
   ignored_files   = var.cloudbuild_ignored_files
 
   depends_on = [
-    google_project_iam_member.cb_sa_roles
+    google_project_iam_member.cb_sa_roles,
+    google_project_iam_member.cb_sa_logging,
+    google_storage_bucket_iam_member.artifacts_admin,
+    google_storage_bucket_iam_member.log_admin,
+    google_storage_bucket_iam_member.state_admin,
+    google_service_account_iam_member.cb_service_agent_impersonate,
+    google_service_account_iam_member.cb_sa_self,
+    google_sourcerepo_repository_iam_member.member,
   ]
 }

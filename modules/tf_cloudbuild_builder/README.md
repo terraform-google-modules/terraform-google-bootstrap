@@ -37,6 +37,7 @@ This module creates:
 | build\_timeout | Amount of time the build should be allowed to run, to second granularity. Format is the number of seconds followed by s. | `string` | `"600s"` | no |
 | cb\_logs\_bucket\_force\_destroy | When deleting the bucket for storing CloudBuild logs, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. | `bool` | `false` | no |
 | cloudbuild\_sa | Custom SA email to be used by the CloudBuild trigger. Defaults to being created if empty. | `string` | `""` | no |
+| cloudbuild\_sa\_name | Custom account\_id for the Cloud Build service account when created. Defaults to 'tf-cb-builder-sa'. | `string` | `"tf-cb-builder-sa"` | no |
 | dockerfile\_repo\_dir | The directory inside the repo where the Dockerfile is located. If empty defaults to repo root. | `string` | `""` | no |
 | dockerfile\_repo\_ref | The branch or tag to use. Use refs/heads/branchname for branches or refs/tags/tagname for tags. | `string` | `"refs/heads/main"` | no |
 | dockerfile\_repo\_type | Type of repo | `string` | `"CLOUD_SOURCE_REPOSITORIES"` | no |
@@ -55,6 +56,7 @@ This module creates:
 | workflow\_name | Name of the workflow managing builds. | `string` | `"terraform-runner-workflow"` | no |
 | workflow\_region | The region of the workflow. | `string` | `"us-central1"` | no |
 | workflow\_sa | Custom SA email to be used by the workflow. Defaults to being created if empty. | `string` | `""` | no |
+| workflow\_sa\_name | Custom account\_id for the Workflow service account when created. Defaults to 'terraform-runner-workflow-sa'. | `string` | `"terraform-runner-workflow-sa"` | no |
 | workflow\_schedule | The workflow frequency, in cron syntax | `string` | `"0 8 * * *"` | no |
 
 ## Outputs
