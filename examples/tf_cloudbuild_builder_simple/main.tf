@@ -16,7 +16,7 @@
 
 module "cloudbuilder" {
   source  = "terraform-google-modules/bootstrap/google//modules/tf_cloudbuild_builder"
-  version = "~> 11.0"
+  version = "~> 12.0"
 
   project_id          = module.enabled_google_apis.project_id
   dockerfile_repo_uri = google_sourcerepo_repository.builder_dockerfile_repo.url

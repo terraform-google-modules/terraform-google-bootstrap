@@ -23,10 +23,12 @@ locals {
   impersonation_apis         = distinct(concat(local.base_apis, ["serviceusage.googleapis.com", "iamcredentials.googleapis.com"]))
   activate_apis              = var.sa_enable_impersonation == true ? local.impersonation_apis : local.base_apis
   org_project_creators_tf_sa = var.create_terraform_sa ? ["serviceAccount:${google_service_account.org_terraform[0].email}"] : []
-  org_project_creators       = distinct(concat(var.org_project_creators, local.org_project_creators_tf_sa, ["group:${var.group_org_admins}"]))
+  org_project_creators       = distinct(concat(var.org_project_creators, local.org_project_creators_tf_sa, [local.group_org_admins_id]))
   is_organization            = var.parent_folder == "" ? true : false
   parent_id                  = var.parent_folder == "" ? var.org_id : split("/", var.parent_folder)[1]
   seed_org_depends_on        = try(google_folder_iam_member.tmp_project_creator[0].etag, "") != "" ? var.org_id : google_organization_iam_member.tmp_project_creator[0].org_id
+  group_billing_admins_id    = startswith(var.group_billing_admins, "principalSet://") || startswith(var.group_billing_admins, "group:") ? var.group_billing_admins : "group:${var.group_billing_admins}"
+  group_org_admins_id        = startswith(var.group_org_admins, "principalSet://") || startswith(var.group_org_admins, "group:") ? var.group_org_admins : "group:${var.group_org_admins}"
 }
 
 resource "random_id" "suffix" {
@@ -42,7 +44,7 @@ resource "google_organization_iam_member" "tmp_project_creator" {
 
   org_id = local.parent_id
   role   = "roles/resourcemanager.projectCreator"
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
 
 resource "google_folder_iam_member" "tmp_project_creator" {
@@ -50,7 +52,7 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 
   folder = local.parent_id
   role   = "roles/resourcemanager.projectCreator"
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
 
 /******************************************
@@ -58,10 +60,12 @@ resource "google_folder_iam_member" "tmp_project_creator" {
 *******************************************/
 
 module "seed_project" {
-  source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 18.0"
+  source  = "terraform-google-modules/project-factory/google"
+  version = "~> 18.3"
+
   name                        = local.seed_project_id
   random_project_id           = var.random_suffix
+  universe_prefix             = var.universe_prefix
   disable_services_on_destroy = false
   folder_id                   = var.folder_id
   org_id                      = local.seed_org_depends_on
@@ -130,6 +134,7 @@ module "kms" {
     "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
   ]
   prevent_destroy = var.kms_prevent_destroy
+
 }
 
 resource "google_storage_bucket" "org_terraform_state" {
@@ -161,7 +166,7 @@ resource "google_organization_iam_binding" "billing_creator" {
   org_id = var.org_id
   role   = "roles/billing.creator"
   members = [
-    "group:${var.group_billing_admins}",
+    local.group_billing_admins_id,
   ]
 }
 
@@ -190,7 +195,7 @@ resource "google_organization_iam_member" "org_admins_group" {
 
   org_id = var.org_id
   role   = each.value
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
 
 /***********************************************
@@ -200,7 +205,7 @@ resource "google_organization_iam_member" "org_admins_group" {
 resource "google_organization_iam_member" "org_billing_admin" {
   org_id = var.org_id
   role   = "roles/billing.admin"
-  member = "group:${var.group_billing_admins}"
+  member = local.group_billing_admins_id
 }
 
 /***********************************************
@@ -241,7 +246,7 @@ resource "google_service_account_iam_member" "org_admin_sa_user" {
 
   service_account_id = google_service_account.org_terraform[0].name
   role               = "roles/iam.serviceAccountUser"
-  member             = "group:${var.group_org_admins}"
+  member             = local.group_org_admins_id
 }
 
 resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissions" {
@@ -249,7 +254,7 @@ resource "google_service_account_iam_member" "org_admin_sa_impersonate_permissio
 
   service_account_id = google_service_account.org_terraform[0].name
   role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "group:${var.group_org_admins}"
+  member             = local.group_org_admins_id
 }
 
 resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
@@ -257,7 +262,7 @@ resource "google_organization_iam_member" "org_admin_serviceusage_consumer" {
 
   org_id = local.parent_id
   role   = "roles/serviceusage.serviceUsageConsumer"
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
 
 resource "google_folder_iam_member" "org_admin_service_account_user" {
@@ -265,7 +270,7 @@ resource "google_folder_iam_member" "org_admin_service_account_user" {
 
   folder = local.parent_id
   role   = "roles/iam.serviceAccountUser"
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
 
 resource "google_folder_iam_member" "org_admin_serviceusage_consumer" {
@@ -273,7 +278,7 @@ resource "google_folder_iam_member" "org_admin_serviceusage_consumer" {
 
   folder = local.parent_id
   role   = "roles/serviceusage.serviceUsageConsumer"
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
 
 resource "google_storage_bucket_iam_member" "orgadmins_state_iam" {
@@ -281,5 +286,5 @@ resource "google_storage_bucket_iam_member" "orgadmins_state_iam" {
 
   bucket = google_storage_bucket.org_terraform_state.name
   role   = "roles/storage.admin"
-  member = "group:${var.group_org_admins}"
+  member = local.group_org_admins_id
 }
