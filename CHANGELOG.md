@@ -7,6 +7,23 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [13.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v12.0.0...v13.0.0) (2026-08-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove terraform-tools from docker images ([#409](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/409))
+
+### Features
+
+* add support for Google Universes for the main module ([#404](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/404)) ([f5318c0](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/f5318c09f090bec5d031faf62ad2a86b7b0916f4))
+
+
+### Bug Fixes
+
+* remove terraform-tools from docker images ([#409](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/409)) ([0526230](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/052623038f5f1c6d4a54404c1b29e9444c67a156))
+* resolve CI test collisions, IAM dependencies, and preview retry logic ([#407](https://github.com/terraform-google-modules/terraform-google-bootstrap/issues/407)) ([425e930](https://github.com/terraform-google-modules/terraform-google-bootstrap/commit/425e930f31a7475614283bd7ae1ad718d6defe3f))
+
 ## [12.0.0](https://github.com/terraform-google-modules/terraform-google-bootstrap/compare/v11.0.1...v12.0.0) (2026-04-21)
 
 
