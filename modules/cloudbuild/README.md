@@ -8,7 +8,7 @@ Basic usage of this module is as follows:
 ```hcl
 module "bootstrap" {
   source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild"
-  version = "~> 12.0"
+  version = "~> 13.0"
 
   org_id         = "<ORGANIZATION_ID>"
   billing_account         = "<BILLING_ACCOUNT_ID>"
