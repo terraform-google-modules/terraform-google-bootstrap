@@ -35,6 +35,7 @@ control "bootstrap" do
 
   describe google_storage_bucket(name: attribute("gcs_bucket_tfstate")) do
     it { should exist }
+    its('versioning') { should exist }
   end
 
   describe google_storage_bucket_iam_binding(bucket: attribute("gcs_bucket_tfstate"),  role: 'roles/storage.admin') do
