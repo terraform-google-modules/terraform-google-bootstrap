@@ -71,7 +71,9 @@ For the cloudbuild submodule, see the README [cloudbuild](./modules/cloudbuild).
 | random\_suffix | Appends a 4 character random suffix to project ID and GCS bucket name. | `bool` | `true` | no |
 | sa\_enable\_impersonation | Allow org\_admins group to impersonate service account & enable APIs required. | `bool` | `false` | no |
 | sa\_org\_iam\_permissions | List of permissions granted to Terraform service account across the GCP organization. | `list(string)` | <pre>[<br>  "roles/billing.user",<br>  "roles/compute.networkAdmin",<br>  "roles/compute.xpnAdmin",<br>  "roles/iam.securityAdmin",<br>  "roles/iam.serviceAccountAdmin",<br>  "roles/logging.configWriter",<br>  "roles/orgpolicy.policyAdmin",<br>  "roles/resourcemanager.folderAdmin",<br>  "roles/resourcemanager.organizationViewer"<br>]</pre> | no |
+| state\_bucket\_lifecycle\_rules | List of optional lifecycle rules for the state bucket. | <pre>list(object({<br>    action    = any<br>    condition = any<br>  }))</pre> | `[]` | no |
 | state\_bucket\_name | Custom state bucket name. If not supplied, the default name is {project\_prefix}-tfstate-{random suffix}. | `string` | `""` | no |
+| state\_bucket\_versioning\_enabled | Boolean to indicate if the object versioning should be enabled for the state bucket. | `bool` | `true` | no |
 | storage\_bucket\_labels | Labels to apply to the storage bucket. | `map(string)` | `{}` | no |
 | tf\_service\_account\_id | ID of service account for terraform in seed project | `string` | `"org-terraform"` | no |
 | tf\_service\_account\_name | Display name of service account for terraform in seed project | `string` | `"CFT Organization Terraform Account"` | no |
